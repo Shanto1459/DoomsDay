@@ -3,20 +3,36 @@
 <head>
   <meta charset="utf-8">
   <title>DoomsDay</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+  text-align: center;
+  background: #111;
+  font-family: 'Creepster', cursive;
+  color: rgb(7, 41, 2);
+  font-size:36px;
+}
+
+    canvas {
+      background: #222;
+      border: 2px solid #4caf50;
+    }
+  </style>
 </head>
 
-<body style="text-align:center;">
+<body>
   <h1>DoomsDay</h1>
+  <canvas id="gameWorld" width="800" height="600" tabindex="0"></canvas>
 
-  <canvas id="gameWorld" width="800" height="600"
-          style="border:1px solid black;">
-  </canvas>
+  <script src="util.js"></script>
+  <script src="timer.js"></script>
+  <script src="assetmanager.js"></script>
+  <script src="gameengine.js"></script>
 
-  <script>
-    const canvas = document.getElementById("gameWorld");
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "gray";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  </script>
+  <script src="zombie.js"></script>
+  <script src="titlescreen.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
