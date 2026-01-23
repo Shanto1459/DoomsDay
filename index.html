@@ -1,1 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>DoomsDay</title>
+</head>
 
+<body style="text-align:center;">
+  <h1>DoomsDay</h1>
+
+  <canvas id="gameWorld" width="800" height="600"
+          style="border:1px solid black;">
+  </canvas>
+
+  <script>
+    const canvas = document.getElementById("gameWorld");
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "gray";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  </script>
+</body>
+</html>
