@@ -11,40 +11,32 @@ class Player {
     // Turn off blur for pixel art
     this.game.ctx.imageSmoothingEnabled = false;
 
-    // =========================
     // RUN sheets
-    // =========================
     this.downSheet  = ASSET_MANAGER.getAsset("./sprites/character/run/Character_down_run-Sheet6.png");
     this.upSheet    = ASSET_MANAGER.getAsset("./sprites/character/run/Character_up_run-Sheet6.png");
     this.leftSheet  = ASSET_MANAGER.getAsset("./sprites/character/run/Character_side-left_run-Sheet6.png");
     this.rightSheet = ASSET_MANAGER.getAsset("./sprites/character/run/Character_side_run-Sheet6.png");
 
-    // =========================
     // PUNCH sheets
-    // =========================
     this.downPunchSheet  = ASSET_MANAGER.getAsset("./sprites/character/punch/Character_down_punch-Sheet4.png");
     this.upPunchSheet    = ASSET_MANAGER.getAsset("./sprites/character/punch/Character_up_punch-Sheet4.png");
     this.leftPunchSheet  = ASSET_MANAGER.getAsset("./sprites/character/punch/Character_side-left_punch-Sheet4.png");
     this.rightPunchSheet = ASSET_MANAGER.getAsset("./sprites/character/punch/Character_side_punch-Sheet4.png");
 
-    // =========================
     // Animators
-    // =========================
     // Run (loops)
     this.downAnim  = new Animator(this.downSheet,  0, 0, 13, 17, 6, 0.10, true);
     this.upAnim    = new Animator(this.upSheet,    0, 0, 13, 17, 6, 0.10, true);
     this.leftAnim  = new Animator(this.leftSheet,  0, 0, 14, 17, 6, 0.10, true);
     this.rightAnim = new Animator(this.rightSheet, 0, 0, 14, 17, 6, 0.10, true);
 
-    // Punch (plays once => loop=false)
+    // Punch 
     this.downPunchAnim  = new Animator(this.downPunchSheet,  0, 0, 13, 17, 4, 0.10, false);
     this.upPunchAnim    = new Animator(this.upPunchSheet,    0, 0, 13, 17, 4, 0.10, false);
     this.leftPunchAnim  = new Animator(this.leftPunchSheet,  0, 0, 14, 17, 4, 0.10, false);
     this.rightPunchAnim = new Animator(this.rightPunchSheet, 0, 0, 14, 17, 4, 0.10, false);
 
-    // =========================
     // State
-    // =========================
     this.moving = false;
     this.punching = false;
 
@@ -55,10 +47,7 @@ class Player {
   update() {
     const keys = this.game.keys;
 
-    // -------------------------
     // SPACE -> start punch (once per press)
-    // Note: space key is " "
-    // -------------------------
     const spaceDown = !!keys[" "];
     const spacePressed = spaceDown && !this.prevSpaceDown;
     this.prevSpaceDown = spaceDown;
@@ -73,9 +62,7 @@ class Player {
       else this.downPunchAnim.reset();
     }
 
-    // -------------------------
     // If punching, don't move; end when animation finishes
-    // -------------------------
     if (this.punching) {
       let pAnim = this.downPunchAnim;
       if (this.direction === "up") pAnim = this.upPunchAnim;
@@ -90,9 +77,7 @@ class Player {
       return; // skip movement while punching
     }
 
-    // -------------------------
     // WASD movement
-    // -------------------------
     let dx = 0;
     let dy = 0;
 
