@@ -10,23 +10,25 @@ class TitleScreen {
     this.removeFromWorld = false;
   }
 
-  update() {
-    if (this.game.click) {
-      const c = this.game.click;
+ update() {
+  if (this.game.click) {
+    const c = this.game.click;
 
-      if (
-        c.x >= this.x &&
-        c.x <= this.x + this.w &&
-        c.y >= this.y &&
-        c.y <= this.y + this.h
-      ) {
-        console.log("START CLICKED");
-        this.removeFromWorld = true;
-      }
+    if (
+      c.x >= this.x &&
+      c.x <= this.x + this.w &&
+      c.y >= this.y &&
+      c.y <= this.y + this.h
+    ) {
+      console.log("START CLICKED");
 
-      this.game.click = null;
+      this.game.addEntity(new Player(this.game, 400, 300));
+      this.removeFromWorld = true;
     }
+    this.game.click = null;
   }
+}
+
 
   draw(ctx) {
     ctx.clearRect(0, 0, 800, 600);
