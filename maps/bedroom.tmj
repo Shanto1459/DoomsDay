@@ -48,7 +48,7 @@
                         {
                          "name":"targetMap",
                          "type":"string",
-                         "value":"outside.tmj"
+                         "value":"Main forest map.tmj"
                         }, 
                         {
                          "name":"targetSpawn",

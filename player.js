@@ -1,12 +1,14 @@
 class Player {
-  constructor(game, x, y) {
+  constructor(game, x, y, speed) {
     this.game = game;
     this.x = x;
     this.y = y;
 
     this.scale = 4;            // make pixel art bigger
-    this.speed = 180;          // pixels per second
+    this.speed = speed || 180; // pixels per second
     this.direction = "down";   // "up" | "down" | "left" | "right"
+    this.width = 14 * this.scale;
+    this.height = 17 * this.scale;
 
     // Turn off blur for pixel art
     this.game.ctx.imageSmoothingEnabled = false;
@@ -77,7 +79,7 @@ class Player {
       return; // skip movement while punching
     }
 
-    // WASD movement
+    // WASD movement input.
     let dx = 0;
     let dy = 0;
 
@@ -92,7 +94,7 @@ class Player {
     else if (dy < 0) this.direction = "up";
     else if (dy > 0) this.direction = "down";
 
-    // Normalize diagonal movement
+    // Normalize diagonal movement.
     const len = Math.hypot(dx, dy);
     if (len > 0) {
       dx /= len;
@@ -100,16 +102,44 @@ class Player {
     }
 
     const dt = this.game.clockTick;
-    this.x += dx * this.speed * dt;
-    this.y += dy * this.speed * dt;
+    const proposedX = this.x + dx * this.speed * dt;
+    const proposedY = this.y + dy * this.speed * dt;
+
+    // Check collisions separately on each axis.
+    if (this.canMoveTo(proposedX, this.y)) {
+      this.x = proposedX;
+    }
+    if (this.canMoveTo(this.x, proposedY)) {
+      this.y = proposedY;
+    }
 
     // Keep within map/world bounds
     const worldWidth = this.game.worldWidth || 800;
     const worldHeight = this.game.worldHeight || 600;
-    this.x = Math.max(0, Math.min(worldWidth - 14 * this.scale, this.x));
-    this.y = Math.max(0, Math.min(worldHeight - 17 * this.scale, this.y));
+    this.x = Math.max(0, Math.min(worldWidth - this.width, this.x));
+    this.y = Math.max(0, Math.min(worldHeight - this.height, this.y));
 
     this.moving = len > 0;
+  }
+
+  // Axis-aligned bounding box for collisions and portals.
+  getBounds() {
+    return {
+      x: this.x,
+      y: this.y,
+      width: this.width,
+      height: this.height
+    };
+  }
+
+  // Ask the collision grid if the next position is blocked.
+  canMoveTo(x, y) {
+    if (!this.game.collisionGrid) return true;
+    const blocked = this.game.collisionGrid.isBlockedRect(x, y, this.width, this.height);
+    if (blocked && this.game.options && this.game.options.debugging) {
+      console.log("Collision blocked:", { x, y, width: this.width, height: this.height });
+    }
+    return !blocked;
   }
 
 draw(ctx) {

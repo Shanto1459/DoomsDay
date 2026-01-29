@@ -1,9 +1,14 @@
-const gameEngine = new GameEngine();
+// Bootstraps the game and sets debug options.
+const gameEngine = new GameEngine({ cameraDebug: true });
 const ASSET_MANAGER = new AssetManager();
 
+// Starting map + player config.
 const MAP_PATH = "./maps/bedroom.tmj";
 const MAP_SCALE = 4;
+const START_SPAWN = "PlayerSpawn";
+const PLAYER_SPEED = 140; // pixels per second
 
+// Loads the map JSON, preloads tiles, then starts the game loop.
 async function loadGame() {
   let mapData = null;
 
@@ -28,41 +33,37 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side_punch-Sheet4.png");
 
   if (mapData) {
-    for (const tileset of mapData.tilesets || []) {
-      const imagePath = resolveMapAssetPath(MAP_PATH, tileset.image);
-      if (imagePath) ASSET_MANAGER.queueDownload(imagePath);
-
-      for (const tile of tileset.tiles || []) {
-        const tileImagePath = resolveMapAssetPath(MAP_PATH, tile.image);
-        if (tileImagePath) ASSET_MANAGER.queueDownload(tileImagePath);
-      }
-    }
+    const tilePaths = collectTilesetImagePaths(mapData, MAP_PATH);
+    const result = await preloadImages(tilePaths);
+    console.log("Tileset images loaded:", result.loaded, "failed:", result.failed);
   }
 
+  // Wait for character sprites, then start the engine.
   ASSET_MANAGER.downloadAll(() => {
     console.log("Game starting");
 
     const canvas = document.getElementById("gameWorld");
-    if (mapData) {
-      const mapSize = getMapPixelSize(mapData, MAP_SCALE);
-      canvas.width = mapSize.width;
-      canvas.height = mapSize.height;
-    }
     const ctx = canvas.getContext("2d");
 
     gameEngine.init(ctx);
     canvas.focus();
 
     if (mapData) {
-      const mapSize = getMapPixelSize(mapData, MAP_SCALE);
-      gameEngine.worldWidth = mapSize.width;
-      gameEngine.worldHeight = mapSize.height;
+      // Spawn player from the map and initialize map manager.
+      const spawn = getSpawnPosition(mapData, MAP_SCALE, START_SPAWN);
+      const player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
+      const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
 
-      const spawn = getSpawnPosition(mapData, MAP_SCALE);
-      gameEngine.addEntity(new Player(gameEngine, spawn.x, spawn.y));
-      gameEngine.addEntity(new TiledMapRenderer(gameEngine, mapData, MAP_PATH, MAP_SCALE));
+      // Camera follows the player.
+      gameEngine.cameraTarget = player;
+      gameEngine.addEntity(player);
+      mapManager.setMap(mapData, MAP_PATH, START_SPAWN);
+      gameEngine.addEntity(mapManager);
     } else {
-      gameEngine.addEntity(new Player(gameEngine, 400, 300));
+      // Fallback spawn if map failed to load.
+      const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
+      gameEngine.cameraTarget = player;
+      gameEngine.addEntity(player);
     }
     gameEngine.start();
     console.log("main.js loaded");

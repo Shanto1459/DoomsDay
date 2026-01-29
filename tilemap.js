@@ -1,3 +1,4 @@
+// Resolves tileset image paths relative to a map file.
 function resolveMapAssetPath(mapPath, assetPath) {
   if (!assetPath) return assetPath;
   if (/^(?:https?:)?\/\//.test(assetPath)) return assetPath;
@@ -14,6 +15,18 @@ function resolveMapAssetPath(mapPath, assetPath) {
   return mapDir + assetPath;
 }
 
+// Resolves map-to-map links (portals) relative to the current map.
+function resolveMapPath(mapPath, relativePath) {
+  if (!relativePath) return relativePath;
+  if (/^(?:https?:)?\/\//.test(relativePath)) return relativePath;
+  if (relativePath.startsWith("/")) return relativePath;
+
+  const slashIndex = mapPath.lastIndexOf("/");
+  if (slashIndex === -1) return relativePath;
+  return mapPath.slice(0, slashIndex + 1) + relativePath;
+}
+
+// Returns map width/height in pixels.
 function getMapPixelSize(mapData, scale) {
   const mapScale = scale || 1;
   return {
@@ -22,6 +35,7 @@ function getMapPixelSize(mapData, scale) {
   };
 }
 
+// Finds the default PlayerSpawn object.
 function findPlayerSpawn(mapData) {
   if (!mapData || !Array.isArray(mapData.layers)) return null;
 
@@ -41,15 +55,169 @@ function findPlayerSpawn(mapData) {
   return null;
 }
 
-function getSpawnPosition(mapData, scale) {
-  const spawn = findPlayerSpawn(mapData);
-  if (!spawn) return { x: 0, y: 0 };
+// Finds a spawn object by name or spawn properties.
+function findSpawnByName(mapData, spawnName) {
+  if (!mapData || !Array.isArray(mapData.layers)) return null;
+
+  for (const layer of mapData.layers) {
+    if (layer.type !== "objectgroup" || !Array.isArray(layer.objects)) continue;
+    for (const obj of layer.objects) {
+      if (obj.name === spawnName) return obj;
+      if (getObjectProperty(obj, "spawn_od") === spawnName) return obj;
+      if (getObjectProperty(obj, "spawn") === spawnName) return obj;
+    }
+  }
+
+  return null;
+}
+
+// Returns spawn position in world pixels (scaled).
+function getSpawnPosition(mapData, scale, spawnName) {
+  let spawn = spawnName ? findSpawnByName(mapData, spawnName) : findPlayerSpawn(mapData);
+  if (!spawn) {
+    for (const layer of mapData.layers || []) {
+      if (layer.type !== "objectgroup" || !Array.isArray(layer.objects)) continue;
+      spawn = layer.objects.find((obj) => getObjectProperty(obj, "entity") === "player");
+      if (spawn) break;
+    }
+  }
+  if (!spawn) {
+    console.warn("Spawn not found:", spawnName || "PlayerSpawn");
+    return { x: 0, y: 0 };
+  }
 
   const mapScale = scale || 1;
   return {
     x: spawn.x * mapScale,
     y: spawn.y * mapScale
   };
+}
+
+// Helper to read custom object properties from Tiled.
+function getObjectProperty(obj, name) {
+  if (!obj || !Array.isArray(obj.properties)) return null;
+  const prop = obj.properties.find((p) => p.name === name);
+  return prop ? prop.value : null;
+}
+
+// Detects portal objects based on properties or class/type.
+function isPortalObject(obj) {
+  const typeProp = getObjectProperty(obj, "type");
+  if (typeProp === "portal") return true;
+  if (obj.type === "portal") return true;
+  if (obj.class === "portal") return true;
+  if (getObjectProperty(obj, "targetMap")) return true;
+  if (getObjectProperty(obj, "targetSpawn")) return true;
+  return false;
+}
+
+// Collects all portal objects from every object layer.
+function getPortalObjects(mapData) {
+  if (!mapData || !Array.isArray(mapData.layers)) return [];
+  const portals = [];
+
+  for (const layer of mapData.layers) {
+    if (layer.type !== "objectgroup" || !Array.isArray(layer.objects)) continue;
+    for (const obj of layer.objects) {
+      if (isPortalObject(obj)) portals.push(obj);
+    }
+  }
+
+  return portals;
+}
+
+// Collects all tileset image paths used by a map.
+function collectTilesetImagePaths(mapData, mapPath) {
+  if (!mapData || !Array.isArray(mapData.tilesets)) return [];
+  const paths = new Set();
+
+  for (const tileset of mapData.tilesets) {
+    const tilesetPath = resolveMapAssetPath(mapPath, tileset.image);
+    if (tilesetPath) paths.add(tilesetPath);
+
+    for (const tile of tileset.tiles || []) {
+      const tilePath = resolveMapAssetPath(mapPath, tile.image);
+      if (tilePath) paths.add(tilePath);
+    }
+  }
+
+  return [...paths];
+}
+
+// Preloads images and stores them in the asset cache.
+function preloadImages(paths) {
+  const uniquePaths = [...new Set(paths)].filter(Boolean);
+  if (uniquePaths.length === 0) return Promise.resolve({ loaded: 0, failed: 0 });
+
+  let loaded = 0;
+  let failed = 0;
+
+  return Promise.all(
+    uniquePaths.map(
+      (path) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.addEventListener("load", () => {
+            ASSET_MANAGER.cache[path] = img;
+            loaded += 1;
+            resolve();
+          });
+          img.addEventListener("error", () => {
+            failed += 1;
+            console.warn("Failed to load image:", path);
+            resolve();
+          });
+          img.src = path;
+        })
+    )
+  ).then(() => ({ loaded, failed }));
+}
+
+class CollisionGrid {
+  constructor(mapData, scale, collisionLayerName) {
+    this.mapData = mapData;
+    this.scale = scale || 1;
+    this.collisionLayerName = collisionLayerName || "Collision";
+    this.collisionLayer = this.findCollisionLayer();
+  }
+
+  // Finds the tile layer named "Collision".
+  findCollisionLayer() {
+    if (!this.mapData || !Array.isArray(this.mapData.layers)) return null;
+    return this.mapData.layers.find(
+      (layer) => layer.type === "tilelayer" && layer.name === this.collisionLayerName
+    );
+  }
+
+  // Checks if a rectangle overlaps any blocked tiles.
+  isBlockedRect(x, y, width, height) {
+    if (!this.collisionLayer || !Array.isArray(this.collisionLayer.data)) return false;
+    const tileWidth = this.mapData.tilewidth * this.scale;
+    const tileHeight = this.mapData.tileheight * this.scale;
+
+    const left = Math.floor(x / tileWidth);
+    const right = Math.floor((x + width - 1) / tileWidth);
+    const top = Math.floor(y / tileHeight);
+    const bottom = Math.floor((y + height - 1) / tileHeight);
+
+    for (let ty = top; ty <= bottom; ty++) {
+      for (let tx = left; tx <= right; tx++) {
+        if (this.isBlockedTile(tx, ty)) return true;
+      }
+    }
+
+    return false;
+  }
+
+  // Checks a single tile for collision.
+  isBlockedTile(tx, ty) {
+    if (!this.collisionLayer) return false;
+    if (tx < 0 || ty < 0 || tx >= this.collisionLayer.width || ty >= this.collisionLayer.height) {
+      return true;
+    }
+    const index = ty * this.collisionLayer.width + tx;
+    return this.collisionLayer.data[index] !== 0;
+  }
 }
 
 class TiledMapRenderer {
@@ -77,6 +245,7 @@ class TiledMapRenderer {
 
   update() {}
 
+  // Draws all visible tile layers.
   draw(ctx) {
     for (const layer of this.mapData.layers) {
       if (layer.type !== "tilelayer" || !layer.visible) continue;
@@ -147,4 +316,191 @@ class TiledMapRenderer {
     }
     return selected;
   }
+}
+
+class MapManager {
+  constructor(game, player, mapScale) {
+    this.game = game;
+    this.player = player;
+    this.mapScale = mapScale || 1;
+    this.mapData = null;
+    this.mapPath = "";
+    this.renderer = null;
+    this.collisionGrid = null;
+    this.portals = [];
+    this.portalCooldown = 0;
+    this.activePortalId = null;
+    this.isTransitioning = false;
+  }
+
+  // Applies a new map, builds collisions/portals, and moves the player.
+  setMap(mapData, mapPath, spawnName) {
+    this.mapData = mapData;
+    this.mapPath = mapPath;
+    this.renderer = new TiledMapRenderer(this.game, mapData, mapPath, this.mapScale);
+    this.collisionGrid = new CollisionGrid(mapData, this.mapScale, "Collision");
+    this.portals = getPortalObjects(mapData);
+
+    const mapSize = getMapPixelSize(mapData, this.mapScale);
+    this.game.worldWidth = mapSize.width;
+    this.game.worldHeight = mapSize.height;
+    this.game.collisionGrid = this.collisionGrid;
+
+    const spawn = getSpawnPosition(mapData, this.mapScale, spawnName);
+    this.player.x = spawn.x;
+    this.player.y = spawn.y;
+
+    console.log("Map loaded:", mapPath);
+    console.log("Spawn:", spawnName || "PlayerSpawn", spawn);
+    this.logObjectLayers();
+    this.logPortals();
+    this.logSpawns();
+  }
+
+  // Loads the next map from a portal object.
+  async transitionTo(portal) {
+    if (this.isTransitioning) return;
+    const targetMap = getObjectProperty(portal, "targetMap");
+    const targetSpawn = getObjectProperty(portal, "targetSpawn");
+    if (!targetMap) return;
+
+    this.isTransitioning = true;
+    console.log("Portal triggered:", portal.name || "(unnamed)", targetMap, targetSpawn);
+
+    const nextMapPath = resolveMapPath(this.mapPath, targetMap);
+    const fetchPath = encodeURI(nextMapPath);
+    try {
+      console.log("Fetching map:", fetchPath);
+      const response = await fetch(fetchPath);
+      if (!response.ok) throw new Error(`Map fetch failed: ${response.status}`);
+      const mapData = await response.json();
+
+      const tilePaths = collectTilesetImagePaths(mapData, nextMapPath);
+      const result = await preloadImages(tilePaths);
+      console.log("Tileset images loaded:", result.loaded, "failed:", result.failed);
+
+      this.setMap(mapData, nextMapPath, targetSpawn);
+      this.portalCooldown = 0.5;
+      this.activePortalId = portal.id;
+    } catch (error) {
+      const altMap = targetMap.includes("_") ? targetMap.replace(/_/g, " ") : null;
+      if (altMap) {
+        const altPath = resolveMapPath(this.mapPath, altMap);
+        const altFetchPath = encodeURI(altPath);
+        try {
+          console.warn("Retrying map with spaces:", altFetchPath);
+          const retry = await fetch(altFetchPath);
+          if (!retry.ok) throw new Error(`Map fetch failed: ${retry.status}`);
+          const mapData = await retry.json();
+          const tilePaths = collectTilesetImagePaths(mapData, altPath);
+          const result = await preloadImages(tilePaths);
+          console.log("Tileset images loaded:", result.loaded, "failed:", result.failed);
+          this.setMap(mapData, altPath, targetSpawn);
+          this.portalCooldown = 0.5;
+          this.activePortalId = portal.id;
+        } catch (retryError) {
+          console.error("Failed to load map:", nextMapPath, retryError);
+        }
+      } else {
+        console.error("Failed to load map:", nextMapPath, error);
+      }
+    } finally {
+      this.isTransitioning = false;
+    }
+  }
+
+  // Checks portal overlap each frame.
+  update() {
+    if (!this.mapData) return;
+
+    if (this.portalCooldown > 0) {
+      this.portalCooldown -= this.game.clockTick;
+    }
+
+    const playerBounds = this.player.getBounds();
+    for (const portal of this.portals) {
+      const portalRect = this.getPortalRect(portal);
+      const overlap = rectsOverlap(playerBounds, portalRect);
+
+      if (!overlap && this.activePortalId === portal.id) {
+        this.activePortalId = null;
+      }
+
+      if (overlap && this.portalCooldown <= 0 && this.activePortalId !== portal.id) {
+        console.log("Portal overlap detected:", portal.name || "(unnamed)", portalRect);
+        this.transitionTo(portal);
+        break;
+      }
+    }
+  }
+
+  // Draws the map (behind entities).
+  draw(ctx) {
+    if (!this.renderer) return;
+    this.renderer.draw(ctx);
+  }
+
+  // Converts a portal object into a screen-space rectangle.
+  getPortalRect(portal) {
+    const tileWidth = this.mapData.tilewidth;
+    const tileHeight = this.mapData.tileheight;
+    const width = portal.width || tileWidth;
+    const height = portal.height || tileHeight;
+    return {
+      x: portal.x * this.mapScale,
+      y: portal.y * this.mapScale,
+      width: width * this.mapScale,
+      height: height * this.mapScale
+    };
+  }
+
+  // Debug: log object layer counts.
+  logObjectLayers() {
+    if (!this.mapData || !Array.isArray(this.mapData.layers)) return;
+    const objectLayers = this.mapData.layers.filter((l) => l.type === "objectgroup");
+    const objectCount = objectLayers.reduce((sum, l) => sum + (l.objects ? l.objects.length : 0), 0);
+    console.log("Object layers:", objectLayers.length, "objects:", objectCount);
+  }
+
+  // Debug: log portal objects.
+  logPortals() {
+    if (!this.portals) return;
+    console.log("Portals found:", this.portals.length);
+    for (const portal of this.portals) {
+      console.log("Portal:", {
+        name: portal.name,
+        x: portal.x,
+        y: portal.y,
+        width: portal.width,
+        height: portal.height,
+        properties: portal.properties || []
+      });
+    }
+  }
+
+  // Debug: log spawn objects.
+  logSpawns() {
+    if (!this.mapData || !Array.isArray(this.mapData.layers)) return;
+    const spawns = [];
+    for (const layer of this.mapData.layers) {
+      if (layer.type !== "objectgroup" || !Array.isArray(layer.objects)) continue;
+      for (const obj of layer.objects) {
+        if (obj.name && obj.name.toLowerCase().includes("spawn")) {
+          spawns.push(obj.name);
+        } else if (getObjectProperty(obj, "entity") === "player") {
+          spawns.push(obj.name || "(unnamed player spawn)");
+        }
+      }
+    }
+    console.log("Spawn objects:", spawns.length ? spawns : "none found");
+  }
+}
+
+function rectsOverlap(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
 }

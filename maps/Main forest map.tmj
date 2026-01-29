@@ -1302,7 +1302,7 @@
                 {
                  "height":16,
                  "id":14,
-                 "name":"spawn house",
+                "name":"OutsideSpawn",
                  "properties":[
                         {
                          "name":"entity",
