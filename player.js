@@ -103,9 +103,11 @@ class Player {
     this.x += dx * this.speed * dt;
     this.y += dy * this.speed * dt;
 
-    // Keep on screen (simple clamp)
-    this.x = Math.max(0, Math.min(800 - 14 * this.scale, this.x));
-    this.y = Math.max(0, Math.min(600 - 17 * this.scale, this.y));
+    // Keep within map/world bounds
+    const worldWidth = this.game.worldWidth || 800;
+    const worldHeight = this.game.worldHeight || 600;
+    this.x = Math.max(0, Math.min(worldWidth - 14 * this.scale, this.x));
+    this.y = Math.max(0, Math.min(worldHeight - 17 * this.scale, this.y));
 
     this.moving = len > 0;
   }

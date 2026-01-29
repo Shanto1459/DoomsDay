@@ -1,6 +1,9 @@
 class TitleScreen {
-  constructor(game) {
+  constructor(game, mapData, mapPath, mapScale) {
     this.game = game;
+    this.mapData = mapData || null;
+    this.mapPath = mapPath || "";
+    this.mapScale = mapScale || 1;
 
     this.x = 280;
     this.y = 300;
@@ -22,7 +25,17 @@ class TitleScreen {
     ) {
       console.log("START CLICKED");
 
-      this.game.addEntity(new Player(this.game, 400, 300));
+      if (this.mapData) {
+        const mapSize = getMapPixelSize(this.mapData, this.mapScale);
+        this.game.worldWidth = mapSize.width;
+        this.game.worldHeight = mapSize.height;
+
+        const spawn = getSpawnPosition(this.mapData, this.mapScale);
+        this.game.addEntity(new Player(this.game, spawn.x, spawn.y));
+        this.game.addEntity(new TiledMapRenderer(this.game, this.mapData, this.mapPath, this.mapScale));
+      } else {
+        this.game.addEntity(new Player(this.game, 400, 300));
+      }
       this.removeFromWorld = true;
     }
     this.game.click = null;

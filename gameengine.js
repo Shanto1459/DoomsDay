@@ -18,6 +18,8 @@ class GameEngine {
 
     init(ctx) {
         this.ctx = ctx;
+        this.worldWidth = this.ctx.canvas.width;
+        this.worldHeight = this.ctx.canvas.height;
         this.startInput();
         this.timer = new Timer();
     };
