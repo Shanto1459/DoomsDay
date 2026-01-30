@@ -7,24 +7,41 @@
   <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 
   <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: #111;
+      font-family: 'Creepster', cursive;
+      color: rgb(7, 41, 2);
+    }
+
     body {
-  text-align: center;
-  background: #111;
-  font-family: 'Creepster', cursive;
-  color: rgb(7, 41, 2);
-  font-size:36px;
-}
+      display: flex;
+      flex-direction: column;
+      align-items: center;   /* horizontal center */
+    }
+
+    h1 {
+      margin: 30px 0 0 0;
+      font-size: 36px;
+    }
 
     canvas {
+      margin-top: 45px;     /* 👈 THIS IS THE GAP YOU WANT */
       background: #222;
       border: 2px solid #4caf50;
+      image-rendering: pixelated;
+      display: block;
     }
   </style>
 </head>
 
 <body>
   <h1>DoomsDay</h1>
-  <canvas id="gameWorld" width="800" height="600" tabindex="0"></canvas>
+
+  <!-- Canvas is pushed DOWN independently -->
+  <canvas id="gameWorld" width="640" height="640" tabindex="0"></canvas>
 
   <script src="util.js"></script>
   <script src="timer.js"></script>
@@ -32,10 +49,8 @@
   <script src="gameengine.js"></script>
   <script src="animator.js"></script>
   <script src="tilemap.js"></script>
-
   <script src="player.js"></script>
   <script src="titlescreen.js"></script>
   <script src="main.js"></script>
-
 </body>
 </html>

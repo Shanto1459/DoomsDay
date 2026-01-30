@@ -246,11 +246,42 @@ class TiledMapRenderer {
   update() {}
 
   // Draws all visible tile layers.
-  draw(ctx) {
-    for (const layer of this.mapData.layers) {
-      if (layer.type !== "tilelayer" || !layer.visible) continue;
+  // Draws only the tiles visible in the camera view (culling).
+draw(ctx) {
+  const game = this.game;
 
-      for (let i = 0; i < layer.data.length; i++) {
+  const tileW = this.mapData.tilewidth * this.scale;
+  const tileH = this.mapData.tileheight * this.scale;
+
+  // Camera/view rectangle in WORLD coordinates
+  const viewLeft = game.camera?.x || 0;
+  const viewTop = game.camera?.y || 0;
+  const viewRight = viewLeft + ctx.canvas.width;
+  const viewBottom = viewTop + ctx.canvas.height;
+
+  // Draw a small buffer to avoid popping at edges
+  const bufferTiles = 1;
+
+  // Convert view rect -> tile indices
+  const startCol = Math.max(0, Math.floor(viewLeft / tileW) - bufferTiles);
+  const endCol = Math.min(this.mapData.width - 1, Math.floor(viewRight / tileW) + bufferTiles);
+
+  const startRow = Math.max(0, Math.floor(viewTop / tileH) - bufferTiles);
+  const endRow = Math.min(this.mapData.height - 1, Math.floor(viewBottom / tileH) + bufferTiles);
+
+
+  console.log("Tiles range:", startRow, endRow, startCol, endCol);
+
+  for (const layer of this.mapData.layers) {
+    if (layer.type !== "tilelayer" || !layer.visible) continue;
+    if (!Array.isArray(layer.data)) continue;
+
+    // If a layer has its own width/height, use it; otherwise map size
+    const layerW = layer.width || this.mapData.width;
+
+    for (let row = startRow; row <= endRow; row++) {
+      for (let col = startCol; col <= endCol; col++) {
+        const i = row * layerW + col;
         const gid = layer.data[i];
         if (!gid) continue;
 
@@ -258,9 +289,10 @@ class TiledMapRenderer {
         if (!tileset) continue;
 
         const tileIndex = gid - tileset.firstgid;
-        const destX = (i % layer.width) * this.mapData.tilewidth * this.scale;
-        const destY = Math.floor(i / layer.width) * this.mapData.tileheight * this.scale;
+        const destX = col * tileW;
+        const destY = row * tileH;
 
+        // --- Normal tileset image (spritesheet)
         if (tileset.imagePath) {
           const columns = tileset.columns;
           const srcX = (tileIndex % columns) * tileset.tilewidth;
@@ -286,6 +318,8 @@ class TiledMapRenderer {
             tileset.tilewidth * this.scale,
             tileset.tileheight * this.scale
           );
+
+        // --- Per-tile images (image collection tileset)
         } else if (tileset.tileImageMap && tileset.tileImageMap[tileIndex]) {
           const tileImage = tileset.tileImageMap[tileIndex];
           const image = ASSET_MANAGER.getAsset(tileImage.imagePath);
@@ -308,6 +342,8 @@ class TiledMapRenderer {
       }
     }
   }
+}
+
 
   getTilesetForGid(gid) {
     let selected = null;
