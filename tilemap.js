@@ -282,15 +282,21 @@ draw(ctx) {
     for (let row = startRow; row <= endRow; row++) {
       for (let col = startCol; col <= endCol; col++) {
         const i = row * layerW + col;
-        const gid = layer.data[i];
-        if (!gid) continue;
+        const rawGid = layer.data[i];          // may include rotate/flip bits
+        const gid = rawGid & 0x1FFFFFFF;       // strip Tiled flags
+        if (gid === 0) continue;
 
         const tileset = this.getTilesetForGid(gid);
         if (!tileset) continue;
 
         const tileIndex = gid - tileset.firstgid;
+
         const destX = col * tileW;
         const destY = row * tileH;
+
+        const flipH = (rawGid & 0x80000000) !== 0;
+        const flipV = (rawGid & 0x40000000) !== 0;
+        const flipD = (rawGid & 0x20000000) !== 0;
 
         // --- Normal tileset image (spritesheet)
         if (tileset.imagePath) {
@@ -307,17 +313,34 @@ draw(ctx) {
             continue;
           }
 
+          const dw = tileset.tilewidth * this.scale;
+          const dh = tileset.tileheight * this.scale;
+
+          ctx.save();
+          ctx.translate(destX + dw / 2, destY + dh / 2);
+
+          // Tiled: apply diagonal first, then H/V
+          if (flipD) {
+            ctx.rotate(Math.PI / 2);
+            ctx.scale(-1, 1);
+          }
+          if (flipH) ctx.scale(-1, 1);
+          if (flipV) ctx.scale(1, -1);
+
           ctx.drawImage(
             image,
             srcX,
             srcY,
             tileset.tilewidth,
             tileset.tileheight,
-            destX,
-            destY,
-            tileset.tilewidth * this.scale,
-            tileset.tileheight * this.scale
+            -dw / 2,
+            -dh / 2,
+            dw,
+            dh
           );
+
+          ctx.restore();
+
 
         // --- Per-tile images (image collection tileset)
         } else if (tileset.tileImageMap && tileset.tileImageMap[tileIndex]) {
@@ -331,13 +354,22 @@ draw(ctx) {
             continue;
           }
 
-          ctx.drawImage(
-            image,
-            destX,
-            destY,
-            tileImage.width * this.scale,
-            tileImage.height * this.scale
-          );
+          const dw = tileImage.width * this.scale;
+          const dh = tileImage.height * this.scale;
+
+          ctx.save();
+          ctx.translate(destX + dw / 2, destY + dh / 2);
+
+          if (flipD) {
+            ctx.rotate(Math.PI / 2);
+            ctx.scale(-1, 1);
+          }
+          if (flipH) ctx.scale(-1, 1);
+          if (flipV) ctx.scale(1, -1);
+
+          ctx.drawImage(image, -dw / 2, -dh / 2, dw, dh);
+          ctx.restore();
+
         }
       }
     }
@@ -371,11 +403,59 @@ class MapManager {
 
   // Applies a new map, builds collisions/portals, and moves the player.
   setMap(mapData, mapPath, spawnName) {
+    console.log("MAP LOADED NAME:", mapData?.properties);
+    console.log(
+  "LAYER NAMES:",
+  mapData.layers.map(l => `${l.name} (${l.type})`)
+);
+
     this.mapData = mapData;
     this.mapPath = mapPath;
     this.renderer = new TiledMapRenderer(this.game, mapData, mapPath, this.mapScale);
     this.collisionGrid = new CollisionGrid(mapData, this.mapScale, "Collision");
     this.portals = getPortalObjects(mapData);
+
+    // --- Dialogue triggers from Tiled ---
+    this.dialogueTriggers = [];
+    this.dialogueUsedGroups = new Set();
+
+    for (const layer of mapData.layers) {
+    if (layer.type !== "objectgroup") continue;
+
+    for (const obj of layer.objects || []) {
+    const marker =
+    getObjectProperty(obj, "type") ||
+    obj.class ||
+    obj.type ||
+    obj.name;
+
+    const isDialogue = marker === "dialogue";
+
+  if (isDialogue) {
+    console.log("FOUND DIALOGUE OBJECT:", obj);
+  }
+
+
+
+
+    if (isDialogue) {
+      this.dialogueTriggers.push({
+      group: getObjectProperty(obj, "group") || obj.name || `obj-${obj.id}`,
+      text: getObjectProperty(obj, "text") || "(missing text property)",
+      once: getObjectProperty(obj, "once") ?? true,
+        rect: {
+          x: obj.x * this.mapScale,
+          y: obj.y * this.mapScale,
+          width: (obj.width || mapData.tilewidth) * this.mapScale,
+          height: (obj.height || mapData.tileheight) * this.mapScale
+        }
+      });
+    console.log("FINAL dialogue triggers:", this.dialogueTriggers);
+
+    }
+  }
+}
+
 
     const mapSize = getMapPixelSize(mapData, this.mapScale);
     this.game.worldWidth = mapSize.width;
@@ -407,7 +487,7 @@ class MapManager {
     const fetchPath = encodeURI(nextMapPath);
     try {
       console.log("Fetching map:", fetchPath);
-      const response = await fetch(fetchPath);
+      const response = await fetch(fetchPath + "?v=" + Date.now());
       if (!response.ok) throw new Error(`Map fetch failed: ${response.status}`);
       const mapData = await response.json();
 
@@ -446,29 +526,49 @@ class MapManager {
   }
 
   // Checks portal overlap each frame.
-  update() {
-    if (!this.mapData) return;
+ update() {
+  if (!this.mapData) return;
 
-    if (this.portalCooldown > 0) {
-      this.portalCooldown -= this.game.clockTick;
+  if (this.portalCooldown > 0) {
+    this.portalCooldown -= this.game.clockTick;
+  }
+
+  const playerBounds = this.player.getBounds();
+
+  // --- portal logic ---
+  for (const portal of this.portals) {
+    const portalRect = this.getPortalRect(portal);
+    const overlap = rectsOverlap(playerBounds, portalRect);
+
+    if (!overlap && this.activePortalId === portal.id) {
+      this.activePortalId = null;
     }
 
-    const playerBounds = this.player.getBounds();
-    for (const portal of this.portals) {
-      const portalRect = this.getPortalRect(portal);
-      const overlap = rectsOverlap(playerBounds, portalRect);
-
-      if (!overlap && this.activePortalId === portal.id) {
-        this.activePortalId = null;
-      }
-
-      if (overlap && this.portalCooldown <= 0 && this.activePortalId !== portal.id) {
-        console.log("Portal overlap detected:", portal.name || "(unnamed)", portalRect);
-        this.transitionTo(portal);
-        break;
-      }
+    if (overlap && this.portalCooldown <= 0 && this.activePortalId !== portal.id) {
+      console.log("Portal overlap detected:", portal.name || "(unnamed)", portalRect);
+      this.transitionTo(portal);
+      break;
     }
   }
+
+  // --- dialogue logic (REUSE same playerBounds) ---
+  for (const trigger of this.dialogueTriggers || []) {
+    if (trigger.once && this.dialogueUsedGroups.has(trigger.group)) continue;
+
+    if (rectsOverlap(playerBounds, trigger.rect)) {
+      this.game.showDialogue(trigger.text);
+      if (trigger.once) {
+        this.dialogueUsedGroups.add(trigger.group);
+      }
+      break;
+    }
+  }
+}
+
+    
+
+    
+
 
   // Draws the map (behind entities).
   draw(ctx) {
