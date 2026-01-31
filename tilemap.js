@@ -26,6 +26,40 @@ function resolveMapPath(mapPath, relativePath) {
   return mapPath.slice(0, slashIndex + 1) + relativePath;
 }
 
+function resolveMapAssetPath(mapPath, assetPath) {
+  if (!assetPath) return assetPath;
+
+  assetPath = assetPath.replace(/\\/g, "/");
+ 
+  if (/^(?:https?:)?\/\//.test(assetPath)) return assetPath;
+  if (assetPath.startsWith("/")) return assetPath;
+  
+  const slashIndex = mapPath.lastIndexOf("/");
+  const mapDir = slashIndex === -1 ? "" : mapPath.slice(0, slashIndex + 1);
+  
+  const pack = "PostApocalypse_AssetPack_v1.1.2/";
+  const packIdx = assetPath.indexOf(pack);
+   if (packIdx !== -1) {
+    let cleaned = assetPath.slice(packIdx);
+
+    // 🔥 REMOVE " - Copy", " - Copy - Copy", etc BEFORE .png
+    cleaned = cleaned.replace(/\s-\sCopy.*(?=\.png)/i, "");
+
+    return mapDir + "../" + cleaned;
+  }
+  const mapsImages = "Maps/images/";
+  const mIdx = assetPath.indexOf(mapsImages);
+  if (mIdx !== -1) {
+    const fileName = assetPath.slice(mIdx + mapsImages.length); // "Garbage_TileSet.png"
+    return mapDir + fileName; // matches your correct file style
+  }
+
+  return mapDir + assetPath;
+}
+
+
+
+
 // Returns map width/height in pixels.
 function getMapPixelSize(mapData, scale) {
   const mapScale = scale || 1;
@@ -385,6 +419,49 @@ draw(ctx) {
     return selected;
   }
 }
+
+function walkLayers(layers, fn) {
+  if (!Array.isArray(layers)) return;
+  for (const layer of layers) {
+    fn(layer);
+    // Tiled group layers store children in `layers`
+    if (layer.type === "group" && Array.isArray(layer.layers)) {
+      walkLayers(layer.layers, fn);
+    }
+  }
+}
+
+function collectDialogueTriggers(mapData, mapScale) {
+  const triggers = [];
+
+  walkLayers(mapData.layers, (layer) => {
+    if (layer.type !== "objectgroup") return;
+
+    for (const obj of layer.objects || []) {
+      const isDialogue =
+        getObjectProperty(obj, "type") === "dialogue" ||
+        obj.type === "dialogue" ||
+        obj.class === "dialogue";
+
+      if (!isDialogue) continue;
+
+      triggers.push({
+        group: getObjectProperty(obj, "group") || obj.name || "(no group)",
+        text: getObjectProperty(obj, "text") || "",
+        once: !!getObjectProperty(obj, "once"),
+        rect: {
+          x: obj.x * mapScale,
+          y: obj.y * mapScale,
+          width: (obj.width || mapData.tilewidth) * mapScale,
+          height: (obj.height || mapData.tileheight) * mapScale
+        }
+      });
+    }
+  });
+
+  return triggers;
+}
+
 
 class MapManager {
   constructor(game, player, mapScale) {
