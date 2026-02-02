@@ -26,6 +26,40 @@ function resolveMapPath(mapPath, relativePath) {
   return mapPath.slice(0, slashIndex + 1) + relativePath;
 }
 
+function resolveMapAssetPath(mapPath, assetPath) {
+  if (!assetPath) return assetPath;
+
+  assetPath = assetPath.replace(/\\/g, "/");
+ 
+  if (/^(?:https?:)?\/\//.test(assetPath)) return assetPath;
+  if (assetPath.startsWith("/")) return assetPath;
+  
+  const slashIndex = mapPath.lastIndexOf("/");
+  const mapDir = slashIndex === -1 ? "" : mapPath.slice(0, slashIndex + 1);
+  
+  const pack = "PostApocalypse_AssetPack_v1.1.2/";
+  const packIdx = assetPath.indexOf(pack);
+   if (packIdx !== -1) {
+    let cleaned = assetPath.slice(packIdx);
+
+    // 🔥 REMOVE " - Copy", " - Copy - Copy", etc BEFORE .png
+    cleaned = cleaned.replace(/\s-\sCopy.*(?=\.png)/i, "");
+
+    return mapDir + "../" + cleaned;
+  }
+  const mapsImages = "Maps/images/";
+  const mIdx = assetPath.indexOf(mapsImages);
+  if (mIdx !== -1) {
+    const fileName = assetPath.slice(mIdx + mapsImages.length); // "Garbage_TileSet.png"
+    return mapDir + fileName; // matches your correct file style
+  }
+
+  return mapDir + assetPath;
+}
+
+
+
+
 // Returns map width/height in pixels.
 function getMapPixelSize(mapData, scale) {
   const mapScale = scale || 1;
@@ -272,88 +306,110 @@ class TiledMapRenderer {
   update() {}
 
   // Draws all visible tile layers.
-  draw(ctx) {
-    const game = this.game;
-  
-    const tileW = this.mapData.tilewidth * this.scale;
-    const tileH = this.mapData.tileheight * this.scale;
-  
-    // Camera/view rectangle in WORLD coordinates
-    const viewLeft = game.camera?.x || 0;
-    const viewTop = game.camera?.y || 0;
-    const viewRight = viewLeft + ctx.canvas.width;
-    const viewBottom = viewTop + ctx.canvas.height;
-  
-    // Draw a small buffer to avoid popping at edges
-    const bufferTiles = 1;
-  
-    // Convert view rect -> tile indices
-    const startCol = Math.max(0, Math.floor(viewLeft / tileW) - bufferTiles);
-    const endCol = Math.min(this.mapData.width - 1, Math.floor(viewRight / tileW) + bufferTiles);
-  
-    const startRow = Math.max(0, Math.floor(viewTop / tileH) - bufferTiles);
-    const endRow = Math.min(this.mapData.height - 1, Math.floor(viewBottom / tileH) + bufferTiles);
-  
-  
-    console.log("Tiles range:", startRow, endRow, startCol, endCol);
-  
-    for (const layer of this.mapData.layers) {
-      if (layer.type !== "tilelayer" || !layer.visible) continue;
-      if (!Array.isArray(layer.data)) continue;
-  
-      // If a layer has its own width/height, use it; otherwise map size
-      const layerW = layer.width || this.mapData.width;
-  
-      for (let row = startRow; row <= endRow; row++) {
-        for (let col = startCol; col <= endCol; col++) {
-          const i = row * layerW + col;
-          const gid = layer.data[i];
-          if (!gid) continue;
-  
-          const tileset = this.getTilesetForGid(gid);
-          if (!tileset) continue;
-  
-          const tileIndex = gid - tileset.firstgid;
-          const destX = col * tileW;
-          const destY = row * tileH;
-  
-          // --- Normal tileset image (spritesheet)
-          if (tileset.imagePath) {
-            const columns = tileset.columns;
-            const srcX = (tileIndex % columns) * tileset.tilewidth;
-            const srcY = Math.floor(tileIndex / columns) * tileset.tileheight;
-  
-            const image = ASSET_MANAGER.getAsset(tileset.imagePath);
-            if (!image) {
-              if (!this.missingImages.has(tileset.imagePath)) {
-                console.warn("Missing tileset image:", tileset.imagePath);
-                this.missingImages.add(tileset.imagePath);
-              }
-              continue;
+  // Draws only the tiles visible in the camera view (culling).
+draw(ctx) {
+  const game = this.game;
+
+  const tileW = this.mapData.tilewidth * this.scale;
+  const tileH = this.mapData.tileheight * this.scale;
+
+  // Camera/view rectangle in WORLD coordinates
+  const viewLeft = game.camera?.x || 0;
+  const viewTop = game.camera?.y || 0;
+  const viewRight = viewLeft + ctx.canvas.width;
+  const viewBottom = viewTop + ctx.canvas.height;
+
+  // Draw a small buffer to avoid popping at edges
+  const bufferTiles = 1;
+
+  // Convert view rect -> tile indices
+  const startCol = Math.max(0, Math.floor(viewLeft / tileW) - bufferTiles);
+  const endCol = Math.min(this.mapData.width - 1, Math.floor(viewRight / tileW) + bufferTiles);
+
+  const startRow = Math.max(0, Math.floor(viewTop / tileH) - bufferTiles);
+  const endRow = Math.min(this.mapData.height - 1, Math.floor(viewBottom / tileH) + bufferTiles);
+
+
+  console.log("Tiles range:", startRow, endRow, startCol, endCol);
+
+  for (const layer of this.mapData.layers) {
+    if (layer.type !== "tilelayer" || !layer.visible) continue;
+    if (!Array.isArray(layer.data)) continue;
+
+    // If a layer has its own width/height, use it; otherwise map size
+    const layerW = layer.width || this.mapData.width;
+
+    for (let row = startRow; row <= endRow; row++) {
+      for (let col = startCol; col <= endCol; col++) {
+        const i = row * layerW + col;
+        const rawGid = layer.data[i];          // may include rotate/flip bits
+        const gid = rawGid & 0x1FFFFFFF;       // strip Tiled flags
+        if (gid === 0) continue;
+
+        const tileset = this.getTilesetForGid(gid);
+        if (!tileset) continue;
+
+        const tileIndex = gid - tileset.firstgid;
+
+        const destX = col * tileW;
+        const destY = row * tileH;
+
+        const flipH = (rawGid & 0x80000000) !== 0;
+        const flipV = (rawGid & 0x40000000) !== 0;
+        const flipD = (rawGid & 0x20000000) !== 0;
+
+        // --- Normal tileset image (spritesheet)
+        if (tileset.imagePath) {
+          const columns = tileset.columns;
+          const srcX = (tileIndex % columns) * tileset.tilewidth;
+          const srcY = Math.floor(tileIndex / columns) * tileset.tileheight;
+
+          const image = ASSET_MANAGER.getAsset(tileset.imagePath);
+          if (!image) {
+            if (!this.missingImages.has(tileset.imagePath)) {
+              console.warn("Missing tileset image:", tileset.imagePath);
+              this.missingImages.add(tileset.imagePath);
             }
-  
-            ctx.drawImage(
-              image,
-              srcX,
-              srcY,
-              tileset.tilewidth,
-              tileset.tileheight,
-              destX,
-              destY,
-              tileset.tilewidth * this.scale,
-              tileset.tileheight * this.scale
-            );
-  
-          // --- Per-tile images (image collection tileset)
-          } else if (tileset.tileImageMap && tileset.tileImageMap[tileIndex]) {
-            const tileImage = tileset.tileImageMap[tileIndex];
-            const image = ASSET_MANAGER.getAsset(tileImage.imagePath);
-            if (!image) {
-              if (!this.missingImages.has(tileImage.imagePath)) {
-                console.warn("Missing tile image:", tileImage.imagePath);
-                this.missingImages.add(tileImage.imagePath);
-              }
-              continue;
+            continue;
+          }
+
+          const dw = tileset.tilewidth * this.scale;
+          const dh = tileset.tileheight * this.scale;
+
+          ctx.save();
+          ctx.translate(destX + dw / 2, destY + dh / 2);
+
+          // Tiled: apply diagonal first, then H/V
+          if (flipD) {
+            ctx.rotate(Math.PI / 2);
+            ctx.scale(-1, 1);
+          }
+          if (flipH) ctx.scale(-1, 1);
+          if (flipV) ctx.scale(1, -1);
+
+          ctx.drawImage(
+            image,
+            srcX,
+            srcY,
+            tileset.tilewidth,
+            tileset.tileheight,
+            -dw / 2,
+            -dh / 2,
+            dw,
+            dh
+          );
+
+          ctx.restore();
+
+
+        // --- Per-tile images (image collection tileset)
+        } else if (tileset.tileImageMap && tileset.tileImageMap[tileIndex]) {
+          const tileImage = tileset.tileImageMap[tileIndex];
+          const image = ASSET_MANAGER.getAsset(tileImage.imagePath);
+          if (!image) {
+            if (!this.missingImages.has(tileImage.imagePath)) {
+              console.warn("Missing tile image:", tileImage.imagePath);
+              this.missingImages.add(tileImage.imagePath);
             }
   
             ctx.drawImage(
@@ -364,10 +420,29 @@ class TiledMapRenderer {
               tileImage.height * this.scale
             );
           }
+
+          const dw = tileImage.width * this.scale;
+          const dh = tileImage.height * this.scale;
+
+          ctx.save();
+          ctx.translate(destX + dw / 2, destY + dh / 2);
+
+          if (flipD) {
+            ctx.rotate(Math.PI / 2);
+            ctx.scale(-1, 1);
+          }
+          if (flipH) ctx.scale(-1, 1);
+          if (flipV) ctx.scale(1, -1);
+
+          ctx.drawImage(image, -dw / 2, -dh / 2, dw, dh);
+          ctx.restore();
+
         }
       }
     }
   }
+}
+
 
   getTilesetForGid(gid) {
     let selected = null;
@@ -378,7 +453,49 @@ class TiledMapRenderer {
   }
 }
 
-// Keeps track of the current map, portals, and transitions.
+function walkLayers(layers, fn) {
+  if (!Array.isArray(layers)) return;
+  for (const layer of layers) {
+    fn(layer);
+    // Tiled group layers store children in `layers`
+    if (layer.type === "group" && Array.isArray(layer.layers)) {
+      walkLayers(layer.layers, fn);
+    }
+  }
+}
+
+function collectDialogueTriggers(mapData, mapScale) {
+  const triggers = [];
+
+  walkLayers(mapData.layers, (layer) => {
+    if (layer.type !== "objectgroup") return;
+
+    for (const obj of layer.objects || []) {
+      const isDialogue =
+        getObjectProperty(obj, "type") === "dialogue" ||
+        obj.type === "dialogue" ||
+        obj.class === "dialogue";
+
+      if (!isDialogue) continue;
+
+      triggers.push({
+        group: getObjectProperty(obj, "group") || obj.name || "(no group)",
+        text: getObjectProperty(obj, "text") || "",
+        once: !!getObjectProperty(obj, "once"),
+        rect: {
+          x: obj.x * mapScale,
+          y: obj.y * mapScale,
+          width: (obj.width || mapData.tilewidth) * mapScale,
+          height: (obj.height || mapData.tileheight) * mapScale
+        }
+      });
+    }
+  });
+
+  return triggers;
+}
+
+
 class MapManager {
   constructor(game, player, mapScale) {
     this.game = game;
@@ -399,6 +516,12 @@ class MapManager {
 
   // Applies a new map, builds collisions/portals, and moves the player.
   setMap(mapData, mapPath, spawnName) {
+    console.log("MAP LOADED NAME:", mapData?.properties);
+    console.log(
+  "LAYER NAMES:",
+  mapData.layers.map(l => `${l.name} (${l.type})`)
+);
+
     this.mapData = mapData;
     this.mapPath = mapPath;
     this.renderer = new TiledMapRenderer(this.game, mapData, mapPath, this.mapScale);
@@ -408,6 +531,48 @@ class MapManager {
     this.usedTriggers = new Set();
     this.activeDialog = null;
     this.game.activeDialog = null;
+
+    // --- Dialogue triggers from Tiled ---
+    this.dialogueTriggers = [];
+    this.dialogueUsedGroups = new Set();
+
+    for (const layer of mapData.layers) {
+    if (layer.type !== "objectgroup") continue;
+
+    for (const obj of layer.objects || []) {
+    const marker =
+    getObjectProperty(obj, "type") ||
+    obj.class ||
+    obj.type ||
+    obj.name;
+
+    const isDialogue = marker === "dialogue";
+
+  if (isDialogue) {
+    console.log("FOUND DIALOGUE OBJECT:", obj);
+  }
+
+
+
+
+    if (isDialogue) {
+      this.dialogueTriggers.push({
+      group: getObjectProperty(obj, "group") || obj.name || `obj-${obj.id}`,
+      text: getObjectProperty(obj, "text") || "(missing text property)",
+      once: getObjectProperty(obj, "once") ?? true,
+        rect: {
+          x: obj.x * this.mapScale,
+          y: obj.y * this.mapScale,
+          width: (obj.width || mapData.tilewidth) * this.mapScale,
+          height: (obj.height || mapData.tileheight) * this.mapScale
+        }
+      });
+    console.log("FINAL dialogue triggers:", this.dialogueTriggers);
+
+    }
+  }
+}
+
 
     const mapSize = getMapPixelSize(mapData, this.mapScale);
     this.game.worldWidth = mapSize.width;
@@ -440,7 +605,7 @@ class MapManager {
     const fetchPath = encodeURI(nextMapPath);
     try {
       console.log("Fetching map:", fetchPath);
-      const response = await fetch(fetchPath);
+      const response = await fetch(fetchPath + "?v=" + Date.now());
       if (!response.ok) throw new Error(`Map fetch failed: ${response.status}`);
       const mapData = await response.json();
 
@@ -479,35 +644,28 @@ class MapManager {
   }
 
   // Checks portal overlap each frame.
-  update() {
-    if (!this.mapData) return;
+ update() {
+  if (!this.mapData) return;
 
-    if (this.portalCooldown > 0) {
-      this.portalCooldown -= this.game.clockTick;
+  if (this.portalCooldown > 0) {
+    this.portalCooldown -= this.game.clockTick;
+  }
+
+  const playerBounds = this.player.getBounds();
+
+  // --- portal logic ---
+  for (const portal of this.portals) {
+    const portalRect = this.getPortalRect(portal);
+    const overlap = rectsOverlap(playerBounds, portalRect);
+
+    if (!overlap && this.activePortalId === portal.id) {
+      this.activePortalId = null;
     }
 
-    if (this.activeDialog) {
-      this.activeDialog.timeLeftMs -= this.game.clockTick * 1000;
-      if (this.activeDialog.timeLeftMs <= 0) {
-        this.activeDialog = null;
-        this.game.activeDialog = null;
-      }
-    }
-
-    const playerBounds = this.player.getBounds();
-    for (const portal of this.portals) {
-      const portalRect = this.getPortalRect(portal);
-      const overlap = rectsOverlap(playerBounds, portalRect);
-
-      if (!overlap && this.activePortalId === portal.id) {
-        this.activePortalId = null;
-      }
-
-      if (overlap && this.portalCooldown <= 0 && this.activePortalId !== portal.id) {
-        console.log("Portal overlap detected:", portal.name || "(unnamed)", portalRect);
-        this.transitionTo(portal);
-        break;
-      }
+    if (overlap && this.portalCooldown <= 0 && this.activePortalId !== portal.id) {
+      console.log("Portal overlap detected:", portal.name || "(unnamed)", portalRect);
+      this.transitionTo(portal);
+      break;
     }
 
     for (const dialog of this.dialogs) {
@@ -525,6 +683,25 @@ class MapManager {
       }
     }
   }
+
+  // --- dialogue logic (REUSE same playerBounds) ---
+  for (const trigger of this.dialogueTriggers || []) {
+    if (trigger.once && this.dialogueUsedGroups.has(trigger.group)) continue;
+
+    if (rectsOverlap(playerBounds, trigger.rect)) {
+      this.game.showDialogue(trigger.text);
+      if (trigger.once) {
+        this.dialogueUsedGroups.add(trigger.group);
+      }
+      break;
+    }
+  }
+}
+
+    
+
+    
+
 
   // Draws the map (behind entities).
   draw(ctx) {

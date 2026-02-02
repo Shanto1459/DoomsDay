@@ -1548,7 +1548,7 @@
         {
          "columns":5,
          "firstgid":1439,
-         "image":"..\/images\/WaterTileSet.png",
+         "image":"WaterTileSet.png",
          "imageheight":128,
          "imagewidth":80,
          "margin":0,
@@ -1561,7 +1561,7 @@
         {
          "columns":4,
          "firstgid":1479,
-         "image":"..\/images\/sand.png",
+         "image":"sand.png",
          "imageheight":96,
          "imagewidth":64,
          "margin":0,
@@ -1574,7 +1574,7 @@
         {
          "columns":20,
          "firstgid":1503,
-         "image":"..\/images\/Pixel_Woods_Tileset.png",
+         "image":"Pixel_Woods_Tileset.png",
          "imageheight":272,
          "imagewidth":320,
          "margin":0,
@@ -1601,1793 +1601,1793 @@
          "tiles":[
                 {
                  "id":0,
-                 "image":"..\/images\/Bench_1_down.png",
+                 "image":"Bench_1_down.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow - Copy - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":2,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow - Copy - Copy (2).png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":3,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":4,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow - Copy (2).png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":5,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":6,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Bleak-Yellow.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":7,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green - Copy - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":8,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green - Copy - Copy (2).png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":9,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":10,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green - Copy (2).png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":11,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":12,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Dark-Green.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":13,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Green - Copy - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Green.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":14,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Green - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Green.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":15,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Green.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":16,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/2-Tires_Grass_Green.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":17,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1 - Copy - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1.png",
                  "imageheight":16,
                  "imagewidth":12
                 }, 
                 {
                  "id":18,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1 - Copy - Copy (2).png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1.png",
                  "imageheight":16,
                  "imagewidth":12
                 }, 
                 {
                  "id":19,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1 - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1.png",
                  "imageheight":16,
                  "imagewidth":12
                 }, 
                 {
                  "id":20,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1 - Copy (2).png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1.png",
                  "imageheight":16,
                  "imagewidth":12
                 }, 
                 {
                  "id":21,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1 - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1.png",
                  "imageheight":16,
                  "imagewidth":12
                 }, 
                 {
                  "id":22,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_1.png",
                  "imageheight":16,
                  "imagewidth":12
                 }, 
                 {
                  "id":23,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_2 - Copy - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_2.png",
                  "imageheight":10,
                  "imagewidth":15
                 }, 
                 {
                  "id":24,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_2 - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_2.png",
                  "imageheight":10,
                  "imagewidth":15
                 }, 
                 {
                  "id":25,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_2 - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_2.png",
                  "imageheight":10,
                  "imagewidth":15
                 }, 
                 {
                  "id":26,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_blue_2.png",
                  "imageheight":10,
                  "imagewidth":15
                 }, 
                 {
                  "id":27,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1 - Copy - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1.png",
                  "imageheight":16,
                  "imagewidth":15
                 }, 
                 {
                  "id":28,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1 - Copy - Copy (2).png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1.png",
                  "imageheight":16,
                  "imagewidth":15
                 }, 
                 {
                  "id":29,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1 - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1.png",
                  "imageheight":16,
                  "imagewidth":15
                 }, 
                 {
                  "id":30,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1 - Copy (2) - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1.png",
                  "imageheight":16,
                  "imagewidth":15
                 }, 
                 {
                  "id":31,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1 - Copy (2).png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1.png",
                  "imageheight":16,
                  "imagewidth":15
                 }, 
                 {
                  "id":32,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1 - Copy (3).png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1.png",
                  "imageheight":16,
                  "imagewidth":15
                 }, 
                 {
                  "id":33,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1 - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1.png",
                  "imageheight":16,
                  "imagewidth":15
                 }, 
                 {
                  "id":34,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_1.png",
                  "imageheight":16,
                  "imagewidth":15
                 }, 
                 {
                  "id":35,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_2 - Copy - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_2.png",
                  "imageheight":10,
                  "imagewidth":15
                 }, 
                 {
                  "id":36,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_2 - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_2.png",
                  "imageheight":10,
                  "imagewidth":15
                 }, 
                 {
                  "id":37,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_2 - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_2.png",
                  "imageheight":10,
                  "imagewidth":15
                 }, 
                 {
                  "id":38,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_red_2.png",
                  "imageheight":10,
                  "imagewidth":15
                 }, 
                 {
                  "id":39,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_rust_blue_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_rust_blue_1.png",
                  "imageheight":16,
                  "imagewidth":12
                 }, 
                 {
                  "id":40,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_rust_blue_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_rust_blue_2.png",
                  "imageheight":10,
                  "imagewidth":15
                 }, 
                 {
                  "id":41,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_rust_red_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_rust_red_1.png",
                  "imageheight":16,
                  "imagewidth":12
                 }, 
                 {
                  "id":42,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_rust_red_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Barrel_rust_red_2.png",
                  "imageheight":10,
                  "imagewidth":15
                 }, 
                 {
                  "id":43,
-                 "image":"..\/images\/Bench_1_down.png",
+                 "image":"Bench_1_down.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":44,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Bleak-Yellow - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Bleak-Yellow.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":45,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Bleak-Yellow - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Bleak-Yellow.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":46,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Bleak-Yellow.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":47,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Dark-Green - Copy - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Dark-Green.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":48,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Dark-Green - Copy - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Dark-Green.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":49,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Dark-Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Dark-Green.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":50,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Dark-Green.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":51,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_2_down_Overgrown_Green.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":52,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_3_side.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_3_side.png",
                  "imageheight":28,
                  "imagewidth":11
                 }, 
                 {
                  "id":53,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_4_side_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_4_side_Overgrown_Bleak-Yellow.png",
                  "imageheight":28,
                  "imagewidth":13
                 }, 
                 {
                  "id":54,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_4_side_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_4_side_Overgrown_Dark-Green.png",
                  "imageheight":28,
                  "imagewidth":13
                 }, 
                 {
                  "id":55,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_4_side_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_4_side_Overgrown_Green.png",
                  "imageheight":28,
                  "imagewidth":13
                 }, 
                 {
                  "id":56,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_5_up.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_5_up.png",
                  "imageheight":13,
                  "imagewidth":32
                 }, 
                 {
                  "id":57,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_6_up_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_6_up_Overgrown_Bleak-Yellow.png",
                  "imageheight":14,
                  "imagewidth":32
                 }, 
                 {
                  "id":58,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_6_up_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_6_up_Overgrown_Dark-Green.png",
                  "imageheight":14,
                  "imagewidth":32
                 }, 
                 {
                  "id":59,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_6_up_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Bench_6_up_Overgrown_Green.png",
                  "imageheight":14,
                  "imagewidth":32
                 },
             
                 {
                  "id":60,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Cardboard_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Cardboard_1.png",
                  "imageheight":9,
                  "imagewidth":11
                 }, 
                 {
                  "id":61,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Cardboard_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Cardboard_2.png",
                  "imageheight":10,
                  "imagewidth":12
                 }, 
                 {
                  "id":62,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Chips-pack_Red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Chips-pack_Red.png",
                  "imageheight":10,
                  "imagewidth":10
                 }, 
                 {
                  "id":63,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Chips-pack_Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Chips-pack_Yellow.png",
                  "imageheight":11,
                  "imagewidth":11
                 }, 
                 {
                  "id":64,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Exhaust-pipe.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Exhaust-pipe.png",
                  "imageheight":11,
                  "imagewidth":5
                 }, 
                 {
                  "id":65,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Garbage-Bin_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Garbage-Bin_1.png",
                  "imageheight":23,
                  "imagewidth":29
                 }, 
                 {
                  "id":66,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Garbage-Bin_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Garbage-Bin_2.png",
                  "imageheight":20,
                  "imagewidth":27
                 }, 
                 {
                  "id":67,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Garbage-Bin_3.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Garbage-Bin_3.png",
                  "imageheight":28,
                  "imagewidth":20
                 }, 
                 {
                  "id":68,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Garbage-Bin_4.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Garbage-Bin_4.png",
                  "imageheight":27,
                  "imagewidth":16
                 }, 
                 {
                  "id":69,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Gray-brick.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Gray-brick.png",
                  "imageheight":10,
                  "imagewidth":8
                 }, 
                 {
                  "id":70,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Gray-brick_Debris.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Gray-brick_Debris.png",
                  "imageheight":15,
                  "imagewidth":17
                 }, 
                 {
                  "id":71,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Hydrant_1_red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Hydrant_1_red.png",
                  "imageheight":15,
                  "imagewidth":10
                 }, 
                 {
                  "id":72,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Hydrant_1_yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Hydrant_1_yellow.png",
                  "imageheight":15,
                  "imagewidth":10
                 }, 
                 {
                  "id":73,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Iron-beam.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Iron-beam.png",
                  "imageheight":5,
                  "imagewidth":15
                 }, 
                 {
                  "id":74,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Manhole.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Manhole.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":75,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Metal-Plates.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Metal-Plates.png",
                  "imageheight":18,
                  "imagewidth":23
                 }, 
                 {
                  "id":76,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Pallet_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Pallet_1.png",
                  "imageheight":14,
                  "imagewidth":13
                 }, 
                 {
                  "id":77,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Pallet_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Pallet_2.png",
                  "imageheight":10,
                  "imagewidth":14
                 }, 
                 {
                  "id":78,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Refrigerator.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Refrigerator.png",
                  "imageheight":28,
                  "imagewidth":16
                 }, 
                 {
                  "id":79,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Shopping-cart.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Shopping-cart.png",
                  "imageheight":16,
                  "imagewidth":12
                 }, 
                 {
                  "id":80,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Down_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Down_1.png",
                  "imageheight":25,
                  "imagewidth":16
                 }, 
                 {
                  "id":81,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Down_2_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Down_2_Overgrown_Bleak-Yellow.png",
                  "imageheight":25,
                  "imagewidth":14
                 }, 
                 {
                  "id":82,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Down_2_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Down_2_Overgrown_Dark-Green.png",
                  "imageheight":25,
                  "imagewidth":14
                 }, 
                 {
                  "id":83,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Down_2_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Down_2_Overgrown_Green.png",
                  "imageheight":25,
                  "imagewidth":14
                 }, 
                 {
                  "id":84,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Side_3.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Side_3.png",
                  "imageheight":25,
                  "imagewidth":7
                 }, 
                 {
                  "id":85,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Side_4_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Side_4_Overgrown_Bleak-Yellow.png",
                  "imageheight":25,
                  "imagewidth":9
                 }, 
                 {
                  "id":86,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Side_4_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Side_4_Overgrown_Dark-Green.png",
                  "imageheight":25,
                  "imagewidth":9
                 }, 
                 {
                  "id":87,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Side_4_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Side_4_Overgrown_Green.png",
                  "imageheight":25,
                  "imagewidth":9
                 }, 
                 {
                  "id":88,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Up_5.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Up_5.png",
                  "imageheight":24,
                  "imagewidth":15
                 }, 
                 {
                  "id":89,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Up_6_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Up_6_Overgrown_Bleak-Yellow.png",
                  "imageheight":24,
                  "imagewidth":15
                 }, 
                 {
                  "id":90,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Up_6_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Up_6_Overgrown_Dark-Green.png",
                  "imageheight":24,
                  "imagewidth":15
                 }, 
                 {
                  "id":91,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Up_6_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Stop-sign_Up_6_Overgrown_Green.png",
                  "imageheight":24,
                  "imagewidth":15
                 }, 
                 {
                  "id":92,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_1_Side.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_1_Side.png",
                  "imageheight":38,
                  "imagewidth":23
                 }, 
                 {
                  "id":93,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_2_Up.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_2_Up.png",
                  "imageheight":49,
                  "imagewidth":6
                 }, 
                 {
                  "id":94,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_3_Down.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_3_Down.png",
                  "imageheight":37,
                  "imagewidth":6
                 }, 
                 {
                  "id":95,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_4_Side_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_4_Side_Overgrown_Bleak-Yellow.png",
                  "imageheight":40,
                  "imagewidth":26
                 }, 
                 {
                  "id":96,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_4_Side_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_4_Side_Overgrown_Dark-Green.png",
                  "imageheight":40,
                  "imagewidth":26
                 }, 
                 {
                  "id":97,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_4_Side_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_4_Side_Overgrown_Green.png",
                  "imageheight":40,
                  "imagewidth":26
                 }, 
                 {
                  "id":98,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_5_Up_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_5_Up_Overgrown_Bleak-Yellow.png",
                  "imageheight":50,
                  "imagewidth":11
                 }, 
                 {
                  "id":99,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_5_Up_Overgrown_Dark-Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_5_Up_Overgrown_Dark-Green.png",
                  "imageheight":50,
                  "imagewidth":11
                 }, 
                 {
                  "id":100,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_5_Up_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_5_Up_Overgrown_Dark-Green.png",
                  "imageheight":50,
                  "imagewidth":11
                 }, 
                 {
                  "id":101,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_5_Up_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_5_Up_Overgrown_Green.png",
                  "imageheight":50,
                  "imagewidth":11
                 }, 
                 {
                  "id":102,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_6_Down_Overgrown_Bleak-Yellow - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_6_Down_Overgrown_Bleak-Yellow.png",
                  "imageheight":37,
                  "imagewidth":10
                 }, 
                 {
                  "id":103,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_6_Down_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_6_Down_Overgrown_Bleak-Yellow.png",
                  "imageheight":37,
                  "imagewidth":10
                 }, 
                 {
                  "id":104,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_6_Down_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_6_Down_Overgrown_Dark-Green.png",
                  "imageheight":37,
                  "imagewidth":10
                 }, 
                 {
                  "id":105,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_6_Down_Overgrown_Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_6_Down_Overgrown_Green.png",
                  "imageheight":37,
                  "imagewidth":10
                 }, 
                 {
                  "id":106,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_6_Down_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Street-Light_6_Down_Overgrown_Green.png",
                  "imageheight":37,
                  "imagewidth":10
                 }, 
                 {
                  "id":107,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_1 - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_1.png",
                  "imageheight":13,
                  "imagewidth":15
                 }, 
                 {
                  "id":108,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_1.png",
                  "imageheight":13,
                  "imagewidth":15
                 }, 
                 {
                  "id":109,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Bleak-Yellow - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Bleak-Yellow.png",
                  "imageheight":13,
                  "imagewidth":15
                 }, 
                 {
                  "id":110,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Bleak-Yellow.png",
                  "imageheight":13,
                  "imagewidth":15
                 }, 
                 {
                  "id":111,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Dark-Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Dark-Green.png",
                  "imageheight":13,
                  "imagewidth":15
                 }, 
                 {
                  "id":112,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Dark-Green.png",
                  "imageheight":13,
                  "imagewidth":15
                 }, 
                 {
                  "id":113,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Green.png",
                  "imageheight":13,
                  "imagewidth":15
                 }, 
                 {
                  "id":114,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Tire_2_Grass_Green.png",
                  "imageheight":13,
                  "imagewidth":15
                 }, 
                 {
                  "id":115,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Traffic-cone - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Traffic-cone.png",
                  "imageheight":11,
                  "imagewidth":9
                 }, 
                 {
                  "id":116,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Traffic-cone.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Traffic-cone.png",
                  "imageheight":11,
                  "imagewidth":9
                 }, 
                 {
                  "id":117,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-bag_1 - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-bag_1.png",
                  "imageheight":11,
                  "imagewidth":11
                 }, 
                 {
                  "id":118,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-bag_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-bag_1.png",
                  "imageheight":11,
                  "imagewidth":11
                 }, 
                 {
                  "id":119,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-bag_2 - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-bag_2.png",
                  "imageheight":12,
                  "imagewidth":11
                 },
             
                 {
                  "id":120,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-bag_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-bag_2.png",
                  "imageheight":12,
                  "imagewidth":11
                 }, 
                 {
                  "id":121,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-can_1 - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-can_1.png",
                  "imageheight":13,
                  "imagewidth":13
                 }, 
                 {
                  "id":122,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-can_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-can_1.png",
                  "imageheight":13,
                  "imagewidth":13
                 }, 
                 {
                  "id":123,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-can_2 - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-can_2.png",
                  "imageheight":12,
                  "imagewidth":13
                 }, 
                 {
                  "id":124,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-can_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Trash-can_2.png",
                  "imageheight":12,
                  "imagewidth":13
                 }, 
                 {
                  "id":125,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue.png",
                  "imageheight":23,
                  "imagewidth":14
                 }, 
                 {
                  "id":126,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue.png",
                  "imageheight":23,
                  "imagewidth":14
                 }, 
                 {
                  "id":127,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Bleak-Yellow - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Bleak-Yellow.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":128,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Bleak-Yellow.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":129,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Dark-Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Dark-Green.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":130,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Dark-Green.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":131,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Green.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":132,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Blue_Overgrown_Green.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":133,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red.png",
                  "imageheight":23,
                  "imagewidth":14
                 }, 
                 {
                  "id":134,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red.png",
                  "imageheight":23,
                  "imagewidth":14
                 }, 
                 {
                  "id":135,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Bleak-Yellow - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Bleak-Yellow.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":136,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Bleak-Yellow.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":137,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Dark-Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Dark-Green.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":138,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Dark-Green.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":139,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Green - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Green.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":140,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vending-machine_Red_Overgrown_Green.png",
                  "imageheight":26,
                  "imagewidth":19
                 }, 
                 {
                  "id":141,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Washing-machine - Copy.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Washing-machine.png",
                  "imageheight":15,
                  "imagewidth":14
                 }, 
                 {
                  "id":142,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Washing-machine.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Washing-machine.png",
                  "imageheight":15,
                  "imagewidth":14
                 }, 
                 {
                  "id":143,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Bush_1_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Bush_1_Dark-Green.png",
                  "imageheight":13,
                  "imagewidth":15
                 }, 
                 {
                  "id":144,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Bush_2_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Bush_2_Dark-Green.png",
                  "imageheight":13,
                  "imagewidth":28
                 }, 
                 {
                  "id":145,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_1_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_1_Dark-Green.png",
                  "imageheight":5,
                  "imagewidth":7
                 }, 
                 {
                  "id":146,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_2_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_2_Dark-Green.png",
                  "imageheight":10,
                  "imagewidth":12
                 }, 
                 {
                  "id":147,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_3_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_3_Dark-Green.png",
                  "imageheight":15,
                  "imagewidth":16
                 }, 
                 {
                  "id":148,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_3_Stepping-On-Animation_Dark-Green.gif",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_3_Stepping-On-Animation_Dark-Green.gif",
                  "imageheight":15,
                  "imagewidth":16
                 }, 
                 {
                  "id":149,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_3_Stepping-On-Animation_Dark-Green-Sheet2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_3_Stepping-On-Animation_Dark-Green-Sheet2.png",
                  "imageheight":15,
                  "imagewidth":32
                 }, 
                 {
                  "id":150,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_4_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_4_Dark-Green.png",
                  "imageheight":11,
                  "imagewidth":16
                 }, 
                 {
                  "id":151,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_4_Stepping-On-Animation_Dark-Green.gif",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_4_Stepping-On-Animation_Dark-Green.gif",
                  "imageheight":11,
                  "imagewidth":16
                 }, 
                 {
                  "id":152,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_4_Stepping-On-Animation_Dark-Green-Sheet2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_4_Stepping-On-Animation_Dark-Green-Sheet2.png",
                  "imageheight":11,
                  "imagewidth":32
                 }, 
                 {
                  "id":153,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_5_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_5_Dark-Green.png",
                  "imageheight":14,
                  "imagewidth":16
                 }, 
                 {
                  "id":154,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_5_Stepping-On-Animation_Dark-Green.gif",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_5_Stepping-On-Animation_Dark-Green.gif",
                  "imageheight":14,
                  "imagewidth":16
                 }, 
                 {
                  "id":155,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_5_Stepping-On-Animation_Dark-Green-Sheet2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass_5_Stepping-On-Animation_Dark-Green-Sheet2.png",
                  "imageheight":14,
                  "imagewidth":32
                 }, 
                 {
                  "id":156,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_1_Spruce_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_1_Spruce_Dark-Green.png",
                  "imageheight":29,
                  "imagewidth":16
                 }, 
                 {
                  "id":157,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_2_Spruce-Sparse_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_2_Spruce-Sparse_Dark-Green.png",
                  "imageheight":29,
                  "imagewidth":16
                 }, 
                 {
                  "id":158,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_3_Normal_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_3_Normal_Dark-Green.png",
                  "imageheight":30,
                  "imagewidth":21
                 }, 
                 {
                  "id":159,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_5_Big_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_5_Big_Dark-Green.png",
                  "imageheight":52,
                  "imagewidth":34
                 }, 
                 {
                  "id":160,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_6_Big-pine_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_6_Big-pine_Dark-Green.png",
                  "imageheight":49,
                  "imagewidth":27
                 }, 
                 {
                  "id":161,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_7_Birch_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_7_Birch_Dark-Green.png",
                  "imageheight":45,
                  "imagewidth":39
                 }, 
                 {
                  "id":162,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_8_Birch_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_8_Birch_Dark-Green.png",
                  "imageheight":36,
                  "imagewidth":24
                 }, 
                 {
                  "id":163,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_9_Small-oak_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_9_Small-oak_Dark-Green.png",
                  "imageheight":45,
                  "imagewidth":39
                 }, 
                 {
                  "id":164,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_10_Small-oak_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree_10_Small-oak_Dark-Green.png",
                  "imageheight":36,
                  "imagewidth":24
                 }, 
                 {
                  "id":165,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree-trunk_2_grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Tree-trunk_2_grass_Dark-Green.png",
                  "imageheight":12,
                  "imagewidth":32
                 }, 
                 {
                  "id":166,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Rocks\/Rock-grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Rocks\/Rock-grass_Dark-Green.png",
                  "imageheight":9,
                  "imagewidth":13
                 }, 
                 {
                  "id":167,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_1.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":168,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_2.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":169,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_3.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_3.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":170,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_4.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_4.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":171,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_5.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_5.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":172,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_6.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_6.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":173,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_7.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_7.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":174,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_8.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_8.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":175,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_9.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_9.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":176,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_10.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_10.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":177,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_11.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_11.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":178,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_12.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_12.png",
                  "imageheight":15,
                  "imagewidth":15
                 }, 
                 {
                  "id":179,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_13.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Moss-On-Top_Dark-Green_13.png",
                  "imageheight":15,
                  "imagewidth":15
                 },
             
                 {
                  "id":180,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_1_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_1_Lighter.png",
                  "imageheight":5,
                  "imagewidth":5
                 }, 
                 {
                  "id":181,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_2_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_2_Lighter.png",
                  "imageheight":6,
                  "imagewidth":5
                 }, 
                 {
                  "id":182,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_3_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_3_Lighter.png",
                  "imageheight":6,
                  "imagewidth":8
                 }, 
                 {
                  "id":183,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_4_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_4_Lighter.png",
                  "imageheight":7,
                  "imagewidth":8
                 }, 
                 {
                  "id":184,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_5_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_5_Lighter.png",
                  "imageheight":8,
                  "imagewidth":7
                 }, 
                 {
                  "id":185,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_6_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_6_Lighter.png",
                  "imageheight":6,
                  "imagewidth":9
                 }, 
                 {
                  "id":186,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_7_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_7_Lighter.png",
                  "imageheight":9,
                  "imagewidth":10
                 }, 
                 {
                  "id":187,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_8_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_8_Lighter.png",
                  "imageheight":8,
                  "imagewidth":10
                 }, 
                 {
                  "id":188,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_9_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_9_Lighter.png",
                  "imageheight":7,
                  "imagewidth":10
                 }, 
                 {
                  "id":189,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_10_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_10_Lighter.png",
                  "imageheight":7,
                  "imagewidth":11
                 }, 
                 {
                  "id":190,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_11_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_11_Lighter.png",
                  "imageheight":5,
                  "imagewidth":15
                 }, 
                 {
                  "id":191,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_12_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_12_Lighter.png",
                  "imageheight":10,
                  "imagewidth":13
                 }, 
                 {
                  "id":192,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_13_Lighter.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Dark-Green\/Grass-On-Top-Of-Things\/Lighter-Outline\/Moss-On-Top_Dark-Green_13_Lighter.png",
                  "imageheight":15,
                  "imagewidth":9
                 }, 
                 {
                  "id":193,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Blue_Motorcycle_Side.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Blue_Motorcycle_Side.png",
                  "imageheight":16,
                  "imagewidth":23
                 }, 
                 {
                  "id":194,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Blue_Motorcycle_Up.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Blue_Motorcycle_Up.png",
                  "imageheight":21,
                  "imagewidth":9
                 }, 
                 {
                  "id":195,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Gray_Motorcycle_Side.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Gray_Motorcycle_Side.png",
                  "imageheight":16,
                  "imagewidth":23
                 }, 
                 {
                  "id":196,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Gray_Motorcycle_Up.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Gray_Motorcycle_Up.png",
                  "imageheight":21,
                  "imagewidth":9
                 }, 
                 {
                  "id":197,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Green_Motorcycle_Side.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Green_Motorcycle_Side.png",
                  "imageheight":16,
                  "imagewidth":23
                 }, 
                 {
                  "id":198,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Green_Motorcycle_Up.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Green_Motorcycle_Up.png",
                  "imageheight":21,
                  "imagewidth":9
                 }, 
                 {
                  "id":199,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Orange_Motorcycle_Side.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Orange_Motorcycle_Side.png",
                  "imageheight":16,
                  "imagewidth":23
                 }, 
                 {
                  "id":200,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Orange_Motorcycle_Up.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Orange_Motorcycle_Up.png",
                  "imageheight":21,
                  "imagewidth":9
                 }, 
                 {
                  "id":201,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Red_Motorcycle_Side.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Red_Motorcycle_Side.png",
                  "imageheight":16,
                  "imagewidth":23
                 }, 
                 {
                  "id":202,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Red_Motorcycle_Up.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Red_Motorcycle_Up.png",
                  "imageheight":21,
                  "imagewidth":9
                 }, 
                 {
                  "id":203,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Yellow_Motorcycle_Side.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Yellow_Motorcycle_Side.png",
                  "imageheight":16,
                  "imagewidth":23
                 }, 
                 {
                  "id":204,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Yellow_Motorcycle_Up.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_9_Motorcycle\/Car_9_Yellow_Motorcycle_Up.png",
                  "imageheight":21,
                  "imagewidth":9
                 }, 
                 {
                  "id":205,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Blue_Scrap.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Blue_Scrap.png",
                  "imageheight":20,
                  "imagewidth":39
                 }, 
                 {
                  "id":206,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Gray_Scrap.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Gray_Scrap.png",
                  "imageheight":20,
                  "imagewidth":39
                 }, 
                 {
                  "id":207,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Green_Scrap.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Green_Scrap.png",
                  "imageheight":20,
                  "imagewidth":39
                 }, 
                 {
                  "id":208,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Orange_Scrap.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Orange_Scrap.png",
                  "imageheight":20,
                  "imagewidth":39
                 }, 
                 {
                  "id":209,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Red_Scrap.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Red_Scrap.png",
                  "imageheight":20,
                  "imagewidth":39
                 }, 
                 {
                  "id":210,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Yellow_Scrap.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_6_Scrap\/Car_6_Yellow_Scrap.png",
                  "imageheight":20,
                  "imagewidth":39
                 }, 
                 {
                  "id":211,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Blue.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Blue.png",
                  "imageheight":37,
                  "imagewidth":25
                 }, 
                 {
                  "id":212,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Gray.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Gray.png",
                  "imageheight":37,
                  "imagewidth":25
                 }, 
                 {
                  "id":213,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Green.png",
                  "imageheight":37,
                  "imagewidth":25
                 }, 
                 {
                  "id":214,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Orange.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Orange.png",
                  "imageheight":37,
                  "imagewidth":25
                 }, 
                 {
                  "id":215,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Red.png",
                  "imageheight":37,
                  "imagewidth":25
                 }, 
                 {
                  "id":216,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Vehicles\/Normal\/Car_1\/Car_1_Yellow.png",
                  "imageheight":37,
                  "imagewidth":25
                 }, 
                 {
                  "id":217,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Air-vent_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Air-vent_1.png",
                  "imageheight":9,
                  "imagewidth":13
                 }, 
                 {
                  "id":218,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Air-vent_2_rusty.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Air-vent_2_rusty.png",
                  "imageheight":9,
                  "imagewidth":13
                 }, 
                 {
                  "id":219,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Air-vent_3.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Air-vent_3.png",
                  "imageheight":12,
                  "imagewidth":9
                 }, 
                 {
                  "id":220,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Air-vent_4_rusty.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Air-vent_4_rusty.png",
                  "imageheight":12,
                  "imagewidth":9
                 }, 
                 {
                  "id":221,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Antenna_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Antenna_1.png",
                  "imageheight":15,
                  "imagewidth":14
                 }, 
                 {
                  "id":222,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Antenna_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Antenna_2.png",
                  "imageheight":14,
                  "imagewidth":14
                 }, 
                 {
                  "id":223,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_blue_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_blue_1.png",
                  "imageheight":16,
                  "imagewidth":32
                 }, 
                 {
                  "id":224,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_blue_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_blue_2.png",
                  "imageheight":16,
                  "imagewidth":48
                 }, 
                 {
                  "id":225,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_blue_3.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_blue_3.png",
                  "imageheight":16,
                  "imagewidth":64
                 }, 
                 {
                  "id":226,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_blue_4.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_blue_4.png",
                  "imageheight":16,
                  "imagewidth":80
                 }, 
                 {
                  "id":227,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_blue_5.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_blue_5.png",
                  "imageheight":16,
                  "imagewidth":96
                 }, 
                 {
                  "id":228,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_orange_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_orange_1.png",
                  "imageheight":16,
                  "imagewidth":32
                 }, 
                 {
                  "id":229,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_orange_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_orange_2.png",
                  "imageheight":16,
                  "imagewidth":48
                 }, 
                 {
                  "id":230,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_orange_3.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_orange_3.png",
                  "imageheight":16,
                  "imagewidth":64
                 }, 
                 {
                  "id":231,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_orange_4.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_orange_4.png",
                  "imageheight":16,
                  "imagewidth":80
                 }, 
                 {
                  "id":232,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_orange_5.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Awning_orange_5.png",
                  "imageheight":16,
                  "imagewidth":96
                 }, 
                 {
                  "id":233,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Balcony_1_Left.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Balcony_1_Left.png",
                  "imageheight":32,
                  "imagewidth":40
                 }, 
                 {
                  "id":234,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Balcony_2_Right.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Balcony_2_Right.png",
                  "imageheight":32,
                  "imagewidth":40
                 }, 
                 {
                  "id":235,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Balcony_3_Left_Ladder-hole.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Balcony_3_Left_Ladder-hole.png",
                  "imageheight":32,
                  "imagewidth":40
                 }, 
                 {
                  "id":236,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Balcony_4_Right_Ladder-hole.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Balcony_4_Right_Ladder-hole.png",
                  "imageheight":32,
                  "imagewidth":40
                 }, 
                 {
                  "id":237,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Brick-wall_1_Lying.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Brick-wall_1_Lying.png",
                  "imageheight":12,
                  "imagewidth":13
                 }, 
                 {
                  "id":238,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Brick-wall_2_Lying.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Brick-wall_2_Lying.png",
                  "imageheight":7,
                  "imagewidth":11
                 }, 
                 {
                  "id":239,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Destroyed-wall_corner.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Destroyed-wall_corner.png",
                  "imageheight":13,
                  "imagewidth":14
                 },
             
                 {
                  "id":240,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Destroyed-wall_not-corner.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Destroyed-wall_not-corner.png",
                  "imageheight":14,
                  "imagewidth":16
                 }, 
                 {
                  "id":241,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_1_Beige.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_1_Beige.png",
                  "imageheight":25,
                  "imagewidth":16
                 }, 
                 {
                  "id":242,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_2_Ajar_Beige.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_2_Ajar_Beige.png",
                  "imageheight":27,
                  "imagewidth":16
                 }, 
                 {
                  "id":243,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_3_Boarded-up_Beige.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_3_Boarded-up_Beige.png",
                  "imageheight":25,
                  "imagewidth":16
                 }, 
                 {
                  "id":244,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_4_Metal.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_4_Metal.png",
                  "imageheight":25,
                  "imagewidth":16
                 }, 
                 {
                  "id":245,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_5_Rusty_Metal.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_5_Rusty_Metal.png",
                  "imageheight":25,
                  "imagewidth":16
                 }, 
                 {
                  "id":246,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_6_Boarded-up_Metal.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_6_Boarded-up_Metal.png",
                  "imageheight":25,
                  "imagewidth":16
                 }, 
                 {
                  "id":247,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Duct_1_side.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Duct_1_side.png",
                  "imageheight":10,
                  "imagewidth":9
                 }, 
                 {
                  "id":248,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Duct_2_down.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Duct_2_down.png",
                  "imageheight":8,
                  "imagewidth":9
                 }, 
                 {
                  "id":249,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Duct_3_up.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Duct_3_up.png",
                  "imageheight":10,
                  "imagewidth":9
                 }, 
                 {
                  "id":250,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Enterance_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Enterance_Bleak-Yellow.png",
                  "imageheight":27,
                  "imagewidth":31
                 }, 
                 {
                  "id":251,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Enterance_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Enterance_Dark-Green.png",
                  "imageheight":27,
                  "imagewidth":31
                 }, 
                 {
                  "id":252,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Enterance_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Enterance_Green.png",
                  "imageheight":27,
                  "imagewidth":31
                 }, 
                 {
                  "id":253,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Hatch_1_Closed.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Hatch_1_Closed.png",
                  "imageheight":10,
                  "imagewidth":13
                 }, 
                 {
                  "id":254,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Hatch_1_Open.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Hatch_1_Open.png",
                  "imageheight":18,
                  "imagewidth":13
                 }, 
                 {
                  "id":255,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/HVAC.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/HVAC.png",
                  "imageheight":12,
                  "imagewidth":16
                 }, 
                 {
                  "id":256,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/HVAC_Overgrown_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/HVAC_Overgrown_Bleak-Yellow.png",
                  "imageheight":15,
                  "imagewidth":16
                 }, 
                 {
                  "id":257,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/HVAC_Overgrown_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/HVAC_Overgrown_Dark-Green.png",
                  "imageheight":15,
                  "imagewidth":16
                 }, 
                 {
                  "id":258,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/HVAC_Overgrown_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/HVAC_Overgrown_Green.png",
                  "imageheight":15,
                  "imagewidth":16
                 }, 
                 {
                  "id":259,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Ladder_Balcony_Metal_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Ladder_Balcony_Metal_1.png",
                  "imageheight":14,
                  "imagewidth":21
                 }, 
                 {
                  "id":260,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Ladder_Balcony_Metal_1_Rusty.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Ladder_Balcony_Metal_1_Rusty.png",
                  "imageheight":14,
                  "imagewidth":21
                 }, 
                 {
                  "id":261,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/layered-posters_1_For-ground-and-walls.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/layered-posters_1_For-ground-and-walls.png",
                  "imageheight":14,
                  "imagewidth":15
                 }, 
                 {
                  "id":262,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/layered-posters_2_For-ground-and-walls.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/layered-posters_2_For-ground-and-walls.png",
                  "imageheight":12,
                  "imagewidth":14
                 }, 
                 {
                  "id":263,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Roof-hole_1_Gray.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Roof-hole_1_Gray.png",
                  "imageheight":15,
                  "imagewidth":13
                 }, 
                 {
                  "id":264,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Roof-hole_2_Red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Roof-hole_2_Red.png",
                  "imageheight":16,
                  "imagewidth":16
                 }, 
                 {
                  "id":265,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_1_blue.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_1_blue.png",
                  "imageheight":8,
                  "imagewidth":7
                 }, 
                 {
                  "id":266,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_1_purple.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_1_purple.png",
                  "imageheight":8,
                  "imagewidth":7
                 }, 
                 {
                  "id":267,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_1_red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_1_red.png",
                  "imageheight":8,
                  "imagewidth":7
                 }, 
                 {
                  "id":268,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_1_yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_1_yellow.png",
                  "imageheight":8,
                  "imagewidth":7
                 }, 
                 {
                  "id":269,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_2_blue.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_2_blue.png",
                  "imageheight":11,
                  "imagewidth":8
                 }, 
                 {
                  "id":270,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_2_purple.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_2_purple.png",
                  "imageheight":11,
                  "imagewidth":8
                 }, 
                 {
                  "id":271,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_2_red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_2_red.png",
                  "imageheight":11,
                  "imagewidth":8
                 }, 
                 {
                  "id":272,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_2_yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flower_2_yellow.png",
                  "imageheight":11,
                  "imagewidth":8
                 }, 
                 {
                  "id":273,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_1_blue.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_1_blue.png",
                  "imageheight":12,
                  "imagewidth":14
                 }, 
                 {
                  "id":274,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_1_purple.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_1_purple.png",
                  "imageheight":12,
                  "imagewidth":14
                 }, 
                 {
                  "id":275,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_1_red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_1_red.png",
                  "imageheight":12,
                  "imagewidth":14
                 }, 
                 {
                  "id":276,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_1_yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_1_yellow.png",
                  "imageheight":12,
                  "imagewidth":14
                 }, 
                 {
                  "id":277,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_2_blue.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_2_blue.png",
                  "imageheight":14,
                  "imagewidth":16
                 }, 
                 {
                  "id":278,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_2_purple.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_2_purple.png",
                  "imageheight":14,
                  "imagewidth":16
                 }, 
                 {
                  "id":279,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_2_red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_2_red.png",
                  "imageheight":14,
                  "imagewidth":16
                 }, 
                 {
                  "id":280,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_2_yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_2_yellow.png",
                  "imageheight":14,
                  "imagewidth":16
                 }, 
                 {
                  "id":281,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_3_blue.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_3_blue.png",
                  "imageheight":9,
                  "imagewidth":9
                 }, 
                 {
                  "id":282,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_3_purple.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_3_purple.png",
                  "imageheight":9,
                  "imagewidth":9
                 }, 
                 {
                  "id":283,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_3_red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_3_red.png",
                  "imageheight":9,
                  "imagewidth":9
                 }, 
                 {
                  "id":284,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_3_yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Flowers_3_yellow.png",
                  "imageheight":9,
                  "imagewidth":9
                 }, 
                 {
                  "id":285,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Mushroom.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Mushroom.png",
                  "imageheight":8,
                  "imagewidth":9
                 }, 
                 {
                  "id":286,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Mushrooms_1_Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Mushrooms_1_Yellow.png",
                  "imageheight":8,
                  "imagewidth":10
                 }, 
                 {
                  "id":287,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Mushrooms_2_Red.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Mushrooms_2_Red.png",
                  "imageheight":8,
                  "imagewidth":10
                 }, 
                 {
                  "id":288,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Rain-Drop_1_Blue.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Rain-Drop_1_Blue.png",
                  "imageheight":3,
                  "imagewidth":1
                 }, 
                 {
                  "id":289,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Rain-Drop_1_White.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Rain-Drop_1_White.png",
                  "imageheight":3,
                  "imagewidth":1
                 }, 
                 {
                  "id":290,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Rain-Drop_2_Long_Blue.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Rain-Drop_2_Long_Blue.png",
                  "imageheight":7,
                  "imagewidth":1
                 }, 
                 {
                  "id":291,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Rain-Drop_2_Long_White.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Rain-Drop_2_Long_White.png",
                  "imageheight":7,
                  "imagewidth":1
                 }, 
                 {
                  "id":292,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Stick.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Stick.png",
                  "imageheight":7,
                  "imagewidth":10
                 }, 
                 {
                  "id":293,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Stick_leaves.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Stick_leaves.png",
                  "imageheight":12,
                  "imagewidth":12
                 }, 
                 {
                  "id":294,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Stump_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Stump_1.png",
                  "imageheight":12,
                  "imagewidth":15
                 }, 
                 {
                  "id":295,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Stump_2_Mushrooms.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Stump_2_Mushrooms.png",
                  "imageheight":12,
                  "imagewidth":15
                 }, 
                 {
                  "id":296,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Tree_4_Dry_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Tree_4_Dry_Green.png",
                  "imageheight":32,
                  "imagewidth":23
                 }, 
                 {
                  "id":297,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Tree-trunk_1_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Tree-trunk_1_Green.png",
                  "imageheight":11,
                  "imagewidth":30
                 }],
@@ -3396,7 +3396,7 @@
         {
          "columns":12,
          "firstgid":2141,
-         "image":"..\/images\/Water+.png",
+         "image":"Water+.png",
          "imageheight":224,
          "imagewidth":192,
          "margin":0,
@@ -3409,7 +3409,7 @@
         {
          "columns":64,
          "firstgid":2309,
-         "image":"..\/images\/path blood.png",
+         "image":"path blood.png",
          "imageheight":512,
          "imagewidth":1024,
          "margin":0,
@@ -3436,253 +3436,253 @@
          "tiles":[
                 {
                  "id":0,
-                 "image":"..\/images\/Puddle_On-Dry-Ground_1.png",
+                 "image":"Puddle_On-Dry-Ground_1.png",
                  "imageheight":9,
                  "imagewidth":22
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_2.png",
                  "imageheight":9,
                  "imagewidth":28
                 }, 
                 {
                  "id":2,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_3.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_3.png",
                  "imageheight":12,
                  "imagewidth":12
                 }, 
                 {
                  "id":3,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_4.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_4.png",
                  "imageheight":10,
                  "imagewidth":18
                 }, 
                 {
                  "id":4,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_5.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_5.png",
                  "imageheight":7,
                  "imagewidth":17
                 }, 
                 {
                  "id":5,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_6.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_6.png",
                  "imageheight":9,
                  "imagewidth":11
                 }, 
                 {
                  "id":6,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_7.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Dry-Ground_7.png",
                  "imageheight":4,
                  "imagewidth":10
                 }, 
                 {
                  "id":7,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_1.png",
                  "imageheight":9,
                  "imagewidth":22
                 }, 
                 {
                  "id":8,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_1_Grass_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_1_Grass_Bleak-Yellow.png",
                  "imageheight":13,
                  "imagewidth":25
                 }, 
                 {
                  "id":9,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_1_Grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_1_Grass_Dark-Green.png",
                  "imageheight":13,
                  "imagewidth":25
                 }, 
                 {
                  "id":10,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_1_Grass_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_1_Grass_Green.png",
                  "imageheight":13,
                  "imagewidth":25
                 }, 
                 {
                  "id":11,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_2.png",
                  "imageheight":9,
                  "imagewidth":28
                 }, 
                 {
                  "id":12,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_2_Grass_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_2_Grass_Bleak-Yellow.png",
                  "imageheight":13,
                  "imagewidth":30
                 }, 
                 {
                  "id":13,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_2_Grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_2_Grass_Dark-Green.png",
                  "imageheight":13,
                  "imagewidth":30
                 }, 
                 {
                  "id":14,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_2_Grass_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_2_Grass_Green.png",
                  "imageheight":13,
                  "imagewidth":30
                 }, 
                 {
                  "id":15,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_3.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_3.png",
                  "imageheight":12,
                  "imagewidth":12
                 }, 
                 {
                  "id":16,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_3_Grass_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_3_Grass_Bleak-Yellow.png",
                  "imageheight":15,
                  "imagewidth":14
                 }, 
                 {
                  "id":17,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_3_Grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_3_Grass_Dark-Green.png",
                  "imageheight":15,
                  "imagewidth":14
                 }, 
                 {
                  "id":18,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_3_Grass_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_3_Grass_Green.png",
                  "imageheight":15,
                  "imagewidth":14
                 }, 
                 {
                  "id":19,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_4.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_4.png",
                  "imageheight":10,
                  "imagewidth":18
                 }, 
                 {
                  "id":20,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_4_Grass_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_4_Grass_Bleak-Yellow.png",
                  "imageheight":13,
                  "imagewidth":19
                 }, 
                 {
                  "id":21,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_4_Grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_4_Grass_Dark-Green.png",
                  "imageheight":13,
                  "imagewidth":19
                 }, 
                 {
                  "id":22,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_4_Grass_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_4_Grass_Green.png",
                  "imageheight":13,
                  "imagewidth":18
                 }, 
                 {
                  "id":23,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_5.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_5.png",
                  "imageheight":7,
                  "imagewidth":17
                 }, 
                 {
                  "id":24,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_5_Grass_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_5_Grass_Bleak-Yellow.png",
                  "imageheight":10,
                  "imagewidth":20
                 }, 
                 {
                  "id":25,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_5_Grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_5_Grass_Dark-Green.png",
                  "imageheight":10,
                  "imagewidth":20
                 }, 
                 {
                  "id":26,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_5_Grass_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_5_Grass_Green.png",
                  "imageheight":10,
                  "imagewidth":20
                 }, 
                 {
                  "id":27,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_6.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_6.png",
                  "imageheight":9,
                  "imagewidth":11
                 }, 
                 {
                  "id":28,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_6_Grass_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_6_Grass_Bleak-Yellow.png",
                  "imageheight":12,
                  "imagewidth":15
                 }, 
                 {
                  "id":29,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_6_Grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_6_Grass_Dark-Green.png",
                  "imageheight":12,
                  "imagewidth":15
                 }, 
                 {
                  "id":30,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_6_Grass_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_6_Grass_Green.png",
                  "imageheight":12,
                  "imagewidth":15
                 }, 
                 {
                  "id":31,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_7.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_7.png",
                  "imageheight":4,
                  "imagewidth":10
                 }, 
                 {
                  "id":32,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_7_Grass_Bleak-Yellow.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_7_Grass_Bleak-Yellow.png",
                  "imageheight":8,
                  "imagewidth":14
                 }, 
                 {
                  "id":33,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_7_Grass_Dark-Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_7_Grass_Dark-Green.png",
                  "imageheight":8,
                  "imagewidth":14
                 }, 
                 {
                  "id":34,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_7_Grass_Green.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Grass_7_Grass_Green.png",
                  "imageheight":8,
                  "imagewidth":14
                 }, 
                 {
                  "id":35,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_1.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_1.png",
                  "imageheight":9,
                  "imagewidth":22
                 }, 
                 {
                  "id":36,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_2.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_2.png",
                  "imageheight":9,
                  "imagewidth":28
                 }, 
                 {
                  "id":37,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_3.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_3.png",
                  "imageheight":12,
                  "imagewidth":12
                 }, 
                 {
                  "id":38,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_4.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_4.png",
                  "imageheight":10,
                  "imagewidth":18
                 }, 
                 {
                  "id":39,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_5.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_5.png",
                  "imageheight":7,
                  "imagewidth":17
                 }, 
                 {
                  "id":40,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_6.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_6.png",
                  "imageheight":9,
                  "imagewidth":11
                 }, 
                 {
                  "id":41,
-                 "image":"..\/..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_7.png",
+                 "image":"PostApocalypse_AssetPack_v1.1.2\/Objects\/Nature\/Flowers_Mashrooms_Other-nature-stuff\/Puddles-And-Water-Anim\/Puddle_On-Mud_7.png",
                  "imageheight":4,
                  "imagewidth":10
                 }],
