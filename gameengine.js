@@ -1,4 +1,5 @@
 
+// Main game loop + input + camera manager.
 class GameEngine {
     constructor(options) {
         
@@ -19,6 +20,8 @@ class GameEngine {
         // Camera tracks a target entity in world space.
         this.camera = { x: 0, y: 0 };
         this.cameraTarget = null;
+        // Active dialog bubble shown above the player.
+        this.activeDialog = null;
     };
 
     init(ctx) {

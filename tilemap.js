@@ -111,6 +111,16 @@ function isPortalObject(obj) {
   return false;
 }
 
+// Detects dialog trigger objects.
+function isDialogObject(obj) {
+  const typeProp = getObjectProperty(obj, "type");
+  if (typeProp === "dialog") return true;
+  if (obj.type === "dialog") return true;
+  if (obj.class === "dialog") return true;
+  if (getObjectProperty(obj, "text")) return true;
+  return false;
+}
+
 // Collects all portal objects from every object layer.
 function getPortalObjects(mapData) {
   if (!mapData || !Array.isArray(mapData.layers)) return [];
@@ -126,6 +136,20 @@ function getPortalObjects(mapData) {
   return portals;
 }
 
+// Collects all dialog trigger objects from every object layer.
+function getDialogObjects(mapData) {
+  if (!mapData || !Array.isArray(mapData.layers)) return [];
+  const dialogs = [];
+
+  for (const layer of mapData.layers) {
+    if (layer.type !== "objectgroup" || !Array.isArray(layer.objects)) continue;
+    for (const obj of layer.objects) {
+      if (isDialogObject(obj)) dialogs.push(obj);
+    }
+  }
+
+  return dialogs;
+}
 // Collects all tileset image paths used by a map.
 function collectTilesetImagePaths(mapData, mapPath) {
   if (!mapData || !Array.isArray(mapData.tilesets)) return [];
@@ -173,6 +197,7 @@ function preloadImages(paths) {
   ).then(() => ({ loaded, failed }));
 }
 
+// Collision grid built from the map's Collision layer.
 class CollisionGrid {
   constructor(mapData, scale, collisionLayerName) {
     this.mapData = mapData;
@@ -220,6 +245,7 @@ class CollisionGrid {
   }
 }
 
+// Draws tile layers from a Tiled map.
 class TiledMapRenderer {
   constructor(game, mapData, mapPath, scale) {
     this.game = game;
@@ -247,63 +273,97 @@ class TiledMapRenderer {
 
   // Draws all visible tile layers.
   draw(ctx) {
+    const game = this.game;
+  
+    const tileW = this.mapData.tilewidth * this.scale;
+    const tileH = this.mapData.tileheight * this.scale;
+  
+    // Camera/view rectangle in WORLD coordinates
+    const viewLeft = game.camera?.x || 0;
+    const viewTop = game.camera?.y || 0;
+    const viewRight = viewLeft + ctx.canvas.width;
+    const viewBottom = viewTop + ctx.canvas.height;
+  
+    // Draw a small buffer to avoid popping at edges
+    const bufferTiles = 1;
+  
+    // Convert view rect -> tile indices
+    const startCol = Math.max(0, Math.floor(viewLeft / tileW) - bufferTiles);
+    const endCol = Math.min(this.mapData.width - 1, Math.floor(viewRight / tileW) + bufferTiles);
+  
+    const startRow = Math.max(0, Math.floor(viewTop / tileH) - bufferTiles);
+    const endRow = Math.min(this.mapData.height - 1, Math.floor(viewBottom / tileH) + bufferTiles);
+  
+  
+    console.log("Tiles range:", startRow, endRow, startCol, endCol);
+  
     for (const layer of this.mapData.layers) {
       if (layer.type !== "tilelayer" || !layer.visible) continue;
-
-      for (let i = 0; i < layer.data.length; i++) {
-        const gid = layer.data[i];
-        if (!gid) continue;
-
-        const tileset = this.getTilesetForGid(gid);
-        if (!tileset) continue;
-
-        const tileIndex = gid - tileset.firstgid;
-        const destX = (i % layer.width) * this.mapData.tilewidth * this.scale;
-        const destY = Math.floor(i / layer.width) * this.mapData.tileheight * this.scale;
-
-        if (tileset.imagePath) {
-          const columns = tileset.columns;
-          const srcX = (tileIndex % columns) * tileset.tilewidth;
-          const srcY = Math.floor(tileIndex / columns) * tileset.tileheight;
-
-          const image = ASSET_MANAGER.getAsset(tileset.imagePath);
-          if (!image) {
-            if (!this.missingImages.has(tileset.imagePath)) {
-              console.warn("Missing tileset image:", tileset.imagePath);
-              this.missingImages.add(tileset.imagePath);
+      if (!Array.isArray(layer.data)) continue;
+  
+      // If a layer has its own width/height, use it; otherwise map size
+      const layerW = layer.width || this.mapData.width;
+  
+      for (let row = startRow; row <= endRow; row++) {
+        for (let col = startCol; col <= endCol; col++) {
+          const i = row * layerW + col;
+          const gid = layer.data[i];
+          if (!gid) continue;
+  
+          const tileset = this.getTilesetForGid(gid);
+          if (!tileset) continue;
+  
+          const tileIndex = gid - tileset.firstgid;
+          const destX = col * tileW;
+          const destY = row * tileH;
+  
+          // --- Normal tileset image (spritesheet)
+          if (tileset.imagePath) {
+            const columns = tileset.columns;
+            const srcX = (tileIndex % columns) * tileset.tilewidth;
+            const srcY = Math.floor(tileIndex / columns) * tileset.tileheight;
+  
+            const image = ASSET_MANAGER.getAsset(tileset.imagePath);
+            if (!image) {
+              if (!this.missingImages.has(tileset.imagePath)) {
+                console.warn("Missing tileset image:", tileset.imagePath);
+                this.missingImages.add(tileset.imagePath);
+              }
+              continue;
             }
-            continue;
-          }
-
-          ctx.drawImage(
-            image,
-            srcX,
-            srcY,
-            tileset.tilewidth,
-            tileset.tileheight,
-            destX,
-            destY,
-            tileset.tilewidth * this.scale,
-            tileset.tileheight * this.scale
-          );
-        } else if (tileset.tileImageMap && tileset.tileImageMap[tileIndex]) {
-          const tileImage = tileset.tileImageMap[tileIndex];
-          const image = ASSET_MANAGER.getAsset(tileImage.imagePath);
-          if (!image) {
-            if (!this.missingImages.has(tileImage.imagePath)) {
-              console.warn("Missing tile image:", tileImage.imagePath);
-              this.missingImages.add(tileImage.imagePath);
+  
+            ctx.drawImage(
+              image,
+              srcX,
+              srcY,
+              tileset.tilewidth,
+              tileset.tileheight,
+              destX,
+              destY,
+              tileset.tilewidth * this.scale,
+              tileset.tileheight * this.scale
+            );
+  
+          // --- Per-tile images (image collection tileset)
+          } else if (tileset.tileImageMap && tileset.tileImageMap[tileIndex]) {
+            const tileImage = tileset.tileImageMap[tileIndex];
+            const image = ASSET_MANAGER.getAsset(tileImage.imagePath);
+            if (!image) {
+              if (!this.missingImages.has(tileImage.imagePath)) {
+                console.warn("Missing tile image:", tileImage.imagePath);
+                this.missingImages.add(tileImage.imagePath);
+              }
+              continue;
             }
-            continue;
+  
+            ctx.drawImage(
+              image,
+              destX,
+              destY,
+              tileImage.width * this.scale,
+              tileImage.height * this.scale
+            );
           }
-
-          ctx.drawImage(
-            image,
-            destX,
-            destY,
-            tileImage.width * this.scale,
-            tileImage.height * this.scale
-          );
         }
       }
     }
@@ -318,6 +378,7 @@ class TiledMapRenderer {
   }
 }
 
+// Keeps track of the current map, portals, and transitions.
 class MapManager {
   constructor(game, player, mapScale) {
     this.game = game;
@@ -328,6 +389,9 @@ class MapManager {
     this.renderer = null;
     this.collisionGrid = null;
     this.portals = [];
+    this.dialogs = [];
+    this.usedTriggers = new Set();
+    this.activeDialog = null;
     this.portalCooldown = 0;
     this.activePortalId = null;
     this.isTransitioning = false;
@@ -340,6 +404,10 @@ class MapManager {
     this.renderer = new TiledMapRenderer(this.game, mapData, mapPath, this.mapScale);
     this.collisionGrid = new CollisionGrid(mapData, this.mapScale, "Collision");
     this.portals = getPortalObjects(mapData);
+    this.dialogs = getDialogObjects(mapData);
+    this.usedTriggers = new Set();
+    this.activeDialog = null;
+    this.game.activeDialog = null;
 
     const mapSize = getMapPixelSize(mapData, this.mapScale);
     this.game.worldWidth = mapSize.width;
@@ -354,6 +422,7 @@ class MapManager {
     console.log("Spawn:", spawnName || "PlayerSpawn", spawn);
     this.logObjectLayers();
     this.logPortals();
+    this.logDialogs();
     this.logSpawns();
   }
 
@@ -417,6 +486,14 @@ class MapManager {
       this.portalCooldown -= this.game.clockTick;
     }
 
+    if (this.activeDialog) {
+      this.activeDialog.timeLeftMs -= this.game.clockTick * 1000;
+      if (this.activeDialog.timeLeftMs <= 0) {
+        this.activeDialog = null;
+        this.game.activeDialog = null;
+      }
+    }
+
     const playerBounds = this.player.getBounds();
     for (const portal of this.portals) {
       const portalRect = this.getPortalRect(portal);
@@ -432,6 +509,21 @@ class MapManager {
         break;
       }
     }
+
+    for (const dialog of this.dialogs) {
+      if (this.usedTriggers.has(dialog.id)) continue;
+      const dialogRect = this.getTriggerRect(dialog);
+      const overlap = rectsOverlap(playerBounds, dialogRect);
+      if (overlap) {
+        const text = getObjectProperty(dialog, "text") || "...";
+        const durationMs = getObjectProperty(dialog, "duration") || 5000;
+        this.activeDialog = { text, timeLeftMs: durationMs };
+        this.game.activeDialog = this.activeDialog;
+        this.usedTriggers.add(dialog.id);
+        console.log("Dialog triggered:", dialog.name || "(unnamed)", text);
+        break;
+      }
+    }
   }
 
   // Draws the map (behind entities).
@@ -442,13 +534,18 @@ class MapManager {
 
   // Converts a portal object into a screen-space rectangle.
   getPortalRect(portal) {
+    return this.getTriggerRect(portal);
+  }
+
+  // Converts any trigger object into a rectangle.
+  getTriggerRect(trigger) {
     const tileWidth = this.mapData.tilewidth;
     const tileHeight = this.mapData.tileheight;
-    const width = portal.width || tileWidth;
-    const height = portal.height || tileHeight;
+    const width = trigger.width || tileWidth;
+    const height = trigger.height || tileHeight;
     return {
-      x: portal.x * this.mapScale,
-      y: portal.y * this.mapScale,
+      x: trigger.x * this.mapScale,
+      y: trigger.y * this.mapScale,
       width: width * this.mapScale,
       height: height * this.mapScale
     };
@@ -474,6 +571,22 @@ class MapManager {
         width: portal.width,
         height: portal.height,
         properties: portal.properties || []
+      });
+    }
+  }
+
+  // Debug: log dialog objects.
+  logDialogs() {
+    if (!this.dialogs) return;
+    console.log("Dialog triggers found:", this.dialogs.length);
+    for (const dialog of this.dialogs) {
+      console.log("Dialog:", {
+        name: dialog.name,
+        x: dialog.x,
+        y: dialog.y,
+        width: dialog.width,
+        height: dialog.height,
+        properties: dialog.properties || []
       });
     }
   }

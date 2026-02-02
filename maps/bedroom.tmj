@@ -66,6 +66,33 @@
                  "width":0,
                  "x":139.341158652026,
                  "y":131.667297740755
+                }, 
+                {
+                 "height":0,
+                 "id":8,
+                 "name":"ChairDialog",
+                 "properties":[
+                        {
+                         "name":"duration",
+                         "type":"int",
+                         "value":5000
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"The Fuck!!!! Why is my window broken?"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"dialog"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":83.5578781198116,
+                 "y":50.6246427696579
                 }],
          "opacity":1,
          "properties":[
@@ -123,7 +150,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":8,
+ "nextobjectid":11,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

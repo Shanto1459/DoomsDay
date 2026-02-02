@@ -1,3 +1,4 @@
+// Handles sprite sheet animation timing and drawing.
 class Animator {
   constructor(spriteSheet, xStart, yStart, width, height, frameCount, frameDuration, loop = true) {
     Object.assign(this, { spriteSheet, xStart, yStart, width, height, frameCount, frameDuration, loop });

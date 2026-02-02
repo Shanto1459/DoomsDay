@@ -1,4 +1,4 @@
-// Bootstraps the game and sets debug options.
+// Entry point: loads assets, then starts the game.
 const gameEngine = new GameEngine({ cameraDebug: true });
 const ASSET_MANAGER = new AssetManager();
 

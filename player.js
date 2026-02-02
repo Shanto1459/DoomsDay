@@ -1,3 +1,4 @@
+// Player character: input, movement, and animation.
 class Player {
   constructor(game, x, y, speed) {
     this.game = game;
@@ -175,6 +176,31 @@ draw(ctx) {
   }
 
   ctx.restore();
+
+  // Draw a simple speech bubble when a dialog is active.
+  if (this.game.activeDialog && this.game.activeDialog.timeLeftMs > 0) {
+    const text = this.game.activeDialog.text || "";
+    if (text) {
+      const padding = 6;
+      ctx.save();
+      ctx.font = "12px monospace";
+      const textWidth = ctx.measureText(text).width;
+      const bubbleWidth = textWidth + padding * 2;
+      const bubbleHeight = 20;
+      const bubbleX = this.x + this.width / 2 - bubbleWidth / 2;
+      const bubbleY = this.y - bubbleHeight - 8;
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
+      ctx.lineWidth = 2;
+      ctx.fillRect(bubbleX, bubbleY, bubbleWidth, bubbleHeight);
+      ctx.strokeRect(bubbleX, bubbleY, bubbleWidth, bubbleHeight);
+
+      ctx.fillStyle = "#111";
+      ctx.fillText(text, bubbleX + padding, bubbleY + 14);
+      ctx.restore();
+    }
+  }
 }
 
 }

@@ -1,3 +1,4 @@
+// Loads and caches image assets for the game.
 class AssetManager {
     constructor() {
         this.successCount = 0;

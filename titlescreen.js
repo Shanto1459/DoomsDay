@@ -1,3 +1,4 @@
+// Simple start screen with a START button.
 class TitleScreen {
   constructor(game, mapData, mapPath, mapScale) {
     this.game = game;
