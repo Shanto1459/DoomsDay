@@ -31,7 +31,13 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_up_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side-left_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side_punch-Sheet4.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/idle/Zombie_Small_Side-left_Idle-Sheet6.png");
+  ASSET_MANAGER.queueDownload("./sprites/zombie/idle/Zombie_Axe_Side-left_Idle-Sheet6.png");
+
+  ASSET_MANAGER.queueDownload("./sprites/zombie/walk/Zombie_Axe_Side-left_Walk-Sheet8.png");
+ASSET_MANAGER.queueDownload("./sprites/zombie/walk/Zombie_Axe_Side_Walk-Sheet8.png");
+ASSET_MANAGER.queueDownload("./sprites/zombie/walk/Zombie_Axe_Up_Walk-Sheet8.png");
+ASSET_MANAGER.queueDownload("./sprites/zombie/walk/Zombie_Axe_Down_Walk-Sheet8.png");
+
 
 
   if (mapData) {
