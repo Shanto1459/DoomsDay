@@ -1,4 +1,10 @@
 function spawnZombiesFromMap(game, mapData, mapScale) {
+
+    if (typeof Zombie === "undefined") {
+  console.error("Zombie class not loaded. Check script order: zombie.js must load before spawners.js");
+  return [];
+}
+
   const spawned = [];
 
   const walk = (layers) => {
