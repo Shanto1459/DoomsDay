@@ -97,7 +97,9 @@ class GameEngine {
 
         // Render world using camera offset.
         this.ctx.save();
-        this.ctx.translate(-this.camera.x, -this.camera.y);
+        const camX = Math.round(this.camera.x);
+        const camY = Math.round(this.camera.y);
+        this.ctx.translate(-camX, -camY);
         for (let i = this.entities.length - 1; i >= 0; i--) {
             this.entities[i].draw(this.ctx, this);
         }
