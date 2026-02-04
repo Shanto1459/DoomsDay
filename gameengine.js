@@ -113,10 +113,14 @@ class GameEngine {
             this.ctx.fillStyle = "#b9ff9e";
             this.ctx.font = "12px monospace";
             const target = this.cameraTarget;
-            const targetX = target ? target.x.toFixed(1) : "n/a";
-            const targetY = target ? target.y.toFixed(1) : "n/a";
+            const targetX = target ? Math.round(target.x) : "n/a";
+            const targetY = target ? Math.round(target.y) : "n/a";
             this.ctx.fillText(`Player: ${targetX}, ${targetY}`, 16, 28);
-            this.ctx.fillText(`Camera: ${this.camera.x.toFixed(1)}, ${this.camera.y.toFixed(1)}`, 16, 44);
+
+            this.ctx.fillText(
+            `Camera: ${Math.round(this.camera.x)}, ${Math.round(this.camera.y)}`, 16, 44
+);
+
             this.ctx.fillText(`World: ${this.worldWidth} x ${this.worldHeight}`, 16, 60);
             this.ctx.restore();
         }
