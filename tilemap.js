@@ -26,6 +26,7 @@ function resolveMapPath(mapPath, relativePath) {
   return mapPath.slice(0, slashIndex + 1) + relativePath;
 }
 
+//Helper function to resolve path issues in map generation
 function resolveMapAssetPath(mapPath, assetPath) {
   if (!assetPath) return assetPath;
 
@@ -42,7 +43,7 @@ function resolveMapAssetPath(mapPath, assetPath) {
    if (packIdx !== -1) {
     let cleaned = assetPath.slice(packIdx);
 
-    // 🔥 REMOVE " - Copy", " - Copy - Copy", etc BEFORE .png
+    // Removes -copy -copy issue in path so that map loads correctly
     cleaned = cleaned.replace(/\s-\sCopy.*(?=\.png)/i, "");
 
     return mapDir + "../" + cleaned;
