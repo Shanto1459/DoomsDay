@@ -9,12 +9,28 @@ const MAP_SCALE = 4;
 const START_SPAWN = "PlayerSpawn";
 const PLAYER_SPEED = 140; 
 
-window.addEventListener("click", () => {
-  if (!AUDIO.unlocked) {
-    AUDIO.unlock();
-    AUDIO.playBGM("./audio/bgm.mp3");
-  }
-}, { once: true });
+function unlockAudioOnMoveKeys() {
+  const handler = (e) => {
+    const k = (e.key || "").toLowerCase();
+    const isMoveKey =
+      k === "w" || k === "a" || k === "s" || k === "d" ||
+      k === "arrowup" || k === "arrowleft" || k === "arrowdown" || k === "arrowright";
+
+    if (!isMoveKey) return;
+
+    if (!AUDIO.unlocked) {
+      AUDIO.unlock();
+      AUDIO.playBGM("./audio/bgm.mp3"); // change to your real file
+    }
+
+    window.removeEventListener("keydown", handler);
+  };
+
+  window.addEventListener("keydown", handler);
+}
+
+unlockAudioOnMoveKeys();
+
 
 function setupSettingsUI(gameEngine) {
   const btn = document.getElementById("settingsBtn");
