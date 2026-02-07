@@ -7,7 +7,7 @@ const AUDIO = new AudioManager(); // music system
 const MAP_PATH = "./maps/bedroom.tmj";
 const MAP_SCALE = 4;
 const START_SPAWN = "PlayerSpawn";
-const PLAYER_SPEED = 140; 
+const PLAYER_SPEED = 140;
 
 function unlockAudioOnMoveKeys() {
   const handler = (e) => {
@@ -20,7 +20,7 @@ function unlockAudioOnMoveKeys() {
 
     if (!AUDIO.unlocked) {
       AUDIO.unlock();
-      AUDIO.playBGM("./audio/bgm.mp3"); // change to your real file
+      AUDIO.playBGM("./audio/bgm.mp3");
     }
 
     window.removeEventListener("keydown", handler);
@@ -28,9 +28,6 @@ function unlockAudioOnMoveKeys() {
 
   window.addEventListener("keydown", handler);
 }
-
-unlockAudioOnMoveKeys();
-
 
 function setupSettingsUI(gameEngine) {
   const btn = document.getElementById("settingsBtn");
@@ -49,7 +46,7 @@ function setupSettingsUI(gameEngine) {
   const open = () => {
     overlay.classList.remove("hidden");
     gameEngine.isPaused = true;
-    gameEngine.keys = {}; // stop stuck movement
+    gameEngine.keys = {};
   };
 
   const close = () => {
@@ -75,8 +72,6 @@ function setupSettingsUI(gameEngine) {
     const vol = Number(slider.value);
     valueLabel.textContent = String(vol);
     gameEngine.masterVolume = vol / 100;
-
-    // update music volume
     AUDIO.setMasterVolume(gameEngine.masterVolume);
   };
 
@@ -90,9 +85,7 @@ async function loadGame() {
 
   try {
     const mapResponse = await fetch(MAP_PATH);
-    if (!mapResponse.ok) {
-      throw new Error(`Map fetch failed: ${mapResponse.status}`);
-    }
+    if (!mapResponse.ok) throw new Error(`Map fetch failed: ${mapResponse.status}`);
     mapData = await mapResponse.json();
   } catch (error) {
     console.error("Map failed to load, starting without map.", error);
@@ -123,7 +116,6 @@ async function loadGame() {
     console.log("Tileset images loaded:", result.loaded, "failed:", result.failed);
   }
 
-  // Wait for character sprites, then start the engine.
   ASSET_MANAGER.downloadAll(() => {
     console.log("Game starting");
 
@@ -133,23 +125,39 @@ async function loadGame() {
     gameEngine.init(ctx);
     canvas.focus();
 
-    // setup settings UI
     setupSettingsUI(gameEngine);
+    unlockAudioOnMoveKeys();
 
-    if (mapData) {
-      const spawn = getSpawnPosition(mapData, MAP_SCALE, START_SPAWN);
-      const player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
-      const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
+    // ---- Start game only once
+    let started = false;
+    const startGame = () => {
+      if (started) return;
+      started = true;
 
-      gameEngine.cameraTarget = player;
-      gameEngine.addEntity(player);
-      mapManager.setMap(mapData, MAP_PATH, START_SPAWN);
-      gameEngine.addEntity(mapManager);
-    } else {
-      const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
-      gameEngine.cameraTarget = player;
-      gameEngine.addEntity(player);
-    }
+      // TitleScreen click is a user gesture, so music can start here too.
+      if (!AUDIO.unlocked) AUDIO.unlock();
+      AUDIO.playBGM("./audio/bgm.mp3");
+
+      if (mapData) {
+        const spawn = getSpawnPosition(mapData, MAP_SCALE, START_SPAWN);
+        const player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
+        const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
+
+        gameEngine.cameraTarget = player;
+        gameEngine.addEntity(player);
+
+        mapManager.setMap(mapData, MAP_PATH, START_SPAWN);
+        gameEngine.addEntity(mapManager);
+      } else {
+        const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
+        gameEngine.cameraTarget = player;
+        gameEngine.addEntity(player);
+      }
+    };
+
+    // Title screen shows first
+    const title = new TitleScreen(gameEngine, startGame);
+    gameEngine.addEntity(title);
 
     gameEngine.start();
     console.log("main.js loaded");
