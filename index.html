@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>DoomsDay</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet" />
 
   <style>
     html, body {
@@ -19,7 +19,7 @@
     body {
       display: flex;
       flex-direction: column;
-      align-items: center;   /* horizontal center */
+      align-items: center;
     }
 
     h1 {
@@ -27,12 +27,123 @@
       font-size: 36px;
     }
 
+    /* Top bar ABOVE the canvas */
+    #topBar {
+      width: 640px;
+      display: flex;
+      justify-content: flex-start;
+      margin-top: 20px; /* space between title and bar */
+    }
+
+    #settingsBtn {
+      border: 2px solid #4caf50;
+      background: rgba(15, 15, 15, 0.85);
+      color: #b9ff9e;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: monospace;
+    }
+
     canvas {
-      margin-top: 45px;     /* 👈 THIS IS THE GAP YOU WANT */
+      margin-top: 10px; /* small gap between topBar and canvas */
       background: #222;
       border: 2px solid #4caf50;
       image-rendering: pixelated;
       display: block;
+    }
+
+    /* --- Overlay + panel --- */
+    #settingsOverlay.hidden {
+      display: none;
+    }
+
+    #settingsOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+    }
+
+    #settingsPanel {
+      width: min(520px, 92vw);
+      background: rgba(20, 20, 20, 0.95);
+      border: 2px solid #4caf50;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      color: #b9ff9e;
+      font-family: monospace;
+    }
+
+    .settingsHeader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .settingsTitle {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    #settingsCloseBtn {
+      background: transparent;
+      border: 1px solid rgba(185, 255, 158, 0.4);
+      color: #b9ff9e;
+      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      font-family: monospace;
+    }
+
+    .settingsSection h2 {
+      margin: 10px 0 6px 0;
+      font-size: 14px;
+      color: #b9ff9e;
+    }
+
+    .settingsSection p {
+      margin: 0 0 8px 0;
+      color: rgba(185, 255, 158, 0.85);
+      line-height: 1.35;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #volumeSlider {
+      width: 100%;
+    }
+
+    .hint {
+      font-size: 12px;
+      opacity: 0.85;
+    }
+
+    .settingsFooter {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+
+    #settingsCloseBtn2 {
+      border: 2px solid #4caf50;
+      background: rgba(15, 15, 15, 0.85);
+      color: #b9ff9e;
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-family: monospace;
     }
   </style>
 </head>
@@ -40,8 +151,39 @@
 <body>
   <h1>DoomsDay</h1>
 
-  <!-- Canvas is pushed DOWN independently -->
+  <!-- Button right above the canvas -->
+  <div id="topBar">
+    <button id="settingsBtn" type="button">⚙ Settings</button>
+  </div>
+
   <canvas id="gameWorld" width="640" height="640" tabindex="0"></canvas>
+
+  <!-- Settings overlay -->
+  <div id="settingsOverlay" class="hidden">
+    <div id="settingsPanel" role="dialog" aria-modal="true" aria-label="Settings">
+      <div class="settingsHeader">
+        <div class="settingsTitle">Settings</div>
+        <button id="settingsCloseBtn" type="button" aria-label="Close">✕</button>
+      </div>
+
+      <div class="settingsSection">
+        <h2>Help</h2>
+        <p> WASD to move. Space to punch.</p>
+      </div>
+
+      <div class="settingsSection">
+        <h2>Volume</h2>
+        <div class="row">
+          <input id="volumeSlider" type="range" min="0" max="100" value="80" />
+          <span id="volumeValue">80</span>
+        </div>
+      </div>
+
+      <div class="settingsFooter">
+        <button id="settingsCloseBtn2" type="button">Close</button>
+      </div>
+    </div>
+  </div>
 
   <script src="util.js"></script>
   <script src="timer.js"></script>
@@ -53,6 +195,7 @@
   <script src="zombie.js"></script>
   <script src="spawners.js"></script>
   <script src="titlescreen.js"></script>
+  <script src="audio/audiomanager.js"></script>
   <script src="./main.js?v=7"></script>
 </body>
 </html>
