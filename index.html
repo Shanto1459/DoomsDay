@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>DoomsDay</title>
+  <link rel="stylesheet" href="styles.css">
 
   <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet" />
 
@@ -156,7 +157,25 @@
     <button id="settingsBtn" type="button">⚙ Settings</button>
   </div>
 
-  <canvas id="gameWorld" width="640" height="640" tabindex="0"></canvas>
+  <div id="gameWrap">
+    <canvas id="gameWorld" width="640" height="640" tabindex="0"></canvas>
+
+    <div id="pauseOverlay" class="hidden">
+      <div id="pausePanel">
+        <h2>Paused</h2>
+        <div class="row">
+          <button id="btnResume">Resume</button>
+          <button id="btnRestart2">Restart</button>
+        </div>
+        <p class="hint">Press <b>Esc</b> to resume</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-ui">
+    <button id="btnPause">Pause</button>
+    <button id="btnRestart">Restart</button>
+  </div>
 
   <!-- Settings overlay -->
   <div id="settingsOverlay" class="hidden">
@@ -196,6 +215,8 @@
   <script src="spawners.js"></script>
   <script src="titlescreen.js"></script>
   <script src="audio/audiomanager.js"></script>
+  <script src="healthbar.js"></script>
+  <script src="hud.js"></script>
   <script src="./main.js?v=7"></script>
 </body>
 </html>

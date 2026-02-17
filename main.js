@@ -110,6 +110,17 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/zombie/walk/Zombie_Axe_Up_Walk-Sheet8.png");
   ASSET_MANAGER.queueDownload("./sprites/zombie/walk/Zombie_Axe_Down_Walk-Sheet8.png");
 
+  // Zombie attack sprites
+  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Down_First-Attack-Sheet7.png");
+  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Down_Second-Attack-Sheet9.png");
+  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Side_First-Attack-Sheet7.png");
+  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Side_Second-Attack-Sheet9.png");
+
+  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Side-left_First-Attack-Sheet7.png");
+  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Side-left_Second-Attack-Sheet9.png");
+  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Up_First-Attack-Sheet7.png");
+  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Up_Second-Attack-Sheet9.png");
+
   if (mapData) {
     const tilePaths = collectTilesetImagePaths(mapData, MAP_PATH);
     const result = await preloadImages(tilePaths);
@@ -128,32 +139,86 @@ async function loadGame() {
     setupSettingsUI(gameEngine);
     unlockAudioOnMoveKeys();
 
+    // ---- Pause UI setup ----
+const wrap = document.getElementById("gameWrap");
+const overlay = document.getElementById("pauseOverlay");
+const btnPause = document.getElementById("btnPause");
+const btnRestart = document.getElementById("btnRestart");
+const btnResume = document.getElementById("btnResume");
+const btnRestart2 = document.getElementById("btnRestart2");
+
+function syncPauseUI() {
+  const paused = gameEngine.isPaused;
+  overlay.classList.toggle("hidden", !paused);
+  wrap.classList.toggle("paused", paused);
+  btnPause.textContent = paused ? "Resume" : "Pause";
+}
+
+btnPause.addEventListener("click", () => {
+  gameEngine.isPaused = !gameEngine.isPaused;
+  syncPauseUI();
+});
+
+btnResume.addEventListener("click", () => {
+  gameEngine.isPaused = false;
+  syncPauseUI();
+});
+
+function restartGame() {
+  window.location.reload();
+}
+
+btnRestart.addEventListener("click", restartGame);
+btnRestart2.addEventListener("click", restartGame);
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    gameEngine.isPaused = !gameEngine.isPaused;
+    syncPauseUI();
+  }
+});
+gameEngine.isPaused = false;
+overlay.classList.add("hidden");
+wrap.classList.remove("paused");
+syncPauseUI();
+syncPauseUI();
+
     // ---- Start game only once
     let started = false;
     const startGame = () => {
-      if (started) return;
-      started = true;
+    if (started) return;
+    started = true;
 
-      // TitleScreen click is a user gesture, so music can start here too.
-      if (!AUDIO.unlocked) AUDIO.unlock();
-      AUDIO.playBGM("./audio/bgm.mp3");
+    if (!AUDIO.unlocked) AUDIO.unlock();
+    AUDIO.playBGM("./audio/bgm.mp3");
 
-      if (mapData) {
-        const spawn = getSpawnPosition(mapData, MAP_SCALE, START_SPAWN);
-        const player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
-        const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
+    let player;
 
-        gameEngine.cameraTarget = player;
-        gameEngine.addEntity(player);
+    if (mapData) {
+      const spawn = getSpawnPosition(mapData, MAP_SCALE, START_SPAWN);
+      player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
+      const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
 
-        mapManager.setMap(mapData, MAP_PATH, START_SPAWN);
-        gameEngine.addEntity(mapManager);
-      } else {
-        const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
-        gameEngine.cameraTarget = player;
-        gameEngine.addEntity(player);
-      }
-    };
+      gameEngine.cameraTarget = player;
+      gameEngine.addEntity(player);
+
+      gameEngine.addEntity(new HUD(gameEngine, player));
+
+      mapManager.setMap(mapData, MAP_PATH, START_SPAWN);
+      gameEngine.addEntity(mapManager);
+
+      // ADD THIS
+      gameEngine.addEntity(new HUD(gameEngine, player));
+
+    } else {
+      player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
+      gameEngine.cameraTarget = player;
+      gameEngine.addEntity(player);
+
+      // ADD THIS
+      gameEngine.addEntity(new HUD(gameEngine, player));
+    }
+  };
 
     // Title screen shows first
     const title = new TitleScreen(gameEngine, startGame);
