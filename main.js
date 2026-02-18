@@ -1,5 +1,7 @@
 // Entry point: loads assets, then starts the game.
-const gameEngine = new GameEngine({ cameraDebug: true });
+const DEBUG_MODE = true;
+const gameEngine = new GameEngine({ cameraDebug: true, debugging: DEBUG_MODE });
+gameEngine.debug = DEBUG_MODE;
 const ASSET_MANAGER = new AssetManager();
 
 // Starting map + player config.
@@ -7,21 +9,148 @@ const MAP_PATH = "./maps/bedroom.tmj";
 const MAP_SCALE = 4;
 const START_SPAWN = "PlayerSpawn";
 const PLAYER_SPEED = 140; // pixels per second
+const ZOMBIE_COUNT = 1;
 
-// Loads the map JSON, preloads tiles, then starts the game loop.
-async function loadGame() {
-  let mapData = null;
+let currentPlayer = null;
+let currentMapManager = null;
 
-  try {
-    const mapResponse = await fetch(MAP_PATH);
-    if (!mapResponse.ok) {
-      throw new Error(`Map fetch failed: ${mapResponse.status}`);
+function removeZombies() {
+  gameEngine.entities = gameEngine.entities.filter(
+    (e) => !(e && e.constructor && e.constructor.name === "Zombie")
+  );
+}
+
+function keepMapManagerLast() {
+  const entities = gameEngine.entities || [];
+  const idx = entities.findIndex((e) => e && e.constructor && e.constructor.name === "MapManager");
+  if (idx < 0) return;
+  const mapManager = entities.splice(idx, 1)[0];
+  entities.push(mapManager);
+}
+
+function isMapZombieEnabled(mapPath, mapData) {
+  const mapProp = (mapData && mapData.properties || []).find((p) => p.name === "zombiesEnabled");
+  if (mapProp) return !!mapProp.value;
+  const path = (mapPath || "").toLowerCase();
+  // Bedroom/inside map is always safe.
+  if (path.includes("bedroom")) return false;
+  return true;
+}
+
+function isZombieSpawnValid(x, y, zombieWidth, zombieHeight, player) {
+  if (x < 0 || y < 0) return false;
+  if (x + zombieWidth > gameEngine.worldWidth || y + zombieHeight > gameEngine.worldHeight) return false;
+  if (gameEngine.collisionGrid && gameEngine.collisionGrid.isBlockedRect(x, y, zombieWidth, zombieHeight)) return false;
+  if (player) {
+    const dx = x - player.x;
+    const dy = y - player.y;
+    if (Math.hypot(dx, dy) < 80) return false;
+  }
+  return true;
+}
+
+function spawnZombies(player, mapPath, mapData) {
+  removeZombies();
+  const enabled = isMapZombieEnabled(mapPath, mapData);
+  gameEngine.zombiesEnabled = enabled;
+  if (!enabled) {
+    keepMapManagerLast();
+    return;
+  }
+
+  const zombieWidth = 28;
+  const zombieHeight = 28;
+  const candidates = [
+    [140, 100], [-140, 100], [140, -100], [-140, -100], [220, 40], [40, 220]
+  ];
+
+  let spawned = 0;
+  for (let i = 0; i < ZOMBIE_COUNT; i++) {
+    let zx = player.x + 160 + i * 30;
+    let zy = player.y + 100;
+
+    for (const [ox, oy] of candidates) {
+      const cx = player.x + ox + i * 8;
+      const cy = player.y + oy + i * 8;
+      if (isZombieSpawnValid(cx, cy, zombieWidth, zombieHeight, player)) {
+        zx = cx;
+        zy = cy;
+        break;
+      }
     }
-    mapData = await mapResponse.json();
+
+    if (!isZombieSpawnValid(zx, zy, zombieWidth, zombieHeight, player)) continue;
+
+    gameEngine.addEntity(new Zombie(gameEngine, player, zx, zy, {
+      speed: 70,
+      damage: 10,
+      chaseRadius: 320,
+      attackRange: 28,
+      attackCooldown: 0.9
+    }));
+    spawned += 1;
+  }
+  if (DEBUG_MODE) console.log("Zombies spawned:", spawned, "on map:", mapPath || "(unknown)");
+  keepMapManagerLast();
+}
+
+async function loadMapData(mapPath) {
+  const mapResponse = await fetch(mapPath);
+  if (!mapResponse.ok) {
+    throw new Error(`Map fetch failed: ${mapResponse.status}`);
+  }
+  return mapResponse.json();
+}
+
+async function setupWorld(mapPath, spawnName) {
+  let mapData = null;
+  try {
+    mapData = await loadMapData(mapPath);
   } catch (error) {
     console.error("Map failed to load, starting without map.", error);
   }
 
+  gameEngine.entities = [];
+  gameEngine.activeDialog = null;
+  gameEngine.paused = false;
+  gameEngine.gameOver = false;
+  gameEngine.keys = {};
+  gameEngine.zombiesEnabled = false;
+
+  if (mapData) {
+    const tilePaths = collectTilesetImagePaths(mapData, mapPath);
+    const result = await preloadImages(tilePaths);
+    console.log("Tileset images loaded:", result.loaded, "failed:", result.failed);
+
+    const spawn = getSpawnPosition(mapData, MAP_SCALE, spawnName);
+    const player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
+    const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
+    gameEngine.onMapChanged = (newMapPath, newMapData) => {
+      gameEngine.zombiesEnabled = isMapZombieEnabled(newMapPath, newMapData);
+      spawnZombies(player, newMapPath, newMapData);
+    };
+
+    mapManager.setMap(mapData, mapPath, spawnName);
+    gameEngine.cameraTarget = player;
+    gameEngine.addEntity(player);
+    // Map manager is added last because engine draws in reverse order.
+    // This makes the map draw first (background), then zombies, then player.
+    gameEngine.addEntity(mapManager);
+
+    currentPlayer = player;
+    currentMapManager = mapManager;
+  } else {
+    const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
+    gameEngine.cameraTarget = player;
+    gameEngine.addEntity(player);
+    gameEngine.zombiesEnabled = false;
+    currentPlayer = player;
+    currentMapManager = null;
+  }
+}
+
+// Loads the map JSON, preloads tiles, then starts the game loop.
+async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/character/run/Character_down_run-Sheet6.png");
   ASSET_MANAGER.queueDownload("./sprites/character/run/Character_up_run-Sheet6.png");
   ASSET_MANAGER.queueDownload("./sprites/character/run/Character_side-left_run-Sheet6.png");
@@ -31,15 +160,12 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_up_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side-left_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side_punch-Sheet4.png");
-
-  if (mapData) {
-    const tilePaths = collectTilesetImagePaths(mapData, MAP_PATH);
-    const result = await preloadImages(tilePaths);
-    console.log("Tileset images loaded:", result.loaded, "failed:", result.failed);
-  }
+  gameEngine.zombieSpritePath = Zombie.SPRITE_PATH;
+  ASSET_MANAGER.queueDownload(Zombie.SPRITE_PATH);
+  console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
 
   // Wait for character sprites, then start the engine.
-  ASSET_MANAGER.downloadAll(() => {
+  ASSET_MANAGER.downloadAll(async () => {
     console.log("Game starting");
 
     const canvas = document.getElementById("gameWorld");
@@ -48,23 +174,13 @@ async function loadGame() {
     gameEngine.init(ctx);
     canvas.focus();
 
-    if (mapData) {
-      // Spawn player from the map and initialize map manager.
-      const spawn = getSpawnPosition(mapData, MAP_SCALE, START_SPAWN);
-      const player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
-      const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
+    await setupWorld(MAP_PATH, START_SPAWN);
 
-      // Camera follows the player.
-      gameEngine.cameraTarget = player;
-      gameEngine.addEntity(player);
-      mapManager.setMap(mapData, MAP_PATH, START_SPAWN);
-      gameEngine.addEntity(mapManager);
-    } else {
-      // Fallback spawn if map failed to load.
-      const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
-      gameEngine.cameraTarget = player;
-      gameEngine.addEntity(player);
-    }
+    // Restart resets player/map/zombies and clears temporary state.
+    gameEngine.restart = async () => {
+      await setupWorld(MAP_PATH, START_SPAWN);
+    };
+
     gameEngine.start();
     console.log("main.js loaded");
   });

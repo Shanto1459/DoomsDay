@@ -10,6 +10,11 @@ class Player {
     this.direction = "down";   // "up" | "down" | "left" | "right"
     this.width = 14 * this.scale;
     this.height = 17 * this.scale;
+    this.maxHealth = 100;
+    this.health = this.maxHealth;
+    this.invincibilityDuration = 0.75;
+    this.hitCooldown = 0;
+    this.isDead = false;
 
     // Turn off blur for pixel art
     this.game.ctx.imageSmoothingEnabled = false;
@@ -42,12 +47,24 @@ class Player {
     // State
     this.moving = false;
     this.punching = false;
+    this.punchDamage = 18;
+    this.punchRange = 62;
+    this.punchCooldown = 0.35;
+    this.punchCooldownTimer = 0;
+    this.punchTimer = 0;
+    this.punchActiveWindowStart = 0.08;
+    this.punchActiveWindowEnd = 0.24;
+    this.punchHitIds = new Set();
 
     // Used to detect "press once" for Space
     this.prevSpaceDown = false;
   }
 
   update() {
+    if (this.isDead) return;
+    this.hitCooldown = Math.max(0, this.hitCooldown - this.game.clockTick);
+    this.punchCooldownTimer = Math.max(0, this.punchCooldownTimer - this.game.clockTick);
+
     const keys = this.game.keys;
 
     // SPACE -> start punch (once per press)
@@ -55,8 +72,11 @@ class Player {
     const spacePressed = spaceDown && !this.prevSpaceDown;
     this.prevSpaceDown = spaceDown;
 
-    if (spacePressed && !this.punching) {
+    if (spacePressed && !this.punching && this.punchCooldownTimer <= 0) {
       this.punching = true;
+      this.punchTimer = 0;
+      this.punchHitIds.clear();
+      this.punchCooldownTimer = this.punchCooldown;
 
       // Reset the punch animation for the current facing direction
       if (this.direction === "up") this.upPunchAnim.reset();
@@ -67,6 +87,14 @@ class Player {
 
     // If punching, don't move; end when animation finishes
     if (this.punching) {
+      this.punchTimer += this.game.clockTick;
+      const inHitWindow =
+        this.punchTimer >= this.punchActiveWindowStart &&
+        this.punchTimer <= this.punchActiveWindowEnd;
+      if (inHitWindow) {
+        this.applyPunchDamage();
+      }
+
       let pAnim = this.downPunchAnim;
       if (this.direction === "up") pAnim = this.upPunchAnim;
       else if (this.direction === "left") pAnim = this.leftPunchAnim;
@@ -137,10 +165,78 @@ class Player {
   canMoveTo(x, y) {
     if (!this.game.collisionGrid) return true;
     const blocked = this.game.collisionGrid.isBlockedRect(x, y, this.width, this.height);
-    if (blocked && this.game.options && this.game.options.debugging) {
+    if (blocked && this.game.debug) {
       console.log("Collision blocked:", { x, y, width: this.width, height: this.height });
     }
     return !blocked;
+  }
+
+  applyPunchDamage() {
+    const zombies = (this.game.entities || []).filter(
+      (e) => e && e.constructor && e.constructor.name === "Zombie" && !e.removeFromWorld
+    );
+    for (const zombie of zombies) {
+      if (this.punchHitIds.has(zombie.id)) continue;
+      if (!this.isZombieInPunchRange(zombie)) continue;
+      const applied = zombie.takeDamage(this.punchDamage, this);
+      if (applied) {
+        this.punchHitIds.add(zombie.id);
+        if (this.game.debug) {
+          const dx = (zombie.x + zombie.width / 2) - (this.x + this.width / 2);
+          const dy = (zombie.y + zombie.height / 2) - (this.y + this.height / 2);
+          console.log("[PUNCH] player hit zombie", {
+            zombieId: zombie.id,
+            distance: Number(Math.hypot(dx, dy).toFixed(2)),
+            zombieHealth: zombie.health
+          });
+        }
+      }
+    }
+  }
+
+  isZombieInPunchRange(zombie) {
+    const playerCenterX = this.x + this.width / 2;
+    const playerCenterY = this.y + this.height / 2;
+    const zombieCenterX = zombie.x + zombie.width / 2;
+    const zombieCenterY = zombie.y + zombie.height / 2;
+    const dx = zombieCenterX - playerCenterX;
+    const dy = zombieCenterY - playerCenterY;
+    const dist = Math.hypot(dx, dy);
+    if (dist > this.punchRange) return false;
+
+    // Keep temporary combat modular: this directional check can be swapped later for weapon arcs.
+    if (this.direction === "right") return dx >= -6;
+    if (this.direction === "left") return dx <= 6;
+    if (this.direction === "up") return dy <= 6;
+    return dy >= -6;
+  }
+
+  takeDamage(amount, attacker, distanceFromAttacker) {
+    if (this.isDead) return false;
+    if (this.hitCooldown > 0) return false;
+    if (!this.game.zombiesEnabled) return false;
+
+    // Safety guards: health can only drop from a real zombie attack.
+    const zombies = (this.game.entities || []).filter((e) => e && e.constructor && e.constructor.name === "Zombie");
+    if (zombies.length === 0) return false;
+    if (!attacker || attacker.constructor.name !== "Zombie") return false;
+    if (!zombies.includes(attacker)) return false;
+
+    const dx = this.x - attacker.x;
+    const dy = this.y - attacker.y;
+    const dist = typeof distanceFromAttacker === "number" ? distanceFromAttacker : Math.hypot(dx, dy);
+    if (dist > attacker.attackRange) return false;
+
+    this.health = Math.max(0, Math.min(this.maxHealth, this.health - amount));
+    this.hitCooldown = this.invincibilityDuration;
+
+    if (this.health <= 0) {
+      this.isDead = true;
+      this.game.gameOver = true;
+      this.game.paused = true;
+      this.game.keys = {};
+    }
+    return true;
   }
 
 draw(ctx) {
@@ -176,6 +272,14 @@ draw(ctx) {
   }
 
   ctx.restore();
+
+  if (this.game.debug) {
+    ctx.save();
+    ctx.strokeStyle = "#33c5ff";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
+    ctx.restore();
+  }
 
   // Draw a simple speech bubble when a dialog is active.
   if (this.game.activeDialog && this.game.activeDialog.timeLeftMs > 0) {

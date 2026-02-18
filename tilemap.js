@@ -525,6 +525,7 @@ class MapManager {
 
     this.mapData = mapData;
     this.mapPath = mapPath;
+    this.lastSpawnName = spawnName || "PlayerSpawn";
     this.renderer = new TiledMapRenderer(this.game, mapData, mapPath, this.mapScale);
     this.collisionGrid = new CollisionGrid(mapData, this.mapScale, "Collision");
     this.portals = getPortalObjects(mapData);
@@ -583,6 +584,9 @@ class MapManager {
     const spawn = getSpawnPosition(mapData, this.mapScale, spawnName);
     this.player.x = spawn.x;
     this.player.y = spawn.y;
+    if (typeof this.game.onMapChanged === "function") {
+      this.game.onMapChanged(this.mapPath, this.mapData, this.player);
+    }
 
     console.log("Map loaded:", mapPath);
     console.log("Spawn:", spawnName || "PlayerSpawn", spawn);
