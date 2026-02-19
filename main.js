@@ -51,48 +51,25 @@ function isZombieSpawnValid(x, y, zombieWidth, zombieHeight, player) {
 
 function spawnZombies(player, mapPath, mapData) {
   removeZombies();
+
   const enabled = isMapZombieEnabled(mapPath, mapData);
   gameEngine.zombiesEnabled = enabled;
+
   if (!enabled) {
     keepMapManagerLast();
     return;
   }
 
-  const zombieWidth = 28;
-  const zombieHeight = 28;
-  const candidates = [
-    [140, 100], [-140, 100], [140, -100], [-140, -100], [220, 40], [40, 220]
-  ];
+  // Spawn zombies from Tiled object markers (type/name includes "zombie")
+  const spawned = spawnZombiesFromMap(gameEngine, mapData, MAP_SCALE);
 
-  let spawned = 0;
-  for (let i = 0; i < ZOMBIE_COUNT; i++) {
-    let zx = player.x + 160 + i * 30;
-    let zy = player.y + 100;
-
-    for (const [ox, oy] of candidates) {
-      const cx = player.x + ox + i * 8;
-      const cy = player.y + oy + i * 8;
-      if (isZombieSpawnValid(cx, cy, zombieWidth, zombieHeight, player)) {
-        zx = cx;
-        zy = cy;
-        break;
-      }
-    }
-
-    if (!isZombieSpawnValid(zx, zy, zombieWidth, zombieHeight, player)) continue;
-
-    gameEngine.addEntity(new Zombie(gameEngine, player, zx, zy, {
-      speed: 70,
-      damage: 10,
-      chaseRadius: 320,
-      attackRange: 28,
-      attackCooldown: 0.9
-    }));
-    spawned += 1;
+  if (DEBUG_MODE) {
+    console.log("Zombies spawned from map:", spawned.length, "on map:", mapPath || "(unknown)");
   }
-  if (DEBUG_MODE) console.log("Zombies spawned:", spawned, "on map:", mapPath || "(unknown)");
+
   keepMapManagerLast();
 }
+
 
 async function loadMapData(mapPath) {
   const mapResponse = await fetch(mapPath);

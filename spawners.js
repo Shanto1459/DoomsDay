@@ -40,9 +40,11 @@ function spawnZombiesFromMap(game, mapData, mapScale) {
         const y = obj.y * mapScale; 
         console.log("SPAWN ZOMBIE AT:", { x, y, rawX: obj.x, rawY: obj.y, mapScale });
         const facing = getObjectProperty(obj, "facing") || "down";
+        const player = game.cameraTarget;
+        const z = new Zombie(game, player, x, y, { facing });
 
-        const z = new Zombie(game, x, y, facing);
         game.addEntity(z);
+
         spawned.push(z);
       }
     }

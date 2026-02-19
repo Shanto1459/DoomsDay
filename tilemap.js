@@ -333,8 +333,6 @@ draw(ctx) {
   const endRow = Math.min(this.mapData.height - 1, Math.floor(viewBottom / tileH) + bufferTiles);
 
 
-  console.log("Tiles range:", startRow, endRow, startCol, endCol);
-
   for (const layer of this.mapData.layers) {
     if (layer.type !== "tilelayer" || !layer.visible) continue;
     if (!Array.isArray(layer.data)) continue;
