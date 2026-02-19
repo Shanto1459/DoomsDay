@@ -1,11 +1,46 @@
 function spawnZombiesFromMap(game, mapData, mapScale) {
 
-    if (typeof Zombie === "undefined") {
-  console.error("Zombie class not loaded. Check script order: zombie.js must load before spawners.js");
-  return [];
-}
+  if (typeof Zombie === "undefined") {
+    console.error("Zombie class not loaded. Check script order: zombie.js must load before spawners.js");
+    return [];
+  }
 
   const spawned = [];
+
+ const variants = [
+  {
+    name: "small",
+    spritePath: "./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Small/Zombie_Small_Down_walk-Sheet6.png",
+    width: 40,
+    height: 55,
+    speed: 85,
+    damage: 8,
+    maxHealth: 35
+  },
+  {
+    name: "axe",
+    spritePath: "./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Axe/Zombie_Axe_Down_Walk-Sheet8.png",
+    width: 60,
+    height: 90,   // taller than small
+    speed: 70,
+    damage: 12,
+    maxHealth: 45
+  },
+  {
+    name: "big",
+    spritePath: "./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Big/Zombie_Big_Down_Walk-Sheet8.png",
+    width: 75,
+    height: 115,  // tallest
+    speed: 55,
+    damage: 18,
+    maxHealth: 75
+  }
+];
+
+
+  function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
 
   const walk = (layers) => {
     for (const layer of layers || []) {
@@ -15,37 +50,43 @@ function spawnZombiesFromMap(game, mapData, mapScale) {
 
       for (const obj of layer.objects || []) {
         const markerRaw =
-        getObjectProperty(obj, "type") ||
-        getObjectProperty(obj, "entity") ||   
-        obj.class ||
-        obj.type ||
-        obj.name ||
-        "";
-
+          getObjectProperty(obj, "type") ||
+          getObjectProperty(obj, "entity") ||
+          obj.class ||
+          obj.type ||
+          obj.name ||
+          "";
 
         const marker = String(markerRaw).trim().toLowerCase();
-
-        console.log("SPAWN OBJ:", obj.name, {
-        typeProp: getObjectProperty(obj, "type"),
-        class: obj.class,
-        type: obj.type,
-        marker
-        });
-
         if (!marker.includes("zombie")) continue;
 
-
-
         const x = obj.x * mapScale;
-        const y = obj.y * mapScale; 
-        console.log("SPAWN ZOMBIE AT:", { x, y, rawX: obj.x, rawY: obj.y, mapScale });
+        const y = obj.y * mapScale;
+
         const facing = getObjectProperty(obj, "facing") || "down";
         const player = game.cameraTarget;
-        const z = new Zombie(game, player, x, y, { facing });
+
+        // Pick a random zombie type
+        const v = pickRandom(variants);
+
+        const z = new Zombie(game, player, x, y, {
+          facing,
+          spritePath: v.spritePath,
+          speed: v.speed,
+          damage: v.damage,
+          maxHealth: v.maxHealth,
+          width: v.width,
+          height: v.height
+        });
+
+        // Apply visual size
+        z.width = v.width;
+        z.height = v.height;
 
         game.addEntity(z);
-
         spawned.push(z);
+
+        console.log("[SPAWNED]", v.name, "zombie at", x, y);
       }
     }
   };

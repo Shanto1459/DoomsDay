@@ -137,8 +137,13 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_up_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side-left_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side_punch-Sheet4.png");
-  gameEngine.zombieSpritePath = Zombie.SPRITE_PATH;
-  ASSET_MANAGER.queueDownload(Zombie.SPRITE_PATH);
+  
+
+  // Queue all zombie variants
+ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Small/Zombie_Small_Down_walk-Sheet6.png");
+ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Axe/Zombie_Axe_Down_Walk-Sheet8.png");
+ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Big/Zombie_Big_Down_Walk-Sheet8.png");
+
   console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
 
   // Wait for character sprites, then start the engine.
