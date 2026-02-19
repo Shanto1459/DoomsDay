@@ -16,12 +16,22 @@ class GameEngine {
             debugging: false,
             cameraDebug: false,
         };
+        this.debug = !!this.options.debugging;
 
         // Camera tracks a target entity in world space.
         this.camera = { x: 0, y: 0 };
         this.cameraTarget = null;
         // Active dialog bubble shown above the player.
         this.activeDialog = null;
+        this.paused = false;
+        this.gameOver = false;
+        this.restart = null;
+        this.zombiesEnabled = false;
+        this.zombieSpritePath = "./sprites/zombie/zombie.png";
+        this.onMapChanged = null;
+        this.uiMargin = 14;
+        this.uiButtonWidth = 110;
+        this.uiButtonHeight = 28;
     };
 
     init(ctx) {
@@ -79,7 +89,20 @@ class GameEngine {
         });
 
         window.addEventListener("keydown", (event) => {
-        this.keys[event.key.toLowerCase()] = true;
+            const key = event.key.toLowerCase();
+
+            if (key === "p" || key === "escape") {
+                this.togglePause();
+                return;
+            }
+
+            if ((this.paused || this.gameOver) && key === "r") {
+                if (this.restart) this.restart();
+                return;
+            }
+
+            if (this.paused || this.gameOver) return;
+            this.keys[key] = true;
         });
 
         window.addEventListener("keyup", (event) => {
@@ -124,9 +147,23 @@ class GameEngine {
             this.ctx.fillText(`World: ${this.worldWidth} x ${this.worldHeight}`, 16, 60);
             this.ctx.restore();
         }
+
+        this.drawHealthBar();
+        this.drawPauseOverlay();
+        this.drawTopRightControls();
     };
 
     update() {
+        this.handleTopRightUiClick();
+        if (this.paused || this.gameOver) return;
+
+        if (this.activeDialog && this.activeDialog.timeLeftMs > 0) {
+            this.activeDialog.timeLeftMs -= this.clockTick * 1000;
+            if (this.activeDialog.timeLeftMs <= 0) {
+                this.activeDialog = null;
+            }
+        }
+
         let entitiesCount = this.entities.length;
 
         for (let i = 0; i < entitiesCount; i++) {
@@ -145,10 +182,151 @@ class GameEngine {
     };
 
     loop() {
-        this.clockTick = this.timer.tick();
+        const delta = this.timer.tick();
+        this.clockTick = (this.paused || this.gameOver) ? 0 : delta;
         this.update();
-        this.updateCamera();
+        if (!this.paused && !this.gameOver) {
+            this.updateCamera();
+        }
         this.draw();
+    };
+
+    togglePause() {
+        if (this.gameOver) return;
+        this.paused = !this.paused;
+        if (this.paused) this.keys = {};
+    };
+
+    showDialogue(text, durationMs = 5000) {
+        this.activeDialog = { text, timeLeftMs: durationMs };
+    };
+
+    getTopRightControlRects() {
+        const canvasWidth = this.ctx.canvas.width;
+        const x = canvasWidth - this.uiButtonWidth - this.uiMargin;
+        const y = this.uiMargin;
+        return {
+            pause: {
+                x,
+                y,
+                width: this.uiButtonWidth,
+                height: this.uiButtonHeight
+            },
+            restart: {
+                x,
+                y: y + this.uiButtonHeight + 8,
+                width: this.uiButtonWidth,
+                height: this.uiButtonHeight
+            }
+        };
+    };
+
+    pointInRect(p, r) {
+        return p.x >= r.x && p.x <= r.x + r.width && p.y >= r.y && p.y <= r.y + r.height;
+    };
+
+    handleTopRightUiClick() {
+        if (!this.click || !this.ctx) return;
+        const click = this.click;
+        this.click = null;
+
+        const rects = this.getTopRightControlRects();
+        if (this.pointInRect(click, rects.pause)) {
+            this.togglePause();
+            return;
+        }
+        if (this.pointInRect(click, rects.restart)) {
+            if (this.restart) this.restart();
+        }
+    };
+
+    drawTopRightControls() {
+        if (!this.ctx) return;
+        const rects = this.getTopRightControlRects();
+        const pauseLabel = this.paused ? "Resume" : "Pause";
+
+        this.ctx.save();
+        this.ctx.font = "14px monospace";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+
+        const drawButton = (r, label) => {
+            this.ctx.fillStyle = "rgba(0,0,0,0.65)";
+            this.ctx.fillRect(r.x, r.y, r.width, r.height);
+            this.ctx.strokeStyle = "#ffffff";
+            this.ctx.lineWidth = 1;
+            this.ctx.strokeRect(r.x, r.y, r.width, r.height);
+            this.ctx.fillStyle = "#ffffff";
+            this.ctx.fillText(label, r.x + r.width / 2, r.y + r.height / 2);
+        };
+
+        drawButton(rects.pause, pauseLabel);
+        drawButton(rects.restart, "Restart");
+        this.ctx.restore();
+    };
+
+    drawHealthBar() {
+        const player = this.cameraTarget;
+        if (!player || typeof player.health !== "number" || typeof player.maxHealth !== "number") return;
+
+        const x = 20;
+        const width = 220;
+        const height = 16;
+        const y = this.ctx.canvas.height - 30;
+        const ratio = player.maxHealth > 0 ? player.health / player.maxHealth : 0;
+
+        this.ctx.save();
+        this.ctx.fillStyle = "rgba(0,0,0,0.6)";
+        this.ctx.fillRect(x - 2, y - 2, width + 4, height + 4);
+        this.ctx.fillStyle = "#7a1111";
+        this.ctx.fillRect(x, y, width, height);
+        this.ctx.fillStyle = "#47c55f";
+        this.ctx.fillRect(x, y, Math.max(0, width * ratio), height);
+        this.ctx.strokeStyle = "#ffffff";
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeRect(x, y, width, height);
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.font = "12px monospace";
+        this.ctx.fillText(`HP: ${Math.ceil(player.health)} / ${player.maxHealth}`, x, y - 6);
+        if (this.debug) {
+            const zombies = this.entities.filter((e) => e && e.constructor && e.constructor.name === "Zombie");
+            let nearest = "n/a";
+            if (zombies.length > 0) {
+                let min = Infinity;
+                for (const z of zombies) {
+                    const dx = player.x - z.x;
+                    const dy = player.y - z.y;
+                    min = Math.min(min, Math.hypot(dx, dy));
+                }
+                nearest = min.toFixed(1);
+            }
+            const zombieAssetPath = this.zombieSpritePath || "./sprites/zombie/zombie.png";
+            const zombieAsset = ASSET_MANAGER.getAsset(zombieAssetPath);
+            const zombieAssetLoaded = !!(zombieAsset && zombieAsset.complete && zombieAsset.naturalWidth > 0);
+            this.ctx.fillText(`Zombies: ${zombies.length}`, x, y - 22);
+            this.ctx.fillText(`Nearest: ${nearest}`, x + 110, y - 22);
+            this.ctx.fillText(`Zombie asset loaded: ${zombieAssetLoaded}`, x, y - 38);
+            this.ctx.fillText(`Zombie asset path: ${zombieAssetPath}`, x, y - 54);
+        }
+        this.ctx.restore();
+    };
+
+    drawPauseOverlay() {
+        if (!this.paused && !this.gameOver) return;
+
+        this.ctx.save();
+        this.ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+        this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.textAlign = "center";
+        this.ctx.font = "30px Creepster";
+        this.ctx.fillText(this.gameOver ? "GAME OVER" : "PAUSED", this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 - 20);
+        this.ctx.font = "16px monospace";
+        if (!this.gameOver) {
+            this.ctx.fillText("Press P or ESC to Resume", this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 + 16);
+        }
+        this.ctx.fillText("Press R to Restart", this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 + 40);
+        this.ctx.restore();
     };
 
     updateCamera() {

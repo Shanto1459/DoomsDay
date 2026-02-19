@@ -1,133 +1,171 @@
 // Entry point: loads assets, then starts the game.
-const gameEngine = new GameEngine({ cameraDebug: true });
+const DEBUG_MODE = true;
+const gameEngine = new GameEngine({ cameraDebug: true, debugging: DEBUG_MODE });
+gameEngine.debug = DEBUG_MODE;
 const ASSET_MANAGER = new AssetManager();
-const AUDIO = new AudioManager(); // music system
 
 // Starting map + player config.
 const MAP_PATH = "./maps/bedroom.tmj";
 const MAP_SCALE = 4;
 const START_SPAWN = "PlayerSpawn";
-const PLAYER_SPEED = 140;
+const PLAYER_SPEED = 140; // pixels per second
+const ZOMBIE_COUNT = 1;
 
-function unlockAudioOnMoveKeys() {
-  const handler = (e) => {
-    const k = (e.key || "").toLowerCase();
-    const isMoveKey =
-      k === "w" || k === "a" || k === "s" || k === "d" ||
-      k === "arrowup" || k === "arrowleft" || k === "arrowdown" || k === "arrowright";
+let currentPlayer = null;
+let currentMapManager = null;
 
-    if (!isMoveKey) return;
-
-    if (!AUDIO.unlocked) {
-      AUDIO.unlock();
-      AUDIO.playBGM("./audio/bgm.mp3");
-    }
-
-    window.removeEventListener("keydown", handler);
-  };
-
-  window.addEventListener("keydown", handler);
+function removeZombies() {
+  gameEngine.entities = gameEngine.entities.filter(
+    (e) => !(e && e.constructor && e.constructor.name === "Zombie")
+  );
 }
 
-function setupSettingsUI(gameEngine) {
-  const btn = document.getElementById("settingsBtn");
-  const overlay = document.getElementById("settingsOverlay");
-  const close1 = document.getElementById("settingsCloseBtn");
-  const close2 = document.getElementById("settingsCloseBtn2");
+function keepMapManagerLast() {
+  const entities = gameEngine.entities || [];
+  const idx = entities.findIndex((e) => e && e.constructor && e.constructor.name === "MapManager");
+  if (idx < 0) return;
+  const mapManager = entities.splice(idx, 1)[0];
+  entities.push(mapManager);
+}
 
-  const slider = document.getElementById("volumeSlider");
-  const valueLabel = document.getElementById("volumeValue");
+function isMapZombieEnabled(mapPath, mapData) {
+  const mapProp = (mapData && mapData.properties || []).find((p) => p.name === "zombiesEnabled");
+  if (mapProp) return !!mapProp.value;
+  const path = (mapPath || "").toLowerCase();
+  // Bedroom/inside map is always safe.
+  if (path.includes("bedroom")) return false;
+  return true;
+}
 
-  if (!btn || !overlay || !close1 || !close2 || !slider || !valueLabel) {
-    console.warn("Settings UI elements not found in HTML.");
+function isZombieSpawnValid(x, y, zombieWidth, zombieHeight, player) {
+  if (x < 0 || y < 0) return false;
+  if (x + zombieWidth > gameEngine.worldWidth || y + zombieHeight > gameEngine.worldHeight) return false;
+  if (gameEngine.collisionGrid && gameEngine.collisionGrid.isBlockedRect(x, y, zombieWidth, zombieHeight)) return false;
+  if (player) {
+    const dx = x - player.x;
+    const dy = y - player.y;
+    if (Math.hypot(dx, dy) < 80) return false;
+  }
+  return true;
+}
+
+function spawnZombies(player, mapPath, mapData) {
+  removeZombies();
+  const enabled = isMapZombieEnabled(mapPath, mapData);
+  gameEngine.zombiesEnabled = enabled;
+  if (!enabled) {
+    keepMapManagerLast();
     return;
   }
 
-  const open = () => {
-    overlay.classList.remove("hidden");
-    gameEngine.isPaused = true;
-    gameEngine.keys = {};
-  };
+  const zombieWidth = 28;
+  const zombieHeight = 28;
+  const candidates = [
+    [140, 100], [-140, 100], [140, -100], [-140, -100], [220, 40], [40, 220]
+  ];
 
-  const close = () => {
-    overlay.classList.add("hidden");
-    gameEngine.isPaused = false;
-    const canvas = document.getElementById("gameWorld");
-    if (canvas) canvas.focus();
-  };
+  let spawned = 0;
+  for (let i = 0; i < ZOMBIE_COUNT; i++) {
+    let zx = player.x + 160 + i * 30;
+    let zy = player.y + 100;
 
-  btn.addEventListener("click", open);
-  close1.addEventListener("click", close);
-  close2.addEventListener("click", close);
+    for (const [ox, oy] of candidates) {
+      const cx = player.x + ox + i * 8;
+      const cy = player.y + oy + i * 8;
+      if (isZombieSpawnValid(cx, cy, zombieWidth, zombieHeight, player)) {
+        zx = cx;
+        zy = cy;
+        break;
+      }
+    }
 
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) close();
-  });
+    if (!isZombieSpawnValid(zx, zy, zombieWidth, zombieHeight, player)) continue;
 
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !overlay.classList.contains("hidden")) close();
-  });
-
-  const applyVol = () => {
-    const vol = Number(slider.value);
-    valueLabel.textContent = String(vol);
-    gameEngine.masterVolume = vol / 100;
-    AUDIO.setMasterVolume(gameEngine.masterVolume);
-  };
-
-  slider.addEventListener("input", applyVol);
-  applyVol();
+    gameEngine.addEntity(new Zombie(gameEngine, player, zx, zy, {
+      speed: 70,
+      damage: 10,
+      chaseRadius: 320,
+      attackRange: 28,
+      attackCooldown: 0.9
+    }));
+    spawned += 1;
+  }
+  if (DEBUG_MODE) console.log("Zombies spawned:", spawned, "on map:", mapPath || "(unknown)");
+  keepMapManagerLast();
 }
 
-// Loads the map JSON, preloads tiles, then starts the game loop.
-async function loadGame() {
-  let mapData = null;
+async function loadMapData(mapPath) {
+  const mapResponse = await fetch(mapPath);
+  if (!mapResponse.ok) {
+    throw new Error(`Map fetch failed: ${mapResponse.status}`);
+  }
+  return mapResponse.json();
+}
 
+async function setupWorld(mapPath, spawnName) {
+  let mapData = null;
   try {
-    const mapResponse = await fetch(MAP_PATH);
-    if (!mapResponse.ok) throw new Error(`Map fetch failed: ${mapResponse.status}`);
-    mapData = await mapResponse.json();
+    mapData = await loadMapData(mapPath);
   } catch (error) {
     console.error("Map failed to load, starting without map.", error);
   }
 
-  // Player run sprites
+  gameEngine.entities = [];
+  gameEngine.activeDialog = null;
+  gameEngine.paused = false;
+  gameEngine.gameOver = false;
+  gameEngine.keys = {};
+  gameEngine.zombiesEnabled = false;
+
+  if (mapData) {
+    const tilePaths = collectTilesetImagePaths(mapData, mapPath);
+    const result = await preloadImages(tilePaths);
+    console.log("Tileset images loaded:", result.loaded, "failed:", result.failed);
+
+    const spawn = getSpawnPosition(mapData, MAP_SCALE, spawnName);
+    const player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
+    const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
+    gameEngine.onMapChanged = (newMapPath, newMapData) => {
+      gameEngine.zombiesEnabled = isMapZombieEnabled(newMapPath, newMapData);
+      spawnZombies(player, newMapPath, newMapData);
+    };
+
+    mapManager.setMap(mapData, mapPath, spawnName);
+    gameEngine.cameraTarget = player;
+    gameEngine.addEntity(player);
+    // Map manager is added last because engine draws in reverse order.
+    // This makes the map draw first (background), then zombies, then player.
+    gameEngine.addEntity(mapManager);
+
+    currentPlayer = player;
+    currentMapManager = mapManager;
+  } else {
+    const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
+    gameEngine.cameraTarget = player;
+    gameEngine.addEntity(player);
+    gameEngine.zombiesEnabled = false;
+    currentPlayer = player;
+    currentMapManager = null;
+  }
+}
+
+// Loads the map JSON, preloads tiles, then starts the game loop.
+async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/character/run/Character_down_run-Sheet6.png");
   ASSET_MANAGER.queueDownload("./sprites/character/run/Character_up_run-Sheet6.png");
   ASSET_MANAGER.queueDownload("./sprites/character/run/Character_side-left_run-Sheet6.png");
   ASSET_MANAGER.queueDownload("./sprites/character/run/Character_side_run-Sheet6.png");
 
-  // Player punch sprites
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_down_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_up_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side-left_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side_punch-Sheet4.png");
+  gameEngine.zombieSpritePath = Zombie.SPRITE_PATH;
+  ASSET_MANAGER.queueDownload(Zombie.SPRITE_PATH);
+  console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
 
-  // Zombie sprites
-  ASSET_MANAGER.queueDownload("./sprites/zombie/idle/Zombie_Axe_Side-left_Idle-Sheet6.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/walk/Zombie_Axe_Side-left_Walk-Sheet8.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/walk/Zombie_Axe_Side_Walk-Sheet8.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/walk/Zombie_Axe_Up_Walk-Sheet8.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/walk/Zombie_Axe_Down_Walk-Sheet8.png");
-
-  // Zombie attack sprites
-  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Down_First-Attack-Sheet7.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Down_Second-Attack-Sheet9.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Side_First-Attack-Sheet7.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Side_Second-Attack-Sheet9.png");
-
-  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Side-left_First-Attack-Sheet7.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Side-left_Second-Attack-Sheet9.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Up_First-Attack-Sheet7.png");
-  ASSET_MANAGER.queueDownload("./sprites/zombie/attack/Zombie_Axe_Up_Second-Attack-Sheet9.png");
-
-  if (mapData) {
-    const tilePaths = collectTilesetImagePaths(mapData, MAP_PATH);
-    const result = await preloadImages(tilePaths);
-    console.log("Tileset images loaded:", result.loaded, "failed:", result.failed);
-  }
-
-  ASSET_MANAGER.downloadAll(() => {
+  // Wait for character sprites, then start the engine.
+  ASSET_MANAGER.downloadAll(async () => {
     console.log("Game starting");
 
     const canvas = document.getElementById("gameWorld");
@@ -136,93 +174,12 @@ async function loadGame() {
     gameEngine.init(ctx);
     canvas.focus();
 
-    setupSettingsUI(gameEngine);
-    unlockAudioOnMoveKeys();
+    await setupWorld(MAP_PATH, START_SPAWN);
 
-    // ---- Pause UI setup ----
-const wrap = document.getElementById("gameWrap");
-const overlay = document.getElementById("pauseOverlay");
-const btnPause = document.getElementById("btnPause");
-const btnRestart = document.getElementById("btnRestart");
-const btnResume = document.getElementById("btnResume");
-const btnRestart2 = document.getElementById("btnRestart2");
-
-function syncPauseUI() {
-  const paused = gameEngine.isPaused;
-  overlay.classList.toggle("hidden", !paused);
-  wrap.classList.toggle("paused", paused);
-  btnPause.textContent = paused ? "Resume" : "Pause";
-}
-
-btnPause.addEventListener("click", () => {
-  gameEngine.isPaused = !gameEngine.isPaused;
-  syncPauseUI();
-});
-
-btnResume.addEventListener("click", () => {
-  gameEngine.isPaused = false;
-  syncPauseUI();
-});
-
-function restartGame() {
-  window.location.reload();
-}
-
-btnRestart.addEventListener("click", restartGame);
-btnRestart2.addEventListener("click", restartGame);
-
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    gameEngine.isPaused = !gameEngine.isPaused;
-    syncPauseUI();
-  }
-});
-gameEngine.isPaused = false;
-overlay.classList.add("hidden");
-wrap.classList.remove("paused");
-syncPauseUI();
-syncPauseUI();
-
-    // ---- Start game only once
-    let started = false;
-    const startGame = () => {
-    if (started) return;
-    started = true;
-
-    if (!AUDIO.unlocked) AUDIO.unlock();
-    AUDIO.playBGM("./audio/bgm.mp3");
-
-    let player;
-
-    if (mapData) {
-      const spawn = getSpawnPosition(mapData, MAP_SCALE, START_SPAWN);
-      player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
-      const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
-
-      gameEngine.cameraTarget = player;
-      gameEngine.addEntity(player);
-
-      gameEngine.addEntity(new HUD(gameEngine, player));
-
-      mapManager.setMap(mapData, MAP_PATH, START_SPAWN);
-      gameEngine.addEntity(mapManager);
-
-      // ADD THIS
-      gameEngine.addEntity(new HUD(gameEngine, player));
-
-    } else {
-      player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
-      gameEngine.cameraTarget = player;
-      gameEngine.addEntity(player);
-
-      // ADD THIS
-      gameEngine.addEntity(new HUD(gameEngine, player));
-    }
-  };
-
-    // Title screen shows first
-    const title = new TitleScreen(gameEngine, startGame);
-    gameEngine.addEntity(title);
+    // Restart resets player/map/zombies and clears temporary state.
+    gameEngine.restart = async () => {
+      await setupWorld(MAP_PATH, START_SPAWN);
+    };
 
     gameEngine.start();
     console.log("main.js loaded");
