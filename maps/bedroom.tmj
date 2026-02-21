@@ -3,6 +3,29 @@
  "infinite":false,
  "layers":[
         {
+         "draworder":"topdown",
+         "id":5,
+         "name":"Items",
+         "objects":[
+                {
+                 "height":0,
+                 "id":11,
+                 "name":"Knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":17.1598808341609,
+                 "y":84.2105263157895
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
          "data":[360, 361, 362, 111, 363, 364, 120, 120, 120, 367,
             385, 386, 387, 111, 388, 389, 390, 120, 115, 392,
             410, 411, 412, 116, 413, 414, 415, 464, 416, 417,

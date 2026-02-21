@@ -29,6 +29,7 @@ class GameEngine {
         this.zombiesEnabled = false;
         this.zombieSpritePath = "./sprites/zombie/zombie.png";
         this.onMapChanged = null;
+        this.collectedItems = new Set();
         this.uiMargin = 14;
         this.uiButtonWidth = 110;
         this.uiButtonHeight = 28;
@@ -149,6 +150,7 @@ class GameEngine {
         }
 
         this.drawHealthBar();
+        this.drawInventoryBag();
         this.drawPauseOverlay();
         this.drawTopRightControls();
     };
@@ -326,6 +328,56 @@ class GameEngine {
             this.ctx.fillText("Press P or ESC to Resume", this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 + 16);
         }
         this.ctx.fillText("Press R to Restart", this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 + 40);
+        this.ctx.restore();
+    };
+
+    drawInventoryBag() {
+        const player = this.cameraTarget;
+        if (!player || !this.ctx) return;
+
+        const panelWidth = 150;
+        const panelHeight = 74;
+        const x = this.ctx.canvas.width - panelWidth - 12;
+        const y = this.ctx.canvas.height - panelHeight - 12;
+
+        this.ctx.save();
+        this.ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+        this.ctx.fillRect(x, y, panelWidth, panelHeight);
+        this.ctx.strokeStyle = "#ffffff";
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeRect(x, y, panelWidth, panelHeight);
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.font = "12px monospace";
+        this.ctx.fillText("Bag", x + 8, y + 16);
+
+        const batPath = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Bat.png";
+        const hasBat = !!(player.hasItem && player.hasItem("bat"));
+        const iconX = x + 8;
+        const iconY = y + 24;
+        const iconSize = 24;
+        const batSprite = ASSET_MANAGER.getAsset(batPath);
+        const batReady = !!(batSprite && batSprite.complete && batSprite.naturalWidth > 0);
+
+        if (hasBat && batReady) {
+            this.ctx.drawImage(batSprite, iconX, iconY, iconSize, iconSize);
+        } else {
+            this.ctx.fillStyle = hasBat ? "#ddb85b" : "rgba(255,255,255,0.2)";
+            this.ctx.fillRect(iconX, iconY, iconSize, iconSize);
+            this.ctx.strokeStyle = "#ffffff";
+            this.ctx.strokeRect(iconX, iconY, iconSize, iconSize);
+        }
+
+        if (this.debug) {
+            const inventoryKeys = Object.keys((player.inventory || {})).filter((k) => player.inventory[k]);
+            const inventoryText = inventoryKeys.length ? inventoryKeys.join(",") : "empty";
+            this.ctx.fillStyle = "#ffffff";
+            this.ctx.fillText(`Inv: ${inventoryText}`, x + 38, y + 38);
+            this.ctx.fillText(`Eq: ${player.equippedWeapon || "none"}`, x + 38, y + 54);
+        } else {
+            this.ctx.fillStyle = "#ffffff";
+            this.ctx.fillText(hasBat ? "Bat" : "(empty)", x + 38, y + 41);
+        }
+
         this.ctx.restore();
     };
 

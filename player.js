@@ -55,9 +55,18 @@ class Player {
     this.punchActiveWindowStart = 0.08;
     this.punchActiveWindowEnd = 0.24;
     this.punchHitIds = new Set();
+    this.inventory = {};
+    this.equippedWeapon = null;
+    this.weaponStats = {
+      punch: { damage: this.punchDamage, range: this.punchRange },
+      knife: { damage: 24, range: 76 },
+      bat: { damage: 32, range: 92 }
+    };
 
     // Used to detect "press once" for Space
     this.prevSpaceDown = false;
+    this.prevEDown = false;
+    this.interactPressed = false;
   }
 
   update() {
@@ -71,6 +80,9 @@ class Player {
     const spaceDown = !!keys[" "];
     const spacePressed = spaceDown && !this.prevSpaceDown;
     this.prevSpaceDown = spaceDown;
+    const eDown = !!keys["e"];
+    this.interactPressed = eDown && !this.prevEDown;
+    this.prevEDown = eDown;
 
     if (spacePressed && !this.punching && this.punchCooldownTimer <= 0) {
       this.punching = true;
@@ -177,14 +189,16 @@ class Player {
     );
     for (const zombie of zombies) {
       if (this.punchHitIds.has(zombie.id)) continue;
-      if (!this.isZombieInPunchRange(zombie)) continue;
-      const applied = zombie.takeDamage(this.punchDamage, this);
+      const attack = this.getAttackProfile();
+      if (!this.isZombieInAttackRange(zombie, attack.range)) continue;
+      const applied = zombie.takeDamage(attack.damage, this);
       if (applied) {
         this.punchHitIds.add(zombie.id);
         if (this.game.debug) {
           const dx = (zombie.x + zombie.width / 2) - (this.x + this.width / 2);
           const dy = (zombie.y + zombie.height / 2) - (this.y + this.height / 2);
           console.log("[PUNCH] player hit zombie", {
+            attackType: attack.id,
             zombieId: zombie.id,
             distance: Number(Math.hypot(dx, dy).toFixed(2)),
             zombieHealth: zombie.health
@@ -194,7 +208,14 @@ class Player {
     }
   }
 
-  isZombieInPunchRange(zombie) {
+  getAttackProfile() {
+    if (this.equippedWeapon && this.weaponStats[this.equippedWeapon]) {
+      return { id: this.equippedWeapon, ...this.weaponStats[this.equippedWeapon] };
+    }
+    return { id: "punch", ...this.weaponStats.punch };
+  }
+
+  isZombieInAttackRange(zombie, attackRange) {
     const playerCenterX = this.x + this.width / 2;
     const playerCenterY = this.y + this.height / 2;
     const zombieCenterX = zombie.x + zombie.width / 2;
@@ -202,13 +223,30 @@ class Player {
     const dx = zombieCenterX - playerCenterX;
     const dy = zombieCenterY - playerCenterY;
     const dist = Math.hypot(dx, dy);
-    if (dist > this.punchRange) return false;
+    if (dist > attackRange) return false;
 
     // Keep temporary combat modular: this directional check can be swapped later for weapon arcs.
     if (this.direction === "right") return dx >= -6;
     if (this.direction === "left") return dx <= 6;
     if (this.direction === "up") return dy <= 6;
     return dy >= -6;
+  }
+
+  addItem(itemId) {
+    if (!itemId) return;
+    this.inventory[itemId] = true;
+    if (!this.equippedWeapon && this.weaponStats[itemId]) {
+      this.equippedWeapon = itemId;
+    }
+  }
+
+  hasItem(itemId) {
+    return !!this.inventory[itemId];
+  }
+
+  removeItem(itemId) {
+    delete this.inventory[itemId];
+    if (this.equippedWeapon === itemId) this.equippedWeapon = null;
   }
 
   takeDamage(amount, attacker, distanceFromAttacker) {
