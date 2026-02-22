@@ -23,9 +23,6 @@ class GameEngine {
 
         // Active dialog bubble shown above the player.
         this.activeDialog = null;
-<<<<<<< Updated upstream
-    };
-=======
 
         this.paused = false;
         this.gameOver = false;
@@ -44,7 +41,6 @@ class GameEngine {
         // Prevents the "need to click twice" issue after restarting / UI clicks.
         this.ignoreClicksUntil = 0;
     }
->>>>>>> Stashed changes
 
     init(ctx) {
         this.ctx = ctx;
@@ -137,9 +133,6 @@ class GameEngine {
         });
 
         window.addEventListener("keydown", (event) => {
-<<<<<<< Updated upstream
-        this.keys[event.key.toLowerCase()] = true;
-=======
             const key = event.key.toLowerCase();
 
             // Pause/Resume (disabled when won/over)
@@ -158,7 +151,6 @@ class GameEngine {
             if (this.paused || this.gameOver || this.gameWon) return;
 
             this.keys[key] = true;
->>>>>>> Stashed changes
         });
 
         window.addEventListener("keyup", (event) => {
@@ -251,39 +243,6 @@ class GameEngine {
             const targetX = target ? target.x.toFixed(1) : "n/a";
             const targetY = target ? target.y.toFixed(1) : "n/a";
             this.ctx.fillText(`Player: ${targetX}, ${targetY}`, 16, 28);
-<<<<<<< Updated upstream
-            this.ctx.fillText(`Camera: ${this.camera.x.toFixed(1)}, ${this.camera.y.toFixed(1)}`, 16, 44);
-            this.ctx.fillText(`World: ${this.worldWidth} x ${this.worldHeight}`, 16, 60);
-            this.ctx.restore();
-        }
-    };
-
-    update() {
-        let entitiesCount = this.entities.length;
-
-        for (let i = 0; i < entitiesCount; i++) {
-            let entity = this.entities[i];
-
-            if (!entity.removeFromWorld) {
-                entity.update();
-            }
-        }
-
-        for (let i = this.entities.length - 1; i >= 0; --i) {
-            if (this.entities[i].removeFromWorld) {
-                this.entities.splice(i, 1);
-            }
-        }
-    };
-
-    loop() {
-        this.clockTick = this.timer.tick();
-        this.update();
-        this.updateCamera();
-        this.draw();
-    };
-
-=======
 
             this.ctx.fillText(
                 `Camera: ${Math.round(this.camera.x)}, ${Math.round(this.camera.y)}`, 16, 44
@@ -447,7 +406,6 @@ class GameEngine {
         this.ctx.restore();
     }
 
->>>>>>> Stashed changes
     updateCamera() {
         // Center the camera on the target, then clamp to map bounds.
         if (!this.cameraTarget) return;
