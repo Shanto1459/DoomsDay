@@ -32,6 +32,7 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side-left_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side_punch-Sheet4.png");
 
+<<<<<<< Updated upstream
   if (mapData) {
     const tilePaths = collectTilesetImagePaths(mapData, MAP_PATH);
     const result = await preloadImages(tilePaths);
@@ -41,13 +42,25 @@ async function loadGame() {
   // Wait for character sprites, then start the engine.
   ASSET_MANAGER.downloadAll(() => {
     console.log("Game starting");
+=======
+  // Queue all zombie variants
+queueZombieSkins(ASSET_MANAGER);
 
-    const canvas = document.getElementById("gameWorld");
-    const ctx = canvas.getContext("2d");
+console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
 
-    gameEngine.init(ctx);
-    canvas.focus();
+  // Wait for character sprites, then start the engine.
+ASSET_MANAGER.downloadAll(async () => {
+console.log("Game starting");
+>>>>>>> Stashed changes
 
+const canvas = document.getElementById("gameWorld");
+const ctx = canvas.getContext("2d");
+
+gameEngine.init(ctx);
+canvas.focus();
+await setupWorld(MAP_PATH, START_SPAWN);
+
+<<<<<<< Updated upstream
     if (mapData) {
       // Spawn player from the map and initialize map manager.
       const spawn = getSpawnPosition(mapData, MAP_SCALE, START_SPAWN);
@@ -68,6 +81,16 @@ async function loadGame() {
     gameEngine.start();
     console.log("main.js loaded");
   });
+=======
+// Restart resets player/map/zombies and clears temporary state.
+gameEngine.restart = async () => {
+await setupWorld(MAP_PATH, START_SPAWN);
+};
+
+gameEngine.start();
+console.log("main.js loaded");
+});
+>>>>>>> Stashed changes
 }
 
 loadGame().catch((error) => {
