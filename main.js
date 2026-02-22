@@ -46,13 +46,24 @@ const ctx = canvas.getContext("2d");
 
 gameEngine.init(ctx);
 canvas.focus();
-await setupWorld(MAP_PATH, START_SPAWN);
+// Set world size (fallback if map didn't load)
+gameEngine.worldWidth =
+  (mapData && mapData.width ? mapData.width * mapData.tilewidth : 800) * MAP_SCALE;
+gameEngine.worldHeight =
+  (mapData && mapData.height ? mapData.height * mapData.tileheight : 600) * MAP_SCALE;
 
-// Restart resets player/map/zombies and clears temporary state.
-gameEngine.restart = async () => {
-await setupWorld(MAP_PATH, START_SPAWN);
-};
+// Create player (simple default spawn)
+const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
+gameEngine.cameraTarget = player;
+gameEngine.addEntity(player);
 
+// Spawn zombies from Tiled markers if map loaded
+if (mapData) {
+  spawnZombiesFromMap(gameEngine, mapData, MAP_SCALE);
+}
+
+// Simple restart (reload page)
+gameEngine.restart = async () => location.reload();
 gameEngine.start();
 console.log("main.js loaded");
 });
