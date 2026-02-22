@@ -34,6 +34,8 @@ function resolveMapAssetPath(mapPath, assetPath) {
  
   if (/^(?:https?:)?\/\//.test(assetPath)) return assetPath;
   if (assetPath.startsWith("/")) return assetPath;
+
+  
   
   const slashIndex = mapPath.lastIndexOf("/");
   const mapDir = slashIndex === -1 ? "" : mapPath.slice(0, slashIndex + 1);
@@ -331,8 +333,6 @@ draw(ctx) {
   const endRow = Math.min(this.mapData.height - 1, Math.floor(viewBottom / tileH) + bufferTiles);
 
 
-  console.log("Tiles range:", startRow, endRow, startCol, endCol);
-
   for (const layer of this.mapData.layers) {
     if (layer.type !== "tilelayer" || !layer.visible) continue;
     if (!Array.isArray(layer.data)) continue;
@@ -352,6 +352,7 @@ draw(ctx) {
 
         const tileIndex = gid - tileset.firstgid;
 
+        
         const destX = col * tileW;
         const destY = row * tileH;
 
@@ -405,40 +406,37 @@ draw(ctx) {
 
         // --- Per-tile images (image collection tileset)
         } else if (tileset.tileImageMap && tileset.tileImageMap[tileIndex]) {
-          const tileImage = tileset.tileImageMap[tileIndex];
-          const image = ASSET_MANAGER.getAsset(tileImage.imagePath);
-          if (!image) {
-            if (!this.missingImages.has(tileImage.imagePath)) {
-              console.warn("Missing tile image:", tileImage.imagePath);
-              this.missingImages.add(tileImage.imagePath);
-            }
-  
-            ctx.drawImage(
-              image,
-              destX,
-              destY,
-              tileImage.width * this.scale,
-              tileImage.height * this.scale
-            );
+        const tileImage = tileset.tileImageMap[tileIndex];
+        const image = ASSET_MANAGER.getAsset(tileImage.imagePath);
+
+        if (!image) {
+          if (!this.missingImages.has(tileImage.imagePath)) {
+            console.warn("Missing tile image:", tileImage.imagePath);
+            this.missingImages.add(tileImage.imagePath);
           }
-
-          const dw = tileImage.width * this.scale;
-          const dh = tileImage.height * this.scale;
-
-          ctx.save();
-          ctx.translate(destX + dw / 2, destY + dh / 2);
-
-          if (flipD) {
-            ctx.rotate(Math.PI / 2);
-            ctx.scale(-1, 1);
-          }
-          if (flipH) ctx.scale(-1, 1);
-          if (flipV) ctx.scale(1, -1);
-
-          ctx.drawImage(image, -dw / 2, -dh / 2, dw, dh);
-          ctx.restore();
-
+          continue;
         }
+
+        const dw = tileImage.width * this.scale;
+        const dh = tileImage.height * this.scale;
+
+        // IMPORTANT: anchor the bottom of the image to the bottom of the tile cell
+        const drawY = destY - (dh - tileH);
+
+        ctx.save();
+        ctx.translate(destX + dw / 2, drawY + dh / 2);
+
+        if (flipD) {
+          ctx.rotate(Math.PI / 2);
+          ctx.scale(-1, 1);
+        }
+        if (flipH) ctx.scale(-1, 1);
+        if (flipV) ctx.scale(1, -1);
+
+        ctx.drawImage(image, -dw / 2, -dh / 2, dw, dh);
+        ctx.restore();
+      }
+
       }
     }
   }
@@ -525,6 +523,7 @@ class MapManager {
 
     this.mapData = mapData;
     this.mapPath = mapPath;
+    this.lastSpawnName = spawnName || "PlayerSpawn";
     this.renderer = new TiledMapRenderer(this.game, mapData, mapPath, this.mapScale);
     this.collisionGrid = new CollisionGrid(mapData, this.mapScale, "Collision");
     this.portals = getPortalObjects(mapData);
@@ -533,47 +532,25 @@ class MapManager {
     this.activeDialog = null;
     this.game.activeDialog = null;
 
-    // --- Dialogue triggers from Tiled ---
-    this.dialogueTriggers = [];
-    this.dialogueUsedGroups = new Set();
-
-    for (const layer of mapData.layers) {
-    if (layer.type !== "objectgroup") continue;
-
-    for (const obj of layer.objects || []) {
-    const marker =
-    getObjectProperty(obj, "type") ||
-    obj.class ||
-    obj.type ||
-    obj.name;
-
-    const isDialogue = marker === "dialogue";
-
-  if (isDialogue) {
-    console.log("FOUND DIALOGUE OBJECT:", obj);
-  }
-
-
-
-
-    if (isDialogue) {
-      this.dialogueTriggers.push({
-      group: getObjectProperty(obj, "group") || obj.name || `obj-${obj.id}`,
-      text: getObjectProperty(obj, "text") || "(missing text property)",
-      once: getObjectProperty(obj, "once") ?? true,
-        rect: {
-          x: obj.x * this.mapScale,
-          y: obj.y * this.mapScale,
-          width: (obj.width || mapData.tilewidth) * this.mapScale,
-          height: (obj.height || mapData.tileheight) * this.mapScale
-        }
-      });
-    console.log("FINAL dialogue triggers:", this.dialogueTriggers);
-
+  
+  // --- Zombies ---
+    if (this.spawnedZombies) {
+      for (const z of this.spawnedZombies) z.removeFromWorld = true;
     }
-  }
-}
+    this.spawnedZombies = [];
 
+    // ONLY spawn zombies on Mainforest
+    if (String(mapPath).toLowerCase().includes("mainforest")) {
+      this.spawnedZombies = spawnZombiesFromMap(this.game, mapData, this.mapScale);
+    }
+
+    console.log("ZOMBIES SPAWNED:", this.spawnedZombies.length, "on", mapPath);
+
+    const idx = this.game.entities.indexOf(this);
+    if (idx !== -1) {
+      this.game.entities.splice(idx, 1);
+      this.game.entities.push(this);
+    }
 
     const mapSize = getMapPixelSize(mapData, this.mapScale);
     this.game.worldWidth = mapSize.width;
@@ -583,6 +560,9 @@ class MapManager {
     const spawn = getSpawnPosition(mapData, this.mapScale, spawnName);
     this.player.x = spawn.x;
     this.player.y = spawn.y;
+    if (typeof this.game.onMapChanged === "function") {
+      this.game.onMapChanged(this.mapPath, this.mapData, this.player);
+    }
 
     console.log("Map loaded:", mapPath);
     console.log("Spawn:", spawnName || "PlayerSpawn", spawn);
@@ -690,12 +670,14 @@ class MapManager {
     if (trigger.once && this.dialogueUsedGroups.has(trigger.group)) continue;
 
     if (rectsOverlap(playerBounds, trigger.rect)) {
-      this.game.showDialogue(trigger.text);
-      if (trigger.once) {
-        this.dialogueUsedGroups.add(trigger.group);
-      }
-      break;
-    }
+    this.game.activeDialog = { text: trigger.text, timeLeftMs: 5000 };
+
+    if (trigger.once) {
+    this.dialogueUsedGroups.add(trigger.group);
+  }
+  break;
+}
+
   }
 }
 

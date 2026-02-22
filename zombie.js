@@ -286,5 +286,3 @@ Zombie.nextId = 1;
 // Default sprite (small zombie down walk sheet)
 Zombie.SPRITE_PATH =
   "./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Small/Zombie_Small_Down_walk-Sheet6.png";
-  
-

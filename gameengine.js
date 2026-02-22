@@ -16,6 +16,7 @@ class GameEngine {
             debugging: false,
             cameraDebug: false,
         };
+        this.debug = !!this.options.debugging;
 
         // Camera tracks a target entity in world space.
         this.camera = { x: 0, y: 0 };
@@ -60,7 +61,6 @@ class GameEngine {
         gameLoop();
     }
 
-    // ✅ WIN HANDLER
     winGame() {
         if (this.gameOver || this.gameWon) return;
         this.gameWon = true;
@@ -69,7 +69,6 @@ class GameEngine {
         this.showDialogue("ZOMBIES CLEARED!", 2500);
     }
 
-    // ✅ RESTART HANDLER (resets flags so restart actually works)
     doRestart() {
         // Block any leftover click for a short moment (prevents double-trigger / "click twice")
         this.ignoreClicksUntil = performance.now() + 150;
@@ -208,7 +207,6 @@ class GameEngine {
             }
         }
 
-        // ✅ WIN CONDITION: all zombies cleared (only when zombiesEnabled)
         const zombiesLeft = this.entities.filter(
             e => e && e.constructor && e.constructor.name === "Zombie"
         ).length;
@@ -240,8 +238,8 @@ class GameEngine {
             this.ctx.fillStyle = "#b9ff9e";
             this.ctx.font = "12px monospace";
             const target = this.cameraTarget;
-            const targetX = target ? target.x.toFixed(1) : "n/a";
-            const targetY = target ? target.y.toFixed(1) : "n/a";
+            const targetX = target ? Math.round(target.x) : "n/a";
+            const targetY = target ? Math.round(target.y) : "n/a";
             this.ctx.fillText(`Player: ${targetX}, ${targetY}`, 16, 28);
 
             this.ctx.fillText(
@@ -289,7 +287,6 @@ class GameEngine {
     handleTopRightUiClick() {
         if (!this.click || !this.ctx) return;
 
-        // ✅ ignore any leftover clicks briefly after restart
         if (performance.now() < this.ignoreClicksUntil) {
             this.click = null;
             return;

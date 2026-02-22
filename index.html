@@ -28,7 +28,7 @@
     }
 
     canvas {
-      margin-top: 45px;     /* 👈 THIS IS THE GAP YOU WANT */
+      margin-top: 45px;   
       background: #222;
       border: 2px solid #4caf50;
       image-rendering: pixelated;
@@ -49,15 +49,18 @@
 <script src="gameengine.js"></script>
 <script src="animator.js"></script>
 
-<script src="zombieSkins.js"></script>
+<script src="./zombieSkins.js"></script>
 <script src="zombie.js"></script>
-<script src="spawners.js"></script>
+<script src="spawners.js"></script>   <!-- move up -->
 
-<script src="tilemap.js"></script>
+<script src="tilemap.js"></script>    <!-- after spawners -->
 <script src="player.js"></script>
-<script src="titlescreen.js"></script>
 
-<script src="main.js"></script>
+<script src="titlescreen.js"></script>
+<script src="audio/audiomanager.js"></script>
+<script src="healthbar.js"></script>
+<script src="hud.js"></script>
+<script src="./main.js?v=7"></script>
 
 </body>
 </html>
