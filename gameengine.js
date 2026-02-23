@@ -29,7 +29,7 @@ class GameEngine {
         this.paused = false;
         this.gameOver = false;
         this.gameWon = false;
-
+        this.collectedItems = new Set();
         this.restart = null;
 
         this.zombiesEnabled = false;

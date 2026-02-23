@@ -8,6 +8,8 @@ const ASSET_MANAGER = new AssetManager();
 
 // Starting map + player config.
 const MAP_PATH = "./maps/bedroom.tmj";
+const BAT_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Bat.png";
+const KNIFE_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Knife.png";
 const MAP_SCALE = 4;
 const START_SPAWN = "PlayerSpawn";
 const PLAYER_SPEED = 140; // pixels per second
@@ -74,9 +76,7 @@ function spawnPickupsForMap(player, mapData, mapPath) {
     const x = isPoint ? rawX - width / 2 : rawX;
     const y = isPoint ? rawY - height / 2 : rawY;
 
-    const pickedAsBat = itemType === "knife";
-    const itemId = pickedAsBat ? "bat" : itemType;
-    //const itemId = itemType;
+   const itemId = itemType;
     const spritePath = getPickupSpritePath(itemId);
     const collectedKey = `${mapPathLower}:${itemId}`;
     if (gameEngine.collectedItems.has(collectedKey)) continue;
