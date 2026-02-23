@@ -345,6 +345,7 @@ class GameEngine {
         const ratio = player.maxHealth > 0 ? player.health / player.maxHealth : 0;
 
         this.ctx.save();
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.fillStyle = "rgba(0,0,0,0.6)";
         this.ctx.fillRect(x - 2, y - 2, width + 4, height + 4);
         this.ctx.fillStyle = "#7a1111";

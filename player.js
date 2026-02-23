@@ -182,23 +182,17 @@ class Player {
       //   else if (this.direction === "right") this.rightPunchAnim.reset();
       //   else this.downPunchAnim.reset();
       // }
-      if (this.equippedWeapon === "bat") {
-
-        let aAnim = this.batDownAttackAnim;
-        if (this.direction === "up") aAnim = this.batUpAttackAnim;
-        else if (this.direction === "left") aAnim = this.batLeftAttackAnim;
-        else if (this.direction === "right") aAnim = this.batRightAttackAnim;
-    
-        if (aAnim.isDone()) this.punching = false;
-    
+      // Reset the correct attack animation every time we start an attack.
+    if (this.equippedWeapon === "bat") {
+      if (this.direction === "up") this.batUpAttackAnim.reset();
+      else if (this.direction === "left") this.batLeftAttackAnim.reset();
+      else if (this.direction === "right") this.batRightAttackAnim.reset();
+      else this.batDownAttackAnim.reset();
     } else {
-    
-        let pAnim = this.downPunchAnim;
-        if (this.direction === "up") pAnim = this.upPunchAnim;
-        else if (this.direction === "left") pAnim = this.leftPunchAnim;
-        else if (this.direction === "right") pAnim = this.rightPunchAnim;
-    
-        if (pAnim.isDone()) this.punching = false;
+      if (this.direction === "up") this.upPunchAnim.reset();
+      else if (this.direction === "left") this.leftPunchAnim.reset();
+      else if (this.direction === "right") this.rightPunchAnim.reset();
+      else this.downPunchAnim.reset();
     }
     
     }
@@ -295,41 +289,36 @@ class Player {
   }
 
   applyPunchDamage() {
-    // For now, attacks only deal damage when the bat is equipped and swinging.
-    if (this.equippedWeapon !== "bat") return;
-    const zombies = (this.game.entities || []).filter(
-      (e) => e && e.constructor && e.constructor.name === "Zombie" && !e.removeFromWorld
-    );
-    for (const zombie of zombies) {
-      if (this.punchHitIds.has(zombie.id)) continue;
-      const attack = this.getAttackProfile();
-      if (!this.isZombieInAttackRange(zombie, attack.range)) continue;
-      const weapon = this.getEquippedWeaponDef();
-      const applied = weapon && typeof weapon.attack === "function"
+  // Allow ALL attack types (punch / bat / knife) to deal damage.
+  const zombies = (this.game.entities || []).filter(
+    (e) => e && e.constructor && e.constructor.name === "Zombie" && !e.removeFromWorld
+  );
+
+  const attack = this.getAttackProfile();          // { id, damage, range }
+  const weapon = this.getEquippedWeaponDef();      // may be null
+
+  for (const zombie of zombies) {
+    if (this.punchHitIds.has(zombie.id)) continue;
+    if (!this.isZombieInAttackRange(zombie, attack.range)) continue;
+
+    // If a weapon has a custom attack() use it, otherwise do normal damage.
+    const applied =
+      weapon && typeof weapon.attack === "function"
         ? weapon.attack(zombie)
         : zombie.takeDamage(attack.damage, this);
-      if (applied) {
-        this.punchHitIds.add(zombie.id);
-        if (this.game.debugWeapon) {
-          const dx = (zombie.x + zombie.width / 2) - (this.x + this.width / 2);
-          const dy = (zombie.y + zombie.height / 2) - (this.y + this.height / 2);
-          console.log("[PUNCH] player hit zombie", {
-            attackType: attack.id,
-            zombieId: zombie.id,
-            distance: Number(Math.hypot(dx, dy).toFixed(2)),
-            zombieHealth: zombie.health
-          });
-        }
-      }
+
+    if (applied) {
+      this.punchHitIds.add(zombie.id);
     }
   }
+}
 
   getAttackProfile() {
-    if (this.equippedWeapon && this.weaponStats[this.equippedWeapon]) {
-      return { id: this.equippedWeapon, ...this.weaponStats[this.equippedWeapon] };
-    }
-    return { id: "punch", ...this.weaponStats.punch };
+  if (this.equippedWeapon && this.weaponStats[this.equippedWeapon]) {
+    return { id: this.equippedWeapon, ...this.weaponStats[this.equippedWeapon] };
   }
+  return { id: "punch", ...this.weaponStats.punch };
+}
 
   getEquippedWeaponDef() {
     if (!this.equippedWeapon) return null;
@@ -524,8 +513,16 @@ drawBat(ctx, behindPlayer) {
   };
 
   let angle = dirProfile.restAngle;
-  const swingDuration = Math.max(0.001, this.downPunchAnim.totalTime || 0.4);
-  const attackProgress = Math.max(0, Math.min(1, this.punchTimer / swingDuration));
+let swingDuration = this.batSwingDuration;
+
+if (this.equippedWeapon === "bat") {
+  let attackAnim = this.batDownAttackAnim;
+  if (this.direction === "up") attackAnim = this.batUpAttackAnim;
+  else if (this.direction === "left") attackAnim = this.batLeftAttackAnim;
+  else if (this.direction === "right") attackAnim = this.batRightAttackAnim;
+
+  swingDuration = attackAnim.totalTime;
+}  const attackProgress = Math.max(0, Math.min(1, this.punchTimer / swingDuration));
   let swingFrameIndex = 0;
 
   // Idle/walk hold animation: slight hand sway while moving.

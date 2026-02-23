@@ -75,8 +75,9 @@ function spawnPickupsForMap(player, mapData, mapPath) {
     const isPoint = !!obj.point || (!obj.width && !obj.height);
     const x = isPoint ? rawX - width / 2 : rawX;
     const y = isPoint ? rawY - height / 2 : rawY;
-
-   const itemId = itemType;
+     const pickedAsBat = itemType === "knife";
+    const itemId = pickedAsBat ? "bat" : itemType;
+   //const itemId = itemType;
     const spritePath = getPickupSpritePath(itemId);
     const collectedKey = `${mapPathLower}:${itemId}`;
     if (gameEngine.collectedItems.has(collectedKey)) continue;
