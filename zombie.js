@@ -37,7 +37,15 @@ class Zombie {
     this.lastDirection = options.facing || "down";
 
     // Sprite + animation
-    this.spritePath = options.spritePath || Zombie.SPRITE_PATH;
+    this.variant = options.variant || "small";
+    this.skin = ZOMBIE_SKINS[this.variant];
+
+    this.state = "walk"; // walk | attack | idle
+    this.attackType = Math.random() < 0.5 ? "first" : "second";
+    this.deathType = Math.random() < 0.5 ? "death1" : "death2";
+    this.corpseTimer = 0;      // seconds remaining after death anim finishes
+    this.corpseDuration = 5;   // keep body for 5 seconds
+    this.frozenDeathFrame = 0; // last frame index to freeze on
 
     this.frameWidth = 12;   // will be recalculated
     this.frameHeight = 16;  // will be recalculated
@@ -47,37 +55,57 @@ class Zombie {
     this.loadAnimatorInfo();
   }
 
-  // Figure out frameCount + frameWidth/height based on spritePath.
+  getSpritePath() {
+  if (!this.skin) return Zombie.SPRITE_PATH;
+
+  // DEATH: only side sheets exist in your assets, so map up/down to left/right.
+  if (this.state === "death") {
+    const dir = (this.lastDirection === "left" || this.lastDirection === "right")
+      ? this.lastDirection
+      : "right";
+
+    // Some variants only have death1 (or only left has death2). Fallback safely.
+    const d = this.skin[dir];
+    return (d && d[this.deathType]) || (d && d.death1) || this.skin[dir].walk;
+  }
+
+  if (this.state === "attack") {
+    return this.skin[this.lastDirection][this.attackType];
+  }
+
+  return this.skin[this.lastDirection].walk;
+}
+
   loadAnimatorInfo() {
-    const sprite = ASSET_MANAGER.getAsset(this.spritePath);
-    if (!sprite) return;
+  const spritePath = this.getSpritePath();
+  const sprite = ASSET_MANAGER.getAsset(spritePath);
+  if (!sprite) return;
 
-    // Determine frame count from filename "...Sheet8.png"
-    let frames = 6;
-    const m = String(this.spritePath).match(/Sheet(\d+)\.png$/i);
-    if (m) frames = parseInt(m[1], 10) || 6;
+  let frames = 6;
+  const m = String(spritePath).match(/Sheet(\d+)\.png$/i);
+  if (m) frames = parseInt(m[1], 10) || 6;
 
-    this.frameCount = frames;
-    this.frameWidth = Math.floor(sprite.width / frames);
-    this.frameHeight = sprite.height;
-  }
+  this.frameCount = frames;
+  this.frameWidth = Math.floor(sprite.width / frames);
+  this.frameHeight = sprite.height;
+}
 
-  tryLazyLoadSprite() {
-    if (this.lazyLoadRequested) return;
-    this.lazyLoadRequested = true;
+tryLazyLoadSprite(spritePath) {
+  if (!spritePath) return;
+  if (this.lazyLoadRequested && this.lazyLoadRequested === spritePath) return;
+  this.lazyLoadRequested = spritePath;
 
-    const img = new Image();
-    img.addEventListener("load", () => {
-      ASSET_MANAGER.cache[this.spritePath] = img;
-      // After lazy-load, recalc frame sizes
-      this.loadAnimatorInfo();
-      if (this.game.debug) console.log("[ZOMBIE SPRITE LAZY LOAD OK]", this.spritePath);
-    });
-    img.addEventListener("error", () => {
-      console.warn("[ZOMBIE SPRITE LAZY LOAD FAILED]", this.spritePath);
-    });
-    img.src = this.spritePath;
-  }
+  const img = new Image();
+  img.addEventListener("load", () => {
+    ASSET_MANAGER.cache[spritePath] = img;
+    this.loadAnimatorInfo();
+    if (this.game.debug) console.log("[ZOMBIE SPRITE LAZY LOAD OK]", spritePath);
+  });
+  img.addEventListener("error", () => {
+    console.warn("[ZOMBIE SPRITE LAZY LOAD FAILED]", spritePath);
+  });
+  img.src = spritePath;
+}
 
   takeDamage(amount, source) {
     if (this.removeFromWorld) return false;
@@ -85,35 +113,76 @@ class Zombie {
     this.health = Math.max(0, this.health - dmg);
     if (this.health < this.maxHealth) this.showHealthBar = true;
 
-    if (this.health <= 0) {
-      this.removeFromWorld = true;
-    }
+   if (this.health <= 0) {
+    // Start death animation once
+    this.health = 0;
+    this.state = "death";
+    this.animElapsed = 0;
+    this.attackTimer = 9999; // stop attacking
+  }
     return true;
   }
 
   update() {
+
+  
     if (!this.player || this.player.isDead) return;
     if (this.game.paused || this.game.gameOver) return;
     if (this.removeFromWorld) return;
 
+    if (this.state === "death") {
+  const dt = this.game.clockTick;
+
+  // Once death animation is finished, count down corpse timer
+  if (this.deathFinished) {
+    this.corpseTimer = Math.max(0, this.corpseTimer - dt);
+    if (this.corpseTimer <= 0) this.removeFromWorld = true;
+  }
+
+  return;
+}
+
+
     const dt = this.game.clockTick;
+
     this.attackTimer = Math.max(0, this.attackTimer - dt);
 
     const dx = this.player.x - this.x;
     const dy = this.player.y - this.y;
     const dist = Math.hypot(dx, dy);
 
-    if (dist > this.chaseRadius) return;
+    if (this.state === "attack") {
+    } else {
+    }
+        if (dist > this.chaseRadius) return;
 
     // Update direction for future (if you later swap sprites by direction)
     if (Math.abs(dx) >= Math.abs(dy)) this.lastDirection = dx >= 0 ? "right" : "left";
     else this.lastDirection = dy >= 0 ? "down" : "up";
+    // If currently attacking, let animation finish
+    if (this.state === "attack") {
+      const attackDuration = this.frameCount * 0.10; // matches draw frameDuration
+      if (this.animElapsed >= attackDuration) {
+        this.state = "walk";
+        this.animElapsed = 0;
+      }
+    } 
+    // Start a new attack only if cooldown ready
+    else if (dist <= this.attackRange && this.attackTimer <= 0) {
+      this.state = "attack";
+      this.animElapsed = 0;
+    }
+    else {
+      this.state = "walk";
+    }
 
-    if (dist > this.attackRange) {
-      const len = dist || 1;
-      this.x += (dx / len) * this.speed * dt;
-      this.y += (dy / len) * this.speed * dt;
-    } else if (this.attackTimer <= 0) {
+    if (this.state === "walk" && dist > this.attackRange) {
+    const len = dist || 1;
+    this.x += (dx / len) * this.speed * dt;
+    this.y += (dy / len) * this.speed * dt;
+    }
+    
+    else if (this.attackTimer <= 0) {
       if (this.player && typeof this.player.takeDamage === "function") {
         this.player.takeDamage(this.damage, this, dist);
       }
@@ -121,56 +190,78 @@ class Zombie {
     }
   }
 
-  draw(ctx) {
-    const sprite = ASSET_MANAGER.getAsset(this.spritePath);
-    const spriteReady = !!(sprite && sprite.complete && sprite.naturalWidth > 0);
+draw(ctx) {
+  const spritePath = this.getSpritePath();
 
-    if (spriteReady) {
-      // If sprite exists but we never computed frame sizes (e.g., loaded later)
-      if (!this.frameWidth || !this.frameHeight) this.loadAnimatorInfo();
+  // If the animation switched sheets (walk -> attack -> walk), recalc frames
+  if (this.currentSpritePath !== spritePath) {
+    this.currentSpritePath = spritePath;
+    this.loadAnimatorInfo();
+    this.animElapsed = 0; // optional: restart animation on switch
+  }
 
-      this.animElapsed += this.game.clockTick;
+  const sprite = ASSET_MANAGER.getAsset(spritePath);
+  const spriteReady = !!(sprite && sprite.complete && sprite.naturalWidth > 0);
 
-      const frameDuration = 0.10;
-      const frameCount = this.frameCount || 6;
-      const frame = Math.floor(this.animElapsed / frameDuration) % frameCount;
+  if (spriteReady) {
+    if (!this.frameWidth || !this.frameHeight) this.loadAnimatorInfo();
 
-      const sx = frame * this.frameWidth;
+    this.animElapsed += this.game.clockTick;
 
-      ctx.drawImage(
-        sprite,
-        sx, 0,
-        this.frameWidth, this.frameHeight,
-        this.x, this.y,
-        this.width, this.height
-      );
+    const frameDuration = 0.10;
+    const frameCount = this.frameCount || 6;
+    let frame = Math.floor(this.animElapsed / frameDuration);
 
-      this.drawHealthBar(ctx);
-      return;
+    if (this.state === "death") {
+      // If we've reached the end of the death animation, freeze on last frame
+      if (frame >= frameCount) {
+        frame = frameCount - 1;
+
+        if (!this.deathFinished) {
+          this.deathFinished = true;
+          this.corpseTimer = this.corpseDuration; // start 5s countdown
+          this.frozenDeathFrame = frame;
+        }
+      }
+    } else {
+      frame = frame % frameCount;
     }
+    const sx = frame * this.frameWidth;
 
-    // Sprite missing: don’t crash, show fallback so zombie is never invisible
-    if (!this.warnedMissingSprite) {
-      console.warn("Zombie sprite missing, using fallback rectangle:", this.spritePath);
-      this.warnedMissingSprite = true;
-    }
-
-    this.tryLazyLoadSprite();
-
-    ctx.save();
-    ctx.fillStyle = "#5d8f3e";
-    ctx.strokeStyle = "#1e3811";
-    ctx.lineWidth = 2;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
-    ctx.restore();
+    ctx.drawImage(
+      sprite,
+      sx, 0,
+      this.frameWidth, this.frameHeight,
+      this.x, this.y,
+      this.width, this.height
+    );
 
     this.drawHealthBar(ctx);
+    return;
   }
+
+  if (!this.warnedMissingSprite) {
+    console.warn("Zombie sprite missing, using fallback rectangle:", spritePath);
+    this.warnedMissingSprite = true;
+  }
+
+  // Don't try to lazy load undefined anymore—lazy load the actual spritePath
+  this.tryLazyLoadSprite(spritePath);
+
+  ctx.save();
+  ctx.fillStyle = "#5d8f3e";
+  ctx.strokeStyle = "#1e3811";
+  ctx.lineWidth = 2;
+  ctx.fillRect(this.x, this.y, this.width, this.height);
+  ctx.strokeRect(this.x, this.y, this.width, this.height);
+  ctx.restore();
+
+  this.drawHealthBar(ctx);
+}
 
   drawHealthBar(ctx) {
     if (!this.showHealthBar || this.removeFromWorld) return;
-
+    if (this.state === "death") return;
     const width = 30;
     const height = 4;
     const x = this.x + (this.width - width) / 2;
@@ -195,5 +286,3 @@ Zombie.nextId = 1;
 // Default sprite (small zombie down walk sheet)
 Zombie.SPRITE_PATH =
   "./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Small/Zombie_Small_Down_walk-Sheet6.png";
-  
-

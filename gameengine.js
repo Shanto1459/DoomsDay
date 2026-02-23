@@ -1,15 +1,15 @@
-
 // Main game loop + input + camera manager.
 class GameEngine {
     constructor(options) {
-        
         this.ctx = null;
 
         this.entities = [];
+        this.levelHadZombies = false;
 
         this.click = null;
         this.mouse = null;
         this.wheel = null;
+        this.rightclick = null;
         this.keys = {};
 
         this.options = options || {
@@ -22,19 +22,27 @@ class GameEngine {
         // Camera tracks a target entity in world space.
         this.camera = { x: 0, y: 0 };
         this.cameraTarget = null;
+
         // Active dialog bubble shown above the player.
         this.activeDialog = null;
+
         this.paused = false;
         this.gameOver = false;
+        this.gameWon = false;
+        this.collectedItems = new Set();
         this.restart = null;
+
         this.zombiesEnabled = false;
         this.zombieSpritePath = "./sprites/zombie/zombie.png";
         this.onMapChanged = null;
-        this.collectedItems = new Set();
+
         this.uiMargin = 14;
         this.uiButtonWidth = 110;
         this.uiButtonHeight = 28;
-    };
+
+        // Prevents the "need to click twice" issue after restarting / UI clicks.
+        this.ignoreClicksUntil = 0;
+    }
 
     init(ctx) {
         this.ctx = ctx;
@@ -43,7 +51,7 @@ class GameEngine {
         this.worldHeight = this.ctx.canvas.height;
         this.startInput();
         this.timer = new Timer();
-    };
+    }
 
     start() {
         this.running = true;
@@ -52,14 +60,48 @@ class GameEngine {
             requestAnimFrame(gameLoop, this.ctx.canvas);
         };
         gameLoop();
-    };
+    }
+
+    winGame() {
+        if (this.gameOver || this.gameWon) return;
+        this.gameWon = true;
+        this.paused = false;
+        this.keys = {};
+        this.showDialogue("ZOMBIES CLEARED!", 2500);
+    }
+
+    doRestart() {
+        // Block any leftover click for a short moment (prevents double-trigger / "click twice")
+        this.ignoreClicksUntil = performance.now() + 150;
+
+        // Clear any existing click right away
+        this.click = null;
+        this.rightclick = null;
+        this.wheel = null;
+
+        // Reset engine state
+        this.paused = false;
+        this.gameOver = false;
+        this.gameWon = false;
+
+        this.activeDialog = null;
+        this.keys = {};
+
+        // Optional: reset camera (safe)
+        this.camera.x = 0;
+        this.camera.y = 0;
+
+        if (this.restart) this.restart();
+        this.levelHadZombies = false;
+
+    }
 
     startInput() {
         const getXandY = e => ({
             x: e.clientX - this.ctx.canvas.getBoundingClientRect().left,
             y: e.clientY - this.ctx.canvas.getBoundingClientRect().top
         });
-        
+
         this.ctx.canvas.addEventListener("mousemove", e => {
             if (this.options.debugging) {
                 console.log("MOUSE_MOVE", getXandY(e));
@@ -78,7 +120,7 @@ class GameEngine {
             if (this.options.debugging) {
                 console.log("WHEEL", getXandY(e), e.wheelDelta);
             }
-            e.preventDefault(); 
+            e.preventDefault();
             this.wheel = e;
         });
 
@@ -86,36 +128,94 @@ class GameEngine {
             if (this.options.debugging) {
                 console.log("RIGHT_CLICK", getXandY(e));
             }
-            e.preventDefault(); 
+            e.preventDefault();
             this.rightclick = getXandY(e);
         });
 
         window.addEventListener("keydown", (event) => {
             const key = event.key.toLowerCase();
 
-            if (key === "p" || key === "escape") {
+            // Pause/Resume (disabled when won/over)
+            if ((key === "p" || key === "escape") && !this.gameOver && !this.gameWon) {
                 this.togglePause();
                 return;
             }
 
-            if ((this.paused || this.gameOver) && key === "r") {
-                if (this.restart) this.restart();
+            // Restart from pause/gameover/win
+            if ((this.paused || this.gameOver || this.gameWon) && key === "r") {
+                this.doRestart();
                 return;
             }
 
-            if (this.paused || this.gameOver) return;
+            // Freeze input when paused/ended
+            if (this.paused || this.gameOver || this.gameWon) return;
+
             this.keys[key] = true;
         });
 
         window.addEventListener("keyup", (event) => {
-        this.keys[event.key.toLowerCase()] = false;
-    });
-
-    };
+            this.keys[event.key.toLowerCase()] = false;
+        });
+    }
 
     addEntity(entity) {
         this.entities.push(entity);
-    };
+
+        if (entity && entity.constructor && entity.constructor.name === "Zombie") {
+            this.levelHadZombies = true;
+        }
+    }
+
+
+    loop() {
+        const delta = this.timer.tick();
+        this.clockTick = (this.paused || this.gameOver || this.gameWon) ? 0 : delta;
+
+        this.update();
+
+        if (!this.paused && !this.gameOver && !this.gameWon) {
+            this.updateCamera();
+        }
+
+        this.draw();
+    }
+
+    update() {
+        this.handleTopRightUiClick();
+        if (this.paused || this.gameOver || this.gameWon) return;
+
+        // Dialog timer
+        if (this.activeDialog && this.activeDialog.timeLeftMs > 0) {
+            this.activeDialog.timeLeftMs -= this.clockTick * 1000;
+            if (this.activeDialog.timeLeftMs <= 0) {
+                this.activeDialog = null;
+            }
+        }
+
+        // Update entities
+        const entitiesCount = this.entities.length;
+        for (let i = 0; i < entitiesCount; i++) {
+            const entity = this.entities[i];
+            if (!entity.removeFromWorld) {
+                entity.update();
+            }
+        }
+
+        // Remove entities
+        for (let i = this.entities.length - 1; i >= 0; --i) {
+            if (this.entities[i].removeFromWorld) {
+                this.entities.splice(i, 1);
+            }
+        }
+
+        const zombiesLeft = this.entities.filter(
+            e => e && e.constructor && e.constructor.name === "Zombie"
+        ).length;
+
+        if (this.zombiesEnabled && this.levelHadZombies && zombiesLeft === 0) {
+        this.winGame();
+        }
+    }
 
     draw() {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
@@ -125,6 +225,7 @@ class GameEngine {
         const camX = Math.round(this.camera.x);
         const camY = Math.round(this.camera.y);
         this.ctx.translate(-camX, -camY);
+
         for (let i = this.entities.length - 1; i >= 0; i--) {
             this.entities[i].draw(this.ctx, this);
         }
@@ -143,108 +244,73 @@ class GameEngine {
             this.ctx.fillText(`Player: ${targetX}, ${targetY}`, 16, 28);
 
             this.ctx.fillText(
-            `Camera: ${Math.round(this.camera.x)}, ${Math.round(this.camera.y)}`, 16, 44
-);
+                `Camera: ${Math.round(this.camera.x)}, ${Math.round(this.camera.y)}`, 16, 44
+            );
 
             this.ctx.fillText(`World: ${this.worldWidth} x ${this.worldHeight}`, 16, 60);
             this.ctx.restore();
         }
 
         this.drawHealthBar();
-        this.drawInventoryBag();
         this.drawPauseOverlay();
         this.drawTopRightControls();
-    };
-
-    update() {
-        this.handleTopRightUiClick();
-        if (this.paused || this.gameOver) return;
-
-        if (this.activeDialog && this.activeDialog.timeLeftMs > 0) {
-            this.activeDialog.timeLeftMs -= this.clockTick * 1000;
-            if (this.activeDialog.timeLeftMs <= 0) {
-                this.activeDialog = null;
-            }
-        }
-
-        let entitiesCount = this.entities.length;
-
-        for (let i = 0; i < entitiesCount; i++) {
-            let entity = this.entities[i];
-
-            if (!entity.removeFromWorld) {
-                entity.update();
-            }
-        }
-
-        for (let i = this.entities.length - 1; i >= 0; --i) {
-            if (this.entities[i].removeFromWorld) {
-                this.entities.splice(i, 1);
-            }
-        }
-    };
-
-    loop() {
-        const delta = this.timer.tick();
-        this.clockTick = (this.paused || this.gameOver) ? 0 : delta;
-        this.update();
-        if (!this.paused && !this.gameOver) {
-            this.updateCamera();
-        }
-        this.draw();
-    };
+    }
 
     togglePause() {
-        if (this.gameOver) return;
+        if (this.gameOver || this.gameWon) return;
         this.paused = !this.paused;
         if (this.paused) this.keys = {};
-    };
+    }
 
     showDialogue(text, durationMs = 5000) {
         this.activeDialog = { text, timeLeftMs: durationMs };
-    };
+    }
 
     getTopRightControlRects() {
         const canvasWidth = this.ctx.canvas.width;
         const x = canvasWidth - this.uiButtonWidth - this.uiMargin;
         const y = this.uiMargin;
         return {
-            pause: {
-                x,
-                y,
-                width: this.uiButtonWidth,
-                height: this.uiButtonHeight
-            },
-            restart: {
-                x,
-                y: y + this.uiButtonHeight + 8,
-                width: this.uiButtonWidth,
-                height: this.uiButtonHeight
-            }
+            pause: { x, y, width: this.uiButtonWidth, height: this.uiButtonHeight },
+            restart: { x, y: y + this.uiButtonHeight + 8, width: this.uiButtonWidth, height: this.uiButtonHeight }
         };
-    };
+    }
 
     pointInRect(p, r) {
-        return p.x >= r.x && p.x <= r.x + r.width && p.y >= r.y && p.y <= r.y + r.height;
-    };
+        return (
+            p.x >= r.x &&
+            p.x <= r.x + r.width &&
+            p.y >= r.y &&
+            p.y <= r.y + r.height
+        );
+    }
 
     handleTopRightUiClick() {
         if (!this.click || !this.ctx) return;
+
+        if (performance.now() < this.ignoreClicksUntil) {
+            this.click = null;
+            return;
+        }
+
         const click = this.click;
-        this.click = null;
+        this.click = null; // consume click immediately
 
         const rects = this.getTopRightControlRects();
+
         if (this.pointInRect(click, rects.pause)) {
             this.togglePause();
             return;
         }
+
         if (this.pointInRect(click, rects.restart)) {
-            if (this.restart) this.restart();
+            this.doRestart();
         }
-    };
+    }
 
     drawTopRightControls() {
         if (!this.ctx) return;
+
         const rects = this.getTopRightControlRects();
         const pauseLabel = this.paused ? "Resume" : "Pause";
 
@@ -266,7 +332,7 @@ class GameEngine {
         drawButton(rects.pause, pauseLabel);
         drawButton(rects.restart, "Restart");
         this.ctx.restore();
-    };
+    }
 
     drawHealthBar() {
         const player = this.cameraTarget;
@@ -279,6 +345,7 @@ class GameEngine {
         const ratio = player.maxHealth > 0 ? player.health / player.maxHealth : 0;
 
         this.ctx.save();
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.fillStyle = "rgba(0,0,0,0.6)";
         this.ctx.fillRect(x - 2, y - 2, width + 4, height + 4);
         this.ctx.fillStyle = "#7a1111";
@@ -291,6 +358,7 @@ class GameEngine {
         this.ctx.fillStyle = "#ffffff";
         this.ctx.font = "12px monospace";
         this.ctx.fillText(`HP: ${Math.ceil(player.health)} / ${player.maxHealth}`, x, y - 6);
+
         if (this.debug) {
             const zombies = this.entities.filter((e) => e && e.constructor && e.constructor.name === "Zombie");
             let nearest = "n/a";
@@ -321,75 +389,29 @@ class GameEngine {
             this.ctx.fillText(`SwingFrame: ${ws.swingFrameIndex || 0}`, x, y - 102);
         }
         this.ctx.restore();
-    };
+    }
 
     drawPauseOverlay() {
-        if (!this.paused && !this.gameOver) return;
+        if (!this.paused && !this.gameOver && !this.gameWon) return;
 
         this.ctx.save();
         this.ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
         this.ctx.fillStyle = "#ffffff";
         this.ctx.textAlign = "center";
         this.ctx.font = "30px Creepster";
-        this.ctx.fillText(this.gameOver ? "GAME OVER" : "PAUSED", this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 - 20);
+
+        const title = this.gameOver ? "GAME OVER" : (this.gameWon ? "YOU WIN!" : "PAUSED");
+        this.ctx.fillText(title, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 - 20);
+
         this.ctx.font = "16px monospace";
-        if (!this.gameOver) {
+        if (!this.gameOver && !this.gameWon) {
             this.ctx.fillText("Press P or ESC to Resume", this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 + 16);
         }
         this.ctx.fillText("Press R to Restart", this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 + 40);
         this.ctx.restore();
-    };
-
-    drawInventoryBag() {
-        const player = this.cameraTarget;
-        if (!player || !this.ctx) return;
-
-        const panelWidth = 150;
-        const panelHeight = 74;
-        const x = this.ctx.canvas.width - panelWidth - 12;
-        const y = this.ctx.canvas.height - panelHeight - 12;
-
-        this.ctx.save();
-        this.ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
-        this.ctx.fillRect(x, y, panelWidth, panelHeight);
-        this.ctx.strokeStyle = "#ffffff";
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeRect(x, y, panelWidth, panelHeight);
-        this.ctx.fillStyle = "#ffffff";
-        this.ctx.font = "12px monospace";
-        this.ctx.fillText("Bag", x + 8, y + 16);
-
-        const batPath = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Bat.png";
-        const hasBat = !!(player.hasItem && player.hasItem("bat"));
-        const iconX = x + 8;
-        const iconY = y + 24;
-        const iconSize = 24;
-        const batSprite = ASSET_MANAGER.getAsset(batPath);
-        const batReady = !!(batSprite && batSprite.complete && batSprite.naturalWidth > 0);
-
-        if (hasBat && batReady) {
-            this.ctx.drawImage(batSprite, iconX, iconY, iconSize, iconSize);
-        } else {
-            this.ctx.fillStyle = hasBat ? "#ddb85b" : "rgba(255,255,255,0.2)";
-            this.ctx.fillRect(iconX, iconY, iconSize, iconSize);
-            this.ctx.strokeStyle = "#ffffff";
-            this.ctx.strokeRect(iconX, iconY, iconSize, iconSize);
-        }
-
-        if (this.debug) {
-            const inventoryKeys = Object.keys((player.inventory || {})).filter((k) => player.inventory[k]);
-            const inventoryText = inventoryKeys.length ? inventoryKeys.join(",") : "empty";
-            this.ctx.fillStyle = "#ffffff";
-            this.ctx.fillText(`Inv: ${inventoryText}`, x + 38, y + 38);
-            this.ctx.fillText(`Eq: ${player.equippedWeapon || "none"}`, x + 38, y + 54);
-        } else {
-            this.ctx.fillStyle = "#ffffff";
-            this.ctx.fillText(hasBat ? "Bat" : "(empty)", x + 38, y + 41);
-        }
-
-        this.ctx.restore();
-    };
+    }
 
     updateCamera() {
         // Center the camera on the target, then clamp to map bounds.
@@ -401,15 +423,13 @@ class GameEngine {
         const targetCenterX = target.x + (target.width ? target.width / 2 : 0);
         const targetCenterY = target.y + (target.height ? target.height / 2 : 0);
 
-        let camX = targetCenterX - canvasWidth / 2;
-        let camY = targetCenterY - canvasHeight / 2;
+        const camX = targetCenterX - canvasWidth / 2;
+        const camY = targetCenterY - canvasHeight / 2;
 
         const maxX = Math.max(0, (this.worldWidth || canvasWidth) - canvasWidth);
         const maxY = Math.max(0, (this.worldHeight || canvasHeight) - canvasHeight);
 
         this.camera.x = Math.max(0, Math.min(maxX, camX));
         this.camera.y = Math.max(0, Math.min(maxY, camY));
-    };
-
-};
-
+    }
+}

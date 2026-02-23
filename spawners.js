@@ -6,37 +6,32 @@ function spawnZombiesFromMap(game, mapData, mapScale) {
   }
 
   const spawned = [];
-
- const variants = [
-  {
-    name: "small",
-    spritePath: "./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Small/Zombie_Small_Down_walk-Sheet6.png",
-    width: 40,
-    height: 55,
-    speed: 85,
-    damage: 8,
-    maxHealth: 35
-  },
-  {
-    name: "axe",
-    spritePath: "./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Axe/Zombie_Axe_Down_Walk-Sheet8.png",
-    width: 60,
-    height: 90,   // taller than small
-    speed: 70,
-    damage: 12,
-    maxHealth: 45
-  },
-  {
-    name: "big",
-    spritePath: "./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Big/Zombie_Big_Down_Walk-Sheet8.png",
-    width: 75,
-    height: 115,  // tallest
-    speed: 55,
-    damage: 18,
-    maxHealth: 75
-  }
-];
-
+  const variants = [
+    {
+      name: "small",
+      width: 40,
+      height: 55,
+      speed: 85,
+      damage: 8,
+      maxHealth: 35
+    },
+    {
+      name: "axe",
+      width: 60,
+      height: 90,
+      speed: 70,
+      damage: 12,
+      maxHealth: 45
+    },
+    {
+      name: "big",
+      width: 75,
+      height: 115,
+      speed: 55,
+      damage: 18,
+      maxHealth: 75
+    }
+  ];
 
   function pickRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -71,7 +66,7 @@ function spawnZombiesFromMap(game, mapData, mapScale) {
 
         const z = new Zombie(game, player, x, y, {
           facing,
-          spritePath: v.spritePath,
+          variant: v.name,
           speed: v.speed,
           damage: v.damage,
           maxHealth: v.maxHealth,

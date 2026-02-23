@@ -8,12 +8,12 @@ const ASSET_MANAGER = new AssetManager();
 
 // Starting map + player config.
 const MAP_PATH = "./maps/bedroom.tmj";
+const BAT_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Bat.png";
+const KNIFE_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Knife.png";
 const MAP_SCALE = 4;
 const START_SPAWN = "PlayerSpawn";
 const PLAYER_SPEED = 140; // pixels per second
 const ZOMBIE_COUNT = 1;
-const BAT_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Bat.png";
-const KNIFE_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Knife.png";
 
 let currentPlayer = null;
 let currentMapManager = null;
@@ -21,12 +21,6 @@ let currentMapManager = null;
 function removeZombies() {
   gameEngine.entities = gameEngine.entities.filter(
     (e) => !(e && e.constructor && e.constructor.name === "Zombie")
-  );
-}
-
-function removePickups() {
-  gameEngine.entities = gameEngine.entities.filter(
-    (e) => !(e && e.constructor && e.constructor.name === "ItemPickup")
   );
 }
 
@@ -81,10 +75,9 @@ function spawnPickupsForMap(player, mapData, mapPath) {
     const isPoint = !!obj.point || (!obj.width && !obj.height);
     const x = isPoint ? rawX - width / 2 : rawX;
     const y = isPoint ? rawY - height / 2 : rawY;
-
-    const pickedAsBat = itemType === "knife";
+     const pickedAsBat = itemType === "knife";
     const itemId = pickedAsBat ? "bat" : itemType;
-    //const itemId = itemType;
+   //const itemId = itemType;
     const spritePath = getPickupSpritePath(itemId);
     const collectedKey = `${mapPathLower}:${itemId}`;
     if (gameEngine.collectedItems.has(collectedKey)) continue;
@@ -184,7 +177,6 @@ async function setupWorld(mapPath, spawnName) {
   gameEngine.gameOver = false;
   gameEngine.keys = {};
   gameEngine.zombiesEnabled = false;
-  if (!gameEngine.collectedItems) gameEngine.collectedItems = new Set();
 
   if (mapData) {
     const tilePaths = collectTilesetImagePaths(mapData, mapPath);
@@ -197,7 +189,6 @@ async function setupWorld(mapPath, spawnName) {
     gameEngine.onMapChanged = (newMapPath, newMapData) => {
       gameEngine.zombiesEnabled = isMapZombieEnabled(newMapPath, newMapData);
       spawnZombies(player, newMapPath, newMapData);
-      spawnPickupsForMap(player, newMapData, newMapPath);
     };
 
     mapManager.setMap(mapData, mapPath, spawnName);
@@ -243,32 +234,29 @@ async function loadGame() {
   
 
   // Queue all zombie variants
-ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Small/Zombie_Small_Down_walk-Sheet6.png");
-ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Axe/Zombie_Axe_Down_Walk-Sheet8.png");
-ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Enemies/Zombie_Big/Zombie_Big_Down_Walk-Sheet8.png");
+queueZombieSkins(ASSET_MANAGER);
 
-  console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
+console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
 
   // Wait for character sprites, then start the engine.
-  ASSET_MANAGER.downloadAll(async () => {
-    console.log("Game starting");
+ASSET_MANAGER.downloadAll(async () => {
+console.log("Game starting");
 
-    const canvas = document.getElementById("gameWorld");
-    const ctx = canvas.getContext("2d");
+const canvas = document.getElementById("gameWorld");
+const ctx = canvas.getContext("2d");
 
-    gameEngine.init(ctx);
-    canvas.focus();
+gameEngine.init(ctx);
+canvas.focus();
+await setupWorld(MAP_PATH, START_SPAWN);
 
-    await setupWorld(MAP_PATH, START_SPAWN);
+// Restart resets player/map/zombies and clears temporary state.
+gameEngine.restart = async () => {
+await setupWorld(MAP_PATH, START_SPAWN);
+};
 
-    // Restart resets player/map/zombies and clears temporary state.
-    gameEngine.restart = async () => {
-      await setupWorld(MAP_PATH, START_SPAWN);
-    };
-
-    gameEngine.start();
-    console.log("main.js loaded");
-  });
+gameEngine.start();
+console.log("main.js loaded");
+});
 }
 
 loadGame().catch((error) => {
