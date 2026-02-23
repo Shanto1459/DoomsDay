@@ -32,7 +32,8 @@ class ItemPickup {
     const dist = Math.hypot(itemCenterX - playerCenterX, itemCenterY - playerCenterY);
     this.showHint = dist <= this.pickupRadius;
 
-    if (this.showHint && this.player.interactPressed) {
+    const autoPickup = dist <= this.pickupRadius;
+    if (autoPickup || (this.showHint && this.player.interactPressed)) {
       this.pickup();
     }
   }
