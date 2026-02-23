@@ -59,6 +59,7 @@ class Player {
       }
     };
     this.loggedBatLoadState = false;
+    this.missingBatSheetWarnings = new Set();
 
     // BAT animators (calculated from real sheet sizes)
     // Hold sheets: down 102x11 (17x11 x6), up 96x14 (16x14 x6), side 96x13 (16x13 x6)
@@ -175,32 +176,19 @@ class Player {
       this.punchHitIds.clear();
       this.punchCooldownTimer = this.punchCooldown;
 
-      // Reset punch-body animation only when unarmed.
-      // if (this.equippedWeapon !== "bat") {
-      //   if (this.direction === "up") this.upPunchAnim.reset();
-      //   else if (this.direction === "left") this.leftPunchAnim.reset();
-      //   else if (this.direction === "right") this.rightPunchAnim.reset();
-      //   else this.downPunchAnim.reset();
-      // }
       if (this.equippedWeapon === "bat") {
-
         let aAnim = this.batDownAttackAnim;
         if (this.direction === "up") aAnim = this.batUpAttackAnim;
         else if (this.direction === "left") aAnim = this.batLeftAttackAnim;
         else if (this.direction === "right") aAnim = this.batRightAttackAnim;
-    
-        if (aAnim.isDone()) this.punching = false;
-    
-    } else {
-    
+        if (aAnim && typeof aAnim.reset === "function") aAnim.reset();
+      } else {
         let pAnim = this.downPunchAnim;
         if (this.direction === "up") pAnim = this.upPunchAnim;
         else if (this.direction === "left") pAnim = this.leftPunchAnim;
         else if (this.direction === "right") pAnim = this.rightPunchAnim;
-    
-        if (pAnim.isDone()) this.punching = false;
-    }
-    
+        if (pAnim && typeof pAnim.reset === "function") pAnim.reset();
+      }
     }
 
     // If punching, don't move; end when animation finishes
@@ -403,7 +391,6 @@ draw(ctx) {
   this.logBatSheetStatusOnce("draw");
 
   let anim;
-  let usingBatBodyAnim = false;
 
   // Keep player body visible while bat swing overlay handles the weapon animation.
   if (this.punching) {
@@ -433,8 +420,8 @@ draw(ctx) {
 
   const tick = (this.moving || this.punching) ? this.game.clockTick : 0;
 
-  // Draw standalone bat overlay only when not using bat body animation.
-  if (this.equippedWeapon === "bat" && !usingBatBodyAnim && this.direction === "up") {
+  // Bat layer behind body only when facing up.
+  if (this.equippedWeapon === "bat" && this.direction === "up") {
     this.drawBat(ctx, true);
   }
   
@@ -453,7 +440,7 @@ draw(ctx) {
 
   ctx.restore();
 
-  if (this.equippedWeapon === "bat" && !usingBatBodyAnim && this.direction !== "up") {
+  if (this.equippedWeapon === "bat" && this.direction !== "up") {
     this.drawBat(ctx, false);
   }
 
@@ -494,73 +481,75 @@ draw(ctx) {
 drawBat(ctx, behindPlayer) {
   if (this.equippedWeapon !== "bat") return;
   const dirProfile = {
-    down: {
-      handX: 8.6, handY: 11.2, restAngle: 1.00, drawW: 8.6, drawH: 17.8, pivotX: 0.20, pivotY: 0.86, layer: "front"
-    },
-    up: {
-      handX: 6.6, handY: 7.8, restAngle: -1.05, drawW: 8.6, drawH: 17.8, pivotX: 0.20, pivotY: 0.86, layer: "back"
-    },
-    left: {
-      handX: 5.1, handY: 10.0, restAngle: -0.95, drawW: 8.1, drawH: 16.8, pivotX: 0.24, pivotY: 0.86, layer: "front"
-    },
-    right: {
-      handX: 8.9, handY: 10.0, restAngle: 0.95, drawW: 8.1, drawH: 16.8, pivotX: 0.16, pivotY: 0.86, layer: "front"
-    }
-  }[this.direction] || {
-    handX: 7.0, handY: 10.0, restAngle: 0, drawW: 8.1, drawH: 16.8, pivotX: 0.2, pivotY: 0.86, layer: "front"
-  };
+    // Hand offsets are in player-frame coordinates before scale.
+    down:  { handX: 8, handY: 11, layer: "front", holdOffsetX: -1, holdOffsetY: -8, attackOffsetX: -3, attackOffsetY: -21 },
+    up:    { handX: 6, handY: 8,  layer: "back",  holdOffsetX: -1, holdOffsetY: -8, attackOffsetX: -3, attackOffsetY: -4 },
+    left:  { handX: 5, handY: 10, layer: "front", holdOffsetX: -11, holdOffsetY: -4, attackOffsetX: -20, attackOffsetY: -6 },
+    right: { handX: 8, handY: 10, layer: "front", holdOffsetX: -4, holdOffsetY: -4, attackOffsetX: -2, attackOffsetY: -6 }
+  }[this.direction] || { handX: 8, handY: 10, layer: "front", holdOffsetX: -4, holdOffsetY: -4, attackOffsetX: -2, attackOffsetY: -6 };
 
   const shouldDrawBehind = dirProfile.layer === "back";
   if (behindPlayer !== shouldDrawBehind) return;
 
-  const sprite = this.batSprite || ASSET_MANAGER.getAsset(this.batSpritePath);
-  this.batSprite = sprite || this.batSprite;
-  const hasSprite = !!(sprite && sprite.complete && sprite.naturalWidth > 0);
-
-  const bob = this.moving ? Math.sin(this.batHoldFrameElapsed * 20) * 0.25 : 0;
-  const handLocal = {
-    x: dirProfile.handX,
-    y: dirProfile.handY + bob
-  };
-
-  let angle = dirProfile.restAngle;
-  const swingDuration = Math.max(0.001, this.downPunchAnim.totalTime || 0.4);
-  const attackProgress = Math.max(0, Math.min(1, this.punchTimer / swingDuration));
-  let swingFrameIndex = 0;
-
-  // Idle/walk hold animation: slight hand sway while moving.
-  if (!this.punching && this.moving) {
-    angle += Math.sin(this.batHoldFrameElapsed * 14) * 0.08;
+  let holdAnim = this.batDownHoldAnim;
+  let attackAnim = this.batDownAttackAnim;
+  if (this.direction === "up") {
+    holdAnim = this.batUpHoldAnim;
+    attackAnim = this.batUpAttackAnim;
+  } else if (this.direction === "left") {
+    holdAnim = this.batLeftHoldAnim;
+    attackAnim = this.batLeftAttackAnim;
+  } else if (this.direction === "right") {
+    holdAnim = this.batRightHoldAnim;
+    attackAnim = this.batRightAttackAnim;
   }
 
-  if (this.punching) {
-    // Readable arm-driven swing: pull back then strike through.
-    const t = attackProgress;
-    const pullBack = t < 0.26 ? (t / 0.26) : 1;
-    const followThrough = t > 0.26 ? ((t - 0.26) / 0.74) : 0;
-    const swingSign = (this.direction === "left" || this.direction === "up") ? -1 : 1;
-    angle += swingSign * (-0.55 * pullBack + 1.35 * followThrough);
-    swingFrameIndex = Math.min(3, Math.floor(t * 4));
+  const useAttackAnim = this.punching;
+  const batAnim = useAttackAnim ? attackAnim : holdAnim;
+  const batSheet = batAnim && batAnim.spriteSheet;
+  const hasValidBatSheet = !!(batSheet && batSheet.complete && batSheet.naturalWidth > 0);
+  const fallbackOffsetX = useAttackAnim ? dirProfile.attackOffsetX : dirProfile.holdOffsetX;
+  const fallbackOffsetY = useAttackAnim ? dirProfile.attackOffsetY : dirProfile.holdOffsetY;
+
+  const warningKey = `${this.direction}:${useAttackAnim ? "attack" : "hold"}`;
+  if (!hasValidBatSheet && !this.missingBatSheetWarnings.has(warningKey)) {
+    this.missingBatSheetWarnings.add(warningKey);
+    console.warn(`[BAT SHEET MISSING] ${warningKey}`, batSheet);
   }
 
-  const drawW = dirProfile.drawW;
-  const drawH = dirProfile.drawH;
+  const bob = (!this.punching && this.moving) ? Math.sin(this.batHoldFrameElapsed * 16) * 0.25 : 0;
+  const handLocal = { x: dirProfile.handX, y: dirProfile.handY + bob };
+
+  let drawX = fallbackOffsetX;
+  let drawY = fallbackOffsetY;
+  if (hasValidBatSheet) {
+    drawX = useAttackAnim ? dirProfile.attackOffsetX : dirProfile.holdOffsetX;
+    drawY = useAttackAnim ? dirProfile.attackOffsetY : dirProfile.holdOffsetY;
+  }
+
+  const tick = (this.moving || this.punching) ? this.game.clockTick : 0;
   ctx.save();
   ctx.translate(this.x, this.y);
   ctx.scale(this.scale, this.scale);
-  ctx.translate(handLocal.x, handLocal.y);
-  ctx.rotate(angle);
   ctx.imageSmoothingEnabled = false;
-
-  if (hasSprite) {
-    // Pivot near the handle so rotation looks like a hand grip.
-    ctx.drawImage(sprite, -drawW * dirProfile.pivotX, -drawH * dirProfile.pivotY, drawW, drawH);
+  if (hasValidBatSheet && batAnim && typeof batAnim.drawFrame === "function") {
+    // Two-layer weapon system: bat-only sheet over original body sheet.
+    const frameTick = (!this.punching && !this.moving) ? 0 : tick;
+    batAnim.drawFrame(frameTick, ctx, handLocal.x + drawX, handLocal.y + drawY);
   } else {
+    // Safety fallback: body still renders, and bat stays visibly attached.
     ctx.fillStyle = "#8b5a2b";
-    ctx.fillRect(-1.1, -8.8, 2.2, 8.8);
+    ctx.fillRect(handLocal.x - 1, handLocal.y - 9, 2, 9);
+    ctx.fillStyle = "#4d3319";
+    ctx.fillRect(handLocal.x - 2, handLocal.y - 11, 4, 2);
   }
   ctx.restore();
 
+  const boxW = hasValidBatSheet ? batAnim.width * this.scale : 4 * this.scale;
+  const boxH = hasValidBatSheet ? batAnim.height * this.scale : 11 * this.scale;
+  const boxX = this.x + (handLocal.x + drawX) * this.scale;
+  const boxY = this.y + (handLocal.y + drawY) * this.scale;
+  const swingFrameIndex = this.punching ? Math.min(3, Math.floor(Math.max(0, Math.min(1, this.punchTimer / Math.max(0.001, this.batSwingDuration))) * 4)) : 0;
   this.weaponDebugState = {
     attacking: this.punching,
     attackTimer: this.punchTimer,
@@ -578,12 +567,7 @@ drawBat(ctx, behindPlayer) {
     ctx.fill();
     ctx.strokeStyle = "rgba(255,255,0,0.9)";
     ctx.lineWidth = 1;
-    ctx.strokeRect(
-      this.weaponDebugState.anchorX - (drawW * this.scale) * dirProfile.pivotX,
-      this.weaponDebugState.anchorY - (drawH * this.scale) * dirProfile.pivotY,
-      drawW * this.scale,
-      drawH * this.scale
-    );
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
     ctx.restore();
   }
 }
