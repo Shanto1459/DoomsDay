@@ -17,6 +17,7 @@ class GameEngine {
             cameraDebug: false,
         };
         this.debug = !!this.options.debugging;
+        this.debugWeapon = false;
 
         // Camera tracks a target entity in world space.
         this.camera = { x: 0, y: 0 };
@@ -377,7 +378,15 @@ class GameEngine {
             this.ctx.fillText(`Zombie asset loaded: ${zombieAssetLoaded}`, x, y - 38);
             this.ctx.fillText(`Zombie asset path: ${zombieAssetPath}`, x, y - 54);
         }
-
+        if (this.debugWeapon && player.weaponDebugState) {
+            const ws = player.weaponDebugState;
+            this.ctx.fillStyle = "#ffe8a3";
+            this.ctx.fillText(`Weapon: ${player.equippedWeapon || "none"}`, x, y - 70);
+            this.ctx.fillText(`Attacking: ${ws.attacking ? "true" : "false"}`, x + 145, y - 70);
+            this.ctx.fillText(`AttackTimer: ${Number((ws.attackTimer || 0).toFixed(2))}`, x, y - 86);
+            this.ctx.fillText(`Facing: ${ws.facingDirection || "n/a"}`, x + 145, y - 86);
+            this.ctx.fillText(`SwingFrame: ${ws.swingFrameIndex || 0}`, x, y - 102);
+        }
         this.ctx.restore();
     }
 

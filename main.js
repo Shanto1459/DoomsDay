@@ -1,7 +1,9 @@
 // Entry point: loads assets, then starts the game.
 const DEBUG_MODE = true;
+const DEBUG_WEAPON = false;
 const gameEngine = new GameEngine({ cameraDebug: true, debugging: DEBUG_MODE });
 gameEngine.debug = DEBUG_MODE;
+gameEngine.debugWeapon = DEBUG_WEAPON;
 const ASSET_MANAGER = new AssetManager();
 
 // Starting map + player config.
@@ -26,6 +28,87 @@ function keepMapManagerLast() {
   if (idx < 0) return;
   const mapManager = entities.splice(idx, 1)[0];
   entities.push(mapManager);
+}
+
+function getMapObjectLayers(mapData) {
+  return (mapData && mapData.layers || []).filter((layer) => layer.type === "objectgroup");
+}
+
+function resolvePickupType(obj) {
+  const fromProp = getObjectProperty(obj, "itemId");
+  const raw = String(fromProp || obj.name || obj.type || obj.class || "").toLowerCase();
+  if (raw.includes("bat")) return "bat";
+  if (raw.includes("knife")) return "knife";
+  return null;
+}
+
+function getPickupSpritePath(itemId) {
+  if (itemId === "bat") return BAT_SPRITE_PATH;
+  if (itemId === "knife") return KNIFE_SPRITE_PATH;
+  return "";
+}
+
+function spawnPickupsForMap(player, mapData, mapPath) {
+  removePickups();
+  if (!mapData) return;
+
+  const mapPathLower = String(mapPath || "").toLowerCase();
+  const objectLayers = getMapObjectLayers(mapData);
+  const pickupObjects = [];
+  for (const layer of objectLayers) {
+    const layerName = String(layer.name || "").toLowerCase();
+    if (!layerName.includes("item") && !layerName.includes("pickup")) continue;
+    for (const obj of layer.objects || []) {
+      const itemType = resolvePickupType(obj);
+      if (!itemType) continue;
+      pickupObjects.push({ obj, itemType });
+    }
+  }
+
+  for (const { obj, itemType } of pickupObjects) {
+    const rawX = (obj.x || 0) * MAP_SCALE;
+    const rawY = (obj.y || 0) * MAP_SCALE;
+    const width = Math.max(24, (obj.width || 8) * MAP_SCALE);
+    const height = Math.max(24, (obj.height || 8) * MAP_SCALE);
+    const isPoint = !!obj.point || (!obj.width && !obj.height);
+    const x = isPoint ? rawX - width / 2 : rawX;
+    const y = isPoint ? rawY - height / 2 : rawY;
+
+    const pickedAsBat = itemType === "knife";
+    const itemId = pickedAsBat ? "bat" : itemType;
+    //const itemId = itemType;
+    const spritePath = getPickupSpritePath(itemId);
+    const collectedKey = `${mapPathLower}:${itemId}`;
+    if (gameEngine.collectedItems.has(collectedKey)) continue;
+
+    gameEngine.addEntity(new ItemPickup(gameEngine, player, {
+      x,
+      y,
+      width,
+      height,
+      itemId,
+      spritePath,
+      collectedKey
+    }));
+  }
+
+  // Fallback spawn for bedroom if no pickups detected.
+  if (pickupObjects.length === 0 && mapPathLower.includes("bedroom")) {
+    const fallbackKey = `${mapPathLower}:bat`;
+    if (!gameEngine.collectedItems.has(fallbackKey)) {
+      gameEngine.addEntity(new ItemPickup(gameEngine, player, {
+        x: 64,
+        y: 320,
+        width: 30,
+        height: 30,
+        itemId: "bat",
+        spritePath: BAT_SPRITE_PATH,
+        collectedKey: fallbackKey
+      }));
+    }
+  }
+
+  keepMapManagerLast();
 }
 
 function isMapZombieEnabled(mapPath, mapData) {
@@ -137,6 +220,16 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_up_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side-left_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side_punch-Sheet4.png");
+  ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_down_idle-and-run-Sheet6.png");
+  ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_up_idle-and-run-Sheet6.png");
+  ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_side-left_idle-and-run-Sheet6.png");
+  ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_side_idle-and-run-Sheet6.png");
+  ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_down_attack-Sheet4.png");
+  ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_up_attack-Sheet4.png");
+  ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_side-left_attack-Sheet4.png");
+  ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_side_attack-Sheet4.png");
+  ASSET_MANAGER.queueDownload(BAT_SPRITE_PATH);
+  ASSET_MANAGER.queueDownload(KNIFE_SPRITE_PATH);
   
 
   // Queue all zombie variants
