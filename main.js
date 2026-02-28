@@ -215,6 +215,9 @@ async function setupWorld(mapPath, spawnName) {
     };
 
     mapManager.setMap(mapData, mapPath, spawnName);
+
+    const notebook = new Notebook(gameEngine);
+    gameEngine.entities.unshift(notebook);
     gameEngine.cameraTarget = player;
     gameEngine.addEntity(player);
     // Map manager is added last because engine draws in reverse order.
@@ -275,6 +278,7 @@ ASSET_MANAGER.downloadAll(async () => {
   function showTitleScreen() {
     // reset engine state
     gameEngine.entities = [];
+    
     gameEngine.gameOver = false;
     gameEngine.gameWon = false;
     gameEngine.paused = false;

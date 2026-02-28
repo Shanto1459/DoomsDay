@@ -288,6 +288,7 @@ class TiledMapRenderer {
     this.game = game;
     this.mapData = mapData;
     this.mapPath = mapPath;
+    this.game.currentMapPath = mapPath;
     this.scale = scale || 1;
     this.missingImages = new Set();
     this.tilesets = (mapData.tilesets || []).map((tileset) => ({

@@ -333,6 +333,15 @@ handleTopRightUiClick() {
 
         drawButton(rects.pause, pauseLabel);
         drawButton(rects.restart, "Restart");
+        this.ctx.font = "12px monospace";
+        this.ctx.fillStyle = "rgba(255,255,255,0.85)";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "top";
+        this.ctx.fillText("Press N: Notebook",
+        rects.restart.x + rects.restart.width / 2,
+        rects.restart.y + rects.restart.height + 6
+        );
+
         this.ctx.restore();
     }
 

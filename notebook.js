@@ -63,7 +63,7 @@ class Notebook {
 
     // Fallback for any other maps
     return {
-      title: "Notebook",
+      title: "Tasks",
       lines: [
         "☐ Explore the area.",
         "☐ Look for supplies."
