@@ -238,26 +238,49 @@ queueZombieSkins(ASSET_MANAGER);
 
 console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
 
-  // Wait for character sprites, then start the engine.
 ASSET_MANAGER.downloadAll(async () => {
-console.log("Game starting");
+  console.log("Game starting");
 
-const canvas = document.getElementById("gameWorld");
-const ctx = canvas.getContext("2d");
+  const canvas = document.getElementById("gameWorld");
+  const ctx = canvas.getContext("2d");
 
-gameEngine.init(ctx);
-canvas.focus();
-await setupWorld(MAP_PATH, START_SPAWN);
+  gameEngine.init(ctx);
+  canvas.focus();
 
-// Restart resets player/map/zombies and clears temporary state.
-gameEngine.restart = async () => {
-await setupWorld(MAP_PATH, START_SPAWN);
-};
+  function showTitleScreen() {
+    // reset engine state
+    gameEngine.entities = [];
+    gameEngine.gameOver = false;
+    gameEngine.gameWon = false;
+    gameEngine.paused = false;
+    gameEngine.keys = {};
+    gameEngine.cameraTarget = null;
+    gameEngine.onMapChanged = null;
+    // optional: stop music on main screen
+    if (typeof AudioEngine !== "undefined") {
+      AudioEngine.stopMusic();
+    }
+    const title = new TitleScreen(gameEngine, async () => {
+      // audio must start after click
+      AudioEngine.init();
+      AudioEngine.playMusic();
 
-gameEngine.start();
-console.log("main.js loaded");
+      await setupWorld(MAP_PATH, START_SPAWN);
+    });
+
+    gameEngine.addEntity(title);
+  }
+  // first boot -> title screen
+  showTitleScreen();
+  // restart button -> back to title screen
+  gameEngine.restart = () => {
+    showTitleScreen();
+  };
+  gameEngine.start();
 });
 }
+
+
 
 loadGame().catch((error) => {
   console.error("Failed to load game assets", error);

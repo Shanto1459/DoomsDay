@@ -285,28 +285,30 @@ class GameEngine {
         );
     }
 
-    handleTopRightUiClick() {
-        if (!this.click || !this.ctx) return;
+handleTopRightUiClick() {
+  if (!this.click || !this.ctx) return;
 
-        if (performance.now() < this.ignoreClicksUntil) {
-            this.click = null;
-            return;
-        }
+  if (performance.now() < this.ignoreClicksUntil) {
+    this.click = null;
+    return;
+  }
 
-        const click = this.click;
-        this.click = null; // consume click immediately
+  const click = this.click; // DON'T clear it yet
 
-        const rects = this.getTopRightControlRects();
+  const rects = this.getTopRightControlRects();
 
-        if (this.pointInRect(click, rects.pause)) {
-            this.togglePause();
-            return;
-        }
+  if (this.pointInRect(click, rects.pause)) {
+    this.click = null; // consume only if used
+    this.togglePause();
+    return;
+  }
 
-        if (this.pointInRect(click, rects.restart)) {
-            this.doRestart();
-        }
-    }
+  if (this.pointInRect(click, rects.restart)) {
+    this.click = null; // consume only if used
+    this.doRestart();
+    return;
+  }
+}
 
     drawTopRightControls() {
         if (!this.ctx) return;

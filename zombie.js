@@ -110,11 +110,13 @@ tryLazyLoadSprite(spritePath) {
   takeDamage(amount, source) {
     if (this.removeFromWorld) return false;
     const dmg = Math.max(0, amount || 0);
+    if (dmg > 0) AudioEngine.playHit();
     this.health = Math.max(0, this.health - dmg);
     if (this.health < this.maxHealth) this.showHealthBar = true;
 
    if (this.health <= 0) {
     // Start death animation once
+    AudioEngine.playZombieDie();
     this.health = 0;
     this.state = "death";
     this.animElapsed = 0;

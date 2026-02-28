@@ -170,6 +170,7 @@ class Player {
     this.prevEDown = eDown;
 
     if (spacePressed && !this.punching && this.punchCooldownTimer <= 0) {
+      AudioEngine.playPunch();
       this.punching = true;
       this.punchTimer = 0;
       this.punchHitIds.clear();
@@ -377,6 +378,11 @@ class Player {
 
     this.health = Math.max(0, Math.min(this.maxHealth, this.health - amount));
     this.hitCooldown = this.invincibilityDuration;
+
+    if (typeof AudioEngine !== "undefined") {
+    AudioEngine.init();          // safe to call (it early-returns if already inited)
+    AudioEngine.playPlayerHurt();
+}
 
     if (this.health <= 0) {
       this.isDead = true;

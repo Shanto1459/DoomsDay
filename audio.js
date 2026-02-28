@@ -328,6 +328,8 @@ const AudioEngine = (() => {
         resume();
         musicPlaying = true;
 
+        musicGain.gain.cancelScheduledValues(ctx.currentTime);
+        musicGain.gain.setValueAtTime(0.28, ctx.currentTime);
         // Bass drone — two detuned saws
         function makeDrone() {
             [0, 7].forEach(detune => {
@@ -464,6 +466,7 @@ const AudioEngine = (() => {
         console.log("[AudioEngine] music stopped");
     }
 
+    
     // ─── Game Over Music ───────────────────────────────────────────────────────
 
     function playGameOver() {
