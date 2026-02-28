@@ -1583,7 +1583,7 @@
                          "value":"medkit"
                         }],
                  "rotation":0,
-                 "type":"",
+                 "type":"medkit",
                  "visible":true,
                  "width":0,
                  "x":349.25,
@@ -1600,7 +1600,7 @@
                          "value":"medkit"
                         }],
                  "rotation":0,
-                 "type":"",
+                 "type":"medkit",
                  "visible":true,
                  "width":0,
                  "x":216.333333333333,
@@ -1617,7 +1617,7 @@
                          "value":"medkit"
                         }],
                  "rotation":0,
-                 "type":"",
+                 "type":"medkit",
                  "visible":true,
                  "width":0,
                  "x":250,
