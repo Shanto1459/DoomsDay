@@ -1586,8 +1586,42 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":331,
-                 "y":167.5
+                 "x":349.25,
+                 "y":238.5
+                }, 
+                {
+                 "height":0,
+                 "id":38,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"medkit"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":216.333333333333,
+                 "y":336.666666666667
+                }, 
+                {
+                 "height":0,
+                 "id":39,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"medkit"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":250,
+                 "y":114.666666666667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1596,7 +1630,7 @@
          "y":0
         }],
  "nextlayerid":29,
- "nextobjectid":38,
+ "nextobjectid":40,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
