@@ -24,6 +24,12 @@ function removeZombies() {
   );
 }
 
+function removePickups() {
+  gameEngine.entities = gameEngine.entities.filter(
+    (e) => !(e && e.constructor && e.constructor.name === "ItemPickup")
+  );
+}
+
 function keepMapManagerLast() {
   const entities = gameEngine.entities || [];
   const idx = entities.findIndex((e) => e && e.constructor && e.constructor.name === "MapManager");
@@ -48,6 +54,20 @@ function getPickupSpritePath(itemId) {
   if (itemId === "bat") return BAT_SPRITE_PATH;
   if (itemId === "knife") return KNIFE_SPRITE_PATH;
   return "";
+}
+
+function restoreCollectedItemsToPlayer(player) {
+  if (!player || !gameEngine.collectedItems) return;
+  for (const key of gameEngine.collectedItems) {
+    const parts = String(key || "").split(":");
+    const itemId = parts[parts.length - 1];
+    if (!itemId) continue;
+    if (!player.inventory[itemId]) player.addItem(itemId);
+  }
+  // Keep bat equipped across restart if it was previously collected.
+  if (player.hasItem && player.hasItem("bat")) {
+    player.equippedWeapon = "bat";
+  }
 }
 
 function spawnPickupsForMap(player, mapData, mapPath) {
@@ -177,6 +197,7 @@ async function setupWorld(mapPath, spawnName) {
   gameEngine.gameOver = false;
   gameEngine.keys = {};
   gameEngine.zombiesEnabled = false;
+  if (!gameEngine.collectedItems) gameEngine.collectedItems = new Set();
 
   if (mapData) {
     const tilePaths = collectTilesetImagePaths(mapData, mapPath);
@@ -185,10 +206,12 @@ async function setupWorld(mapPath, spawnName) {
 
     const spawn = getSpawnPosition(mapData, MAP_SCALE, spawnName);
     const player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
+    restoreCollectedItemsToPlayer(player);
     const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
     gameEngine.onMapChanged = (newMapPath, newMapData) => {
       gameEngine.zombiesEnabled = isMapZombieEnabled(newMapPath, newMapData);
       spawnZombies(player, newMapPath, newMapData);
+      spawnPickupsForMap(player, newMapData, newMapPath);
     };
 
     mapManager.setMap(mapData, mapPath, spawnName);
@@ -200,8 +223,10 @@ async function setupWorld(mapPath, spawnName) {
 
     currentPlayer = player;
     currentMapManager = mapManager;
+    spawnPickupsForMap(player, mapData, mapPath);
   } else {
     const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
+    restoreCollectedItemsToPlayer(player);
     gameEngine.cameraTarget = player;
     gameEngine.addEntity(player);
     gameEngine.zombiesEnabled = false;
