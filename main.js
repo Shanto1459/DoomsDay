@@ -24,6 +24,12 @@ function removeZombies() {
   );
 }
 
+function removePickups() {
+  gameEngine.entities = gameEngine.entities.filter(
+    (e) => !(e && e.constructor && e.constructor.name === "ItemPickup")
+  );
+}
+
 function keepMapManagerLast() {
   const entities = gameEngine.entities || [];
   const idx = entities.findIndex((e) => e && e.constructor && e.constructor.name === "MapManager");
@@ -41,6 +47,7 @@ function resolvePickupType(obj) {
   const raw = String(fromProp || obj.name || obj.type || obj.class || "").toLowerCase();
   if (raw.includes("bat")) return "bat";
   if (raw.includes("knife")) return "knife";
+  if (raw.includes("health")) return "healthpack";
   return null;
 }
 
@@ -48,6 +55,20 @@ function getPickupSpritePath(itemId) {
   if (itemId === "bat") return BAT_SPRITE_PATH;
   if (itemId === "knife") return KNIFE_SPRITE_PATH;
   return "";
+}
+
+function restoreCollectedItemsToPlayer(player) {
+  if (!player || !gameEngine.collectedItems) return;
+  for (const key of gameEngine.collectedItems) {
+    const parts = String(key || "").split(":");
+    const itemId = parts[parts.length - 1];
+    if (!itemId) continue;
+    if (!player.inventory[itemId]) player.addItem(itemId);
+  }
+  // Keep bat equipped across restart if it was previously collected.
+  if (player.hasItem && player.hasItem("bat")) {
+    player.equippedWeapon = "bat";
+  }
 }
 
 function spawnPickupsForMap(player, mapData, mapPath) {
@@ -75,9 +96,8 @@ function spawnPickupsForMap(player, mapData, mapPath) {
     const isPoint = !!obj.point || (!obj.width && !obj.height);
     const x = isPoint ? rawX - width / 2 : rawX;
     const y = isPoint ? rawY - height / 2 : rawY;
-     const pickedAsBat = itemType === "knife";
+    const pickedAsBat = itemType === "knife";
     const itemId = pickedAsBat ? "bat" : itemType;
-   //const itemId = itemType;
     const spritePath = getPickupSpritePath(itemId);
     const collectedKey = `${mapPathLower}:${itemId}`;
     if (gameEngine.collectedItems.has(collectedKey)) continue;
@@ -116,7 +136,6 @@ function isMapZombieEnabled(mapPath, mapData) {
   const mapProp = (mapData && mapData.properties || []).find((p) => p.name === "zombiesEnabled");
   if (mapProp) return !!mapProp.value;
   const path = (mapPath || "").toLowerCase();
-  // Bedroom/inside map is always safe.
   if (path.includes("bedroom")) return false;
   return true;
 }
@@ -144,7 +163,6 @@ function spawnZombies(player, mapPath, mapData) {
     return;
   }
 
-  // Spawn zombies from Tiled object markers (type/name includes "zombie")
   const spawned = spawnZombiesFromMap(gameEngine, mapData, MAP_SCALE);
 
   if (DEBUG_MODE) {
@@ -153,7 +171,6 @@ function spawnZombies(player, mapPath, mapData) {
 
   keepMapManagerLast();
 }
-
 
 async function loadMapData(mapPath) {
   const mapResponse = await fetch(mapPath);
@@ -177,6 +194,7 @@ async function setupWorld(mapPath, spawnName) {
   gameEngine.gameOver = false;
   gameEngine.keys = {};
   gameEngine.zombiesEnabled = false;
+  if (!gameEngine.collectedItems) gameEngine.collectedItems = new Set();
 
   if (mapData) {
     const tilePaths = collectTilesetImagePaths(mapData, mapPath);
@@ -185,23 +203,38 @@ async function setupWorld(mapPath, spawnName) {
 
     const spawn = getSpawnPosition(mapData, MAP_SCALE, spawnName);
     const player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
+    restoreCollectedItemsToPlayer(player);
+
     const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
     gameEngine.onMapChanged = (newMapPath, newMapData) => {
       gameEngine.zombiesEnabled = isMapZombieEnabled(newMapPath, newMapData);
       spawnZombies(player, newMapPath, newMapData);
+      spawnPickupsForMap(player, newMapData, newMapPath);
     };
 
     mapManager.setMap(mapData, mapPath, spawnName);
+
+    // UI entities added first (unshift = drawn last = on top)
+    const notebook = new Notebook(gameEngine);
+    gameEngine.entities.unshift(notebook);
+
+    const inventory = new Inventory(gameEngine, player);
+    gameEngine.entities.unshift(inventory);
+
     gameEngine.cameraTarget = player;
     gameEngine.addEntity(player);
-    // Map manager is added last because engine draws in reverse order.
-    // This makes the map draw first (background), then zombies, then player.
     gameEngine.addEntity(mapManager);
 
     currentPlayer = player;
     currentMapManager = mapManager;
+    spawnPickupsForMap(player, mapData, mapPath);
   } else {
     const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
+    restoreCollectedItemsToPlayer(player);
+
+    const inventory = new Inventory(gameEngine, player);
+    gameEngine.entities.unshift(inventory);
+
     gameEngine.cameraTarget = player;
     gameEngine.addEntity(player);
     gameEngine.zombiesEnabled = false;
@@ -231,32 +264,53 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_side_attack-Sheet4.png");
   ASSET_MANAGER.queueDownload(BAT_SPRITE_PATH);
   ASSET_MANAGER.queueDownload(KNIFE_SPRITE_PATH);
-  
 
   // Queue all zombie variants
-queueZombieSkins(ASSET_MANAGER);
+  queueZombieSkins(ASSET_MANAGER);
 
-console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
+  console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
 
-  // Wait for character sprites, then start the engine.
-ASSET_MANAGER.downloadAll(async () => {
-console.log("Game starting");
+  ASSET_MANAGER.downloadAll(async () => {
+    console.log("Game starting");
 
-const canvas = document.getElementById("gameWorld");
-const ctx = canvas.getContext("2d");
+    const canvas = document.getElementById("gameWorld");
+    const ctx = canvas.getContext("2d");
 
-gameEngine.init(ctx);
-canvas.focus();
-await setupWorld(MAP_PATH, START_SPAWN);
+    gameEngine.init(ctx);
+    canvas.focus();
 
-// Restart resets player/map/zombies and clears temporary state.
-gameEngine.restart = async () => {
-await setupWorld(MAP_PATH, START_SPAWN);
-};
+    function showTitleScreen() {
+      gameEngine.entities = [];
+      gameEngine.gameOver = false;
+      gameEngine.gameWon = false;
+      gameEngine.paused = false;
+      gameEngine.keys = {};
+      gameEngine.cameraTarget = null;
+      gameEngine.onMapChanged = null;
 
-gameEngine.start();
-console.log("main.js loaded");
-});
+      if (typeof AudioEngine !== "undefined") {
+        AudioEngine.stopMusic();
+      }
+
+      const title = new TitleScreen(gameEngine, async () => {
+        AudioEngine.init();
+        AudioEngine.playMusic();
+        await setupWorld(MAP_PATH, START_SPAWN);
+      });
+
+      gameEngine.addEntity(title);
+    }
+
+    // First boot → title screen
+    showTitleScreen();
+
+    // Restart → back to title screen
+    gameEngine.restart = () => {
+      showTitleScreen();
+    };
+
+    gameEngine.start();
+  });
 }
 
 loadGame().catch((error) => {
