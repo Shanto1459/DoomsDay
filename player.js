@@ -344,6 +344,17 @@ class Player {
 
   addItem(itemId) {
     if (!itemId) return;
+    
+    // Consumables stack as a numeric count
+    const consumables = ["healthpack"];
+    if (consumables.includes(itemId)) {
+      this.inventory[itemId] = (typeof this.inventory[itemId] === "number")
+        ? this.inventory[itemId] + 1
+        : 1;
+      return;
+    }
+  
+    // Weapons: simple boolean, auto-equip first weapon picked up
     this.inventory[itemId] = true;
     if (!this.equippedWeapon && this.weaponStats[itemId]) {
       this.equippedWeapon = itemId;
