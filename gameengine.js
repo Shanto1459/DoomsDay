@@ -3,6 +3,7 @@ class GameEngine {
     constructor(options) {
         this.ctx = null;
 
+        
         this.entities = [];
         this.levelHadZombies = false;
 
@@ -25,6 +26,7 @@ class GameEngine {
 
         // Active dialog bubble shown above the player.
         this.activeDialog = null;
+        this.pendingTeleport = null;
 
         this.paused = false;
         this.gameOver = false;

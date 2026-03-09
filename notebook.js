@@ -23,6 +23,8 @@ class Notebook {
     return p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h;
   }
 
+  
+
   // Count living zombies (ignore dead/corpse ones)
   getAliveZombies() {
     const ents = this.game.entities || [];
@@ -34,6 +36,33 @@ class Notebook {
       e.state !== "death"
     ).length;
   }
+
+  playerHasWeapon() {
+  const player = this.game.cameraTarget;
+  if (!player) return false;
+
+  return !!(
+    player.equippedWeapon ||
+    (player.inventory && (player.inventory.bat || player.inventory.knife))
+  );
+  }
+  
+  windowChecked() {
+  return !!this.game.checkedWindow;
+  }
+
+  playerNearSewer() {
+  const player = this.game.cameraTarget;
+  if (!player) return false;
+
+  const sewerX = 3147;
+  const sewerY = 3164;
+
+  const dx = sewerX - player.x;
+  const dy = sewerY - player.y;
+
+  return Math.sqrt(dx * dx + dy * dy) < 70;
+}
 
   getObjectives() {
     const path = String(this.game.currentMapPath || "").toLowerCase();
@@ -51,28 +80,33 @@ class Notebook {
       };
     }
 
-    // Mainforest objectives
-    if (path.includes("mainforest")) {
-      const alive = this.getAliveZombies();
-      return {
-        title: "Notebook",
-        lines: [
-          `☐ Kill the three zombies near you. (${alive} remaining)`,
-          "☐ Reach the sewer cover."
-        ],
-        footer: "Press N to close."
-      };
-    }
+if (path.includes("mainforest")) {
 
-    // Fallback for any other maps
+  const alive = this.getAliveZombies();
+
+  // BEFORE finding Beth
+  if (!this.game.foundBeth) {
     return {
-      title: "Tasks",
+      title: "Notebook",
       lines: [
-        "☐ Explore the area.",
-        "☐ Look for supplies."
+        "☐ Knock on Beth's door."
       ],
       footer: "Press N to close."
     };
+  }
+
+  // AFTER finding Beth
+  return {
+    title: "Notebook",
+    lines: [
+      `☐ Kill all the weird creatures. (${alive} remaining)`,
+      `☐ Find Beth's spare house key in the sewer.`,
+      "   I remember she dropped it in there.",
+      "   Maybe she already made it out of the city."
+    ],
+    footer: "Press N to close."
+  };
+}
   }
 
   update() {
@@ -132,14 +166,63 @@ class Notebook {
     ctx.textAlign = "left";
     ctx.fillText(title, x + 22, y + 52);
 
-    // Text
+        // Text
     ctx.font = "20px Arial";
     let ty = y + 105;
-    for (const line of lines) {
-      ctx.fillText(line, x + 28, ty);
-      ty += 34;
-    }
+    let index = 0;
+    const path = String(this.game.currentMapPath || "").toLowerCase();
 
+    for (const line of lines) {
+      let completed = false;
+
+if (path.includes("bedroom") || path === "") {
+  // index 0 = check window
+  // index 1 = find weapon
+  // index 2 = leave bedroom
+
+  if (index === 0 && this.windowChecked()) {
+    completed = true;
+  }
+
+  if (index === 1 && this.playerHasWeapon()) {
+    completed = true;
+  }
+}
+
+      // MAINFOREST TASKS
+      else if (path.includes("mainforest")) {
+        // index 0 = kill zombies
+        // index 1 = reach sewer
+
+        if (index === 0 && this.getAliveZombies() === 0) {
+          completed = true;
+        }
+
+        if (index === 1 && this.playerNearSewer()) {
+          completed = true;
+        }
+      }
+
+      const text = completed ? line.replace("☐", "☑") : line;
+
+      ctx.fillStyle = "rgba(40,25,10,0.95)";
+      ctx.fillText(text, x + 28, ty);
+
+      // draw strike-through if completed
+      if (completed) {
+        const width = ctx.measureText(text).width;
+
+        ctx.beginPath();
+        ctx.moveTo(x + 28, ty - 8);
+        ctx.lineTo(x + 28 + width, ty - 8);
+        ctx.strokeStyle = "rgba(40,25,10,0.95)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      ty += 34;
+      index++;
+    }
     // Footer
     ctx.font = "16px Arial";
     ctx.globalAlpha = 0.8;

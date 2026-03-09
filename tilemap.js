@@ -641,8 +641,19 @@ class MapManager {
       console.log("Tileset images loaded:", result.loaded, "failed:", result.failed);
 
       this.setMap(mapData, nextMapPath, targetSpawn);
-      this.portalCooldown = 0.5;
-      this.activePortalId = portal.id;
+      this.portalCooldown = 1.0;
+
+      // Prevent immediate re-prompt if spawn lands on a portal in the NEW map
+      this.activePortalId = null;
+
+      const playerBounds = this.player.getBounds();
+      for (const newPortal of this.portals) {
+        const portalRect = this.getPortalRect(newPortal);
+        if (rectsOverlap(playerBounds, portalRect)) {
+          this.activePortalId = newPortal.id;
+          break;
+        }
+      }
     } catch (error) {
       const altMap = targetMap.includes("_") ? targetMap.replace(/_/g, " ") : null;
       if (altMap) {
@@ -657,8 +668,19 @@ class MapManager {
           const result = await preloadImages(tilePaths);
           console.log("Tileset images loaded:", result.loaded, "failed:", result.failed);
           this.setMap(mapData, altPath, targetSpawn);
-          this.portalCooldown = 0.5;
-          this.activePortalId = portal.id;
+          this.portalCooldown = 1.0;
+
+          // Prevent immediate re-prompt if spawn lands on a portal in the NEW map
+          this.activePortalId = null;
+
+          const playerBounds = this.player.getBounds();
+          for (const newPortal of this.portals) {
+            const portalRect = this.getPortalRect(newPortal);
+            if (rectsOverlap(playerBounds, portalRect)) {
+              this.activePortalId = newPortal.id;
+              break;
+            }
+          }
         } catch (retryError) {
           console.error("Failed to load map:", nextMapPath, retryError);
         }
@@ -672,28 +694,36 @@ class MapManager {
 
 update() {
   if (!this.mapData) return;
+  if (this.isTransitioning) return;
 
   if (this.portalCooldown > 0) {
     this.portalCooldown -= this.game.clockTick;
   }
 
   const playerBounds = this.player.getBounds();
-
+  if (this.game.pendingTeleport) return;
   // --- portal logic ---
-  for (const portal of this.portals) {
-    const portalRect = this.getPortalRect(portal);
-    const overlap = rectsOverlap(playerBounds, portalRect);
+for (const portal of this.portals) {
+  const portalRect = this.getPortalRect(portal);
+  const overlap = rectsOverlap(playerBounds, portalRect);
 
-    if (!overlap && this.activePortalId === portal.id) {
-      this.activePortalId = null;
-    }
-
-    if (overlap && this.portalCooldown <= 0 && this.activePortalId !== portal.id) {
-      console.log("Portal overlap detected:", portal.name || "(unnamed)", portalRect);
-      this.transitionTo(portal);
-      break;
-    }
+  if (!overlap && this.activePortalId === portal.id) {
+    this.activePortalId = null;
   }
+
+  if (overlap && this.portalCooldown <= 0 && this.activePortalId !== portal.id) {
+    console.log("Portal overlap detected:", portal.name || "(unnamed)", portalRect);
+
+    if (!this.game.pendingTeleport) {
+      this.game.pendingTeleport = {
+        mapManager: this,
+        portal: portal
+      };
+    }
+
+    break;
+  }
+}
 
   // --- dialog object logic ---
   for (const dialog of this.dialogs) {
@@ -709,6 +739,18 @@ update() {
       this.activeDialog = { text, timeLeftMs: durationMs };
       this.game.activeDialog = this.activeDialog;
       this.usedTriggers.add(dialog.id);
+
+      // mark window task complete
+      const dialogName = String(dialog.name || "").toLowerCase();
+      if (dialogName.includes("chair")) {
+        this.game.checkedWindow = true;
+      }
+
+      if (dialogName.includes("door")) {
+      this.game.foundBeth = true;
+      }
+
+
 
       console.log("Dialog triggered:", dialog.name || "(unnamed)", text);
       break;

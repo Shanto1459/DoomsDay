@@ -193,9 +193,13 @@ async function setupWorld(mapPath, spawnName) {
 
   gameEngine.entities = [];
   gameEngine.activeDialog = null;
+  gameEngine.checkedWindow = false;
+  gameEngine.foundBeth = false;
+  gameEngine.hasCarKey = false;
   gameEngine.paused = false;
   gameEngine.gameOver = false;
   gameEngine.keys = {};
+  gameEngine.pendingTeleport = null;
   gameEngine.zombiesEnabled = false;
   if (!gameEngine.collectedItems) gameEngine.collectedItems = new Set();
 
@@ -216,16 +220,20 @@ async function setupWorld(mapPath, spawnName) {
 
     mapManager.setMap(mapData, mapPath, spawnName);
     const notebook = new Notebook(gameEngine);
+    const teleportPrompt = new TeleportPrompt(gameEngine);
     const hintArrow = new HintArrow(gameEngine);
 
     gameEngine.notebook = notebook;
+    gameEngine.teleportPrompt = teleportPrompt;
     gameEngine.hintArrow = hintArrow;
+    
 
     gameEngine.entities.unshift(notebook);
+    gameEngine.entities.unshift(teleportPrompt);
     gameEngine.entities.unshift(hintArrow);
 
-    gameEngine.cameraTarget = player;
-    gameEngine.addEntity(player);
+   gameEngine.cameraTarget = player;
+   gameEngine.addEntity(player);
 
     // Map manager is added last because engine draws in reverse order.
     // This makes the map draw first (background), then zombies, then player.
@@ -233,15 +241,21 @@ async function setupWorld(mapPath, spawnName) {
     currentPlayer = player;
     currentMapManager = mapManager;
     spawnPickupsForMap(player, mapData, mapPath);
-  } else {
-    const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
-    restoreCollectedItemsToPlayer(player);
-    gameEngine.cameraTarget = player;
-    gameEngine.addEntity(player);
-    gameEngine.zombiesEnabled = false;
-    currentPlayer = player;
-    currentMapManager = null;
-  }
+} else {
+  const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
+  const teleportPrompt = new TeleportPrompt(gameEngine);
+
+  restoreCollectedItemsToPlayer(player);
+
+  gameEngine.teleportPrompt = teleportPrompt;
+  gameEngine.entities.unshift(teleportPrompt);
+
+  gameEngine.cameraTarget = player;
+  gameEngine.addEntity(player);
+  gameEngine.zombiesEnabled = false;
+  currentPlayer = player;
+  currentMapManager = null;
+}
 }
 
 // Loads the map JSON, preloads tiles, then starts the game loop.

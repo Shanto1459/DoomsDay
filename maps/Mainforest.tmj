@@ -1079,7 +1079,7 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2684356859, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1328,8 +1328,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":392.454545454545,
-                 "y":172.011818181818
+                 "x":393.704545454545,
+                 "y":185.011818181818
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1419,15 +1419,85 @@
          "name":"dialog",
          "objects":[
                 {
-                 "height":16,
-                 "id":16,
+                 "height":0,
+                 "id":50,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"duration",
+                         "type":"int",
+                         "value":5000
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"WHAT IS THAT????"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"dialog"
+                        }],
+                 "rotation":0,
+                 "type":"First zombie speech",
+                 "visible":true,
+                 "width":0,
+                 "x":402.083333333333,
+                 "y":198.25
+                }, 
+                {
+                 "height":11.4242090909091,
+                 "id":55,
+                 "name":"LockedDoor",
+                 "properties":[
+                        {
+                         "name":"duration",
+                         "type":"string",
+                         "value":"5000"
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"Beth?? Are you in there?? The door is locked..."
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"dialog"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":16,
-                 "x":176.121,
-                 "y":194.394
+                 "width":16.2423909090909,
+                 "x":143.787895454545,
+                 "y":184.015168181818
+                }, 
+                {
+                 "height":38.3332909090909,
+                 "id":56,
+                 "name":"LockedDoor",
+                 "properties":[
+                        {
+                         "name":"duration",
+                         "type":"string",
+                         "value":"5000"
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"There is so much blood I hope Beth is okay!!"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"dialog"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":59.6969454545454,
+                 "x":163.151527272727,
+                 "y":197.742445454545
                 }],
          "opacity":1,
          "properties":[
@@ -1509,8 +1579,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":242.5,
-                 "y":253.25
+                 "x":314.5,
+                 "y":320.25
                 }, 
                 {
                  "height":16,
@@ -1573,34 +1643,7 @@
          "draworder":"topdown",
          "id":26,
          "name":"portal",
-         "objects":[
-                {
-                 "height":19.5,
-                 "id":22,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"targetMap",
-                         "type":"string",
-                         "value":".\/maps\/Mainforest.tmj"
-                        }, 
-                        {
-                         "name":"targetSpawn",
-                         "type":"string",
-                         "value":"ForestSpawn"
-                        }, 
-                        {
-                         "name":"type",
-                         "type":"string",
-                         "value":"portal"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":384.25,
-                 "y":149.25
-                }],
+         "objects":[],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -1611,7 +1654,34 @@
          "draworder":"topdown",
          "id":27,
          "name":"insideportal",
-         "objects":[],
+         "objects":[
+                {
+                 "height":0,
+                 "id":54,
+                 "name":"BackToHouse",
+                 "properties":[
+                        {
+                         "name":"targetMap",
+                         "type":"string",
+                         "value":"Bedroom.tmj"
+                        }, 
+                        {
+                         "name":"targetSpawn",
+                         "type":"string",
+                         "value":"PlayerSpawn"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"portal"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":401.454545454545,
+                 "y":157.818181818182
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -1718,8 +1788,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":30,
- "nextobjectid":49,
+ "nextlayerid":31,
+ "nextobjectid":57,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
