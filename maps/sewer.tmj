@@ -308,12 +308,12 @@
                         {
                          "name":"duration",
                          "type":"string",
-                         "value":"3000"
+                         "value":"5000"
                         }, 
                         {
                          "name":"text",
                          "type":"string",
-                         "value":"Where tf am I??"
+                         "value":"Ow! That was a hard fall... I\u2019m not getting back out that way."
                         }, 
                         {
                          "name":"type",
@@ -353,6 +353,33 @@
                  "width":14,
                  "x":66.25,
                  "y":53
+                }, 
+                {
+                 "height":14.2727272727273,
+                 "id":19,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"duration",
+                         "type":"string",
+                         "value":"3000"
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"Fuck I have to crawl up this pipe, there is no other way out"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"dialog"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":54.1818181818182,
+                 "x":849.545454545455,
+                 "y":58.3181818181818
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -457,7 +484,7 @@
          "y":0
         }],
  "nextlayerid":17,
- "nextobjectid":19,
+ "nextobjectid":20,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

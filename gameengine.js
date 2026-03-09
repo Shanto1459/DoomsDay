@@ -346,8 +346,16 @@ handleTopRightUiClick() {
         this.ctx.fillText("Press N: Notebook", centerX, firstY);
 
         const hintOn = this.hintArrow && this.hintArrow.active;
-        this.ctx.fillText("Press N: Notebook", centerX, firstY);
+        const notebookHasUpdate = this.notebook && this.notebook.hasUnreadUpdate;
+        const flashOn = Math.floor(performance.now() / 300) % 2 === 0;
 
+        if (notebookHasUpdate) {
+        this.ctx.fillStyle = flashOn ? "#ffd54f" : "#ffffff";
+        } else {
+        this.ctx.fillStyle = "rgba(255,255,255,0.85)";
+        }
+
+        this.ctx.fillText("Press N: Notebook", centerX, firstY);
         this.ctx.fillText("Press C: Compass", centerX, firstY + 16);
         this.ctx.fillText(`${hintOn ? "ON" : "OFF"}`, centerX, firstY + 32);
 

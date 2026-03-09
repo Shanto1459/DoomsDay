@@ -1,10 +1,9 @@
 class HintArrow {
   constructor(game) {
     this.game = game;
-    this.active = false;
+    this.active = true;
     this.target = null;
-    this.prevHDown = false;
-  }
+    this.prevCDown = false;  }
 
   setTarget(x, y, label = "Objective") {
     this.target = { x, y, label };
@@ -15,23 +14,27 @@ class HintArrow {
     this.active = false;
   }
 
-  update() {
-    const path = String(this.game.currentMapPath || "").toLowerCase();
+update() {
+  const path = String(this.game.currentMapPath || "").toLowerCase();
 
-    if (path.includes("mainforest")) {
-      this.setTarget(2942, 3682, "Sewer Cover");
+  if (path.includes("mainforest")) {
+    if (!this.game.foundBeth) {
+      this.setTarget(576, 704, "Beth's House");
     } else {
-      this.clearTarget();
+      this.setTarget(2942, 3682, "Sewer Cover");
     }
-
-    const cDown = !!this.game.keys["c"];
-    const cPressed = cDown && !this.prevCDown;
-    this.prevCDown = cDown;
-
-    if (cPressed && this.target && !this.game.gameOver && !this.game.gameWon) {
-      this.active = !this.active;
-    }
+  } else {
+    this.clearTarget();
   }
+
+  const cDown = !!this.game.keys["c"];
+  const cPressed = cDown && !this.prevCDown;
+  this.prevCDown = cDown;
+
+  if (cPressed && this.target && !this.game.gameOver && !this.game.gameWon) {
+    this.active = !this.active;
+  }
+}
 
   draw(ctx) {
     if (!this.active || !this.target) return;

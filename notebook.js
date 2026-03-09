@@ -4,26 +4,53 @@ class Notebook {
     this.game = game;
     this.isOpen = false;
     this.prevNDown = false;
+    this.hasUnreadUpdate = false;
+    this.lastObjectiveSignature = "";
 
     // Buttons
     this.btnClose = { x: 0, y: 0, w: 120, h: 34 };
   }
 
-  toggle() {
-    this.isOpen = !this.isOpen;
+toggle() {
+  this.isOpen = !this.isOpen;
 
-    // stop movement instantly when opening
-    if (this.isOpen) this.game.keys = {};
-
-    this.game.ignoreClicksUntil = performance.now() + 120;
-    this.game.click = null;
+  // stop movement instantly when opening
+  if (this.isOpen) {
+    this.game.keys = {};
+    this.hasUnreadUpdate = false;
   }
+
+  this.game.ignoreClicksUntil = performance.now() + 120;
+  this.game.click = null;
+}
 
   pointInRect(p, r) {
     return p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h;
   }
 
   
+
+  getObjectiveSignature() {
+  const path = String(this.game.currentMapPath || "").toLowerCase();
+
+  if (path.includes("bedroom") || path === "") {
+    return "bedroom:check_window|find_weapon|leave_bedroom";
+  }
+
+  if (path.includes("mainforest")) {
+    if (!this.game.foundBeth) {
+      return "mainforest:knock_on_beths_door";
+    }
+
+    if (!this.game.hasSewerKey) {
+      return "mainforest:avenge_beth|find_sewer";
+    }
+
+    return "mainforest:open_beths_house|read_letter";
+  }
+
+  return "default:explore|look_for_supplies";
+}
 
   // Count living zombies (ignore dead/corpse ones)
   getAliveZombies() {
@@ -95,11 +122,13 @@ if (path.includes("mainforest")) {
     };
   }
 
+
+
   // AFTER finding Beth
   return {
     title: "Notebook",
     lines: [
-      `☐ Kill all the weird creatures. (${alive} remaining)`,
+      `☐ Find & kill all the weird creatures. (${alive} remaining)`,
       `☐ Find Beth's spare house key in the sewer.`,
       "   I remember she dropped it in there.",
       "   Maybe she already made it out of the city."
@@ -107,10 +136,30 @@ if (path.includes("mainforest")) {
     footer: "Press N to close."
   };
 }
+
+// Sewer objectives
+if (path.includes("sewer")) {
+  return {
+    title: "Notebook",
+    lines: [
+      "☐ Look for Beth's spare key.",
+      "☐ Find a way out of the sewer."
+    ],
+    footer: "Press N to close."
+  };
+}
   }
 
   update() {
-    // Toggle with N (press once)
+
+    const currentSignature = this.getObjectiveSignature();
+
+    if (this.lastObjectiveSignature && currentSignature !== this.lastObjectiveSignature) {
+      this.hasUnreadUpdate = true;
+    }
+
+    this.lastObjectiveSignature = currentSignature;
+
     const nDown = !!this.game.keys["n"];
     const nPressed = nDown && !this.prevNDown;
     this.prevNDown = nDown;
