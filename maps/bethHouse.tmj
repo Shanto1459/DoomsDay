@@ -212,7 +212,7 @@
          "name":"dialog",
          "objects":[
                 {
-                 "height":25.3333,
+                 "height":16.3333,
                  "id":3,
                  "name":"blood",
                  "properties":[
@@ -234,9 +234,9 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":32.6969,
-                 "x":80.15155,
-                 "y":165.83335
+                 "width":21.6969,
+                 "x":84.8182166666667,
+                 "y":167.500016666667
                 }, 
                 {
                  "height":25.3333,
