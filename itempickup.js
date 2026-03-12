@@ -14,11 +14,20 @@ class ItemPickup {
     this.showHint = false;
     this.warnedMissingSprite = false;
     this.removeFromWorld = false;
+
+    // Animation settings (for sprite sheets like the rotating key)
+    this.frameCount = options.frameCount || 1;
+    this.frameDuration = options.frameDuration || 0.12;
+    this.frameWidth = options.frameWidth || this.width;
+    this.frameHeight = options.frameHeight || this.height;
+    this.animTime = 0;
   }
 
   update() {
     if (!this.player || this.removeFromWorld) return;
     if (this.game.paused || this.game.gameOver) return;
+
+    this.animTime += this.game.clockTick;
 
     if (this.game.collectedItems && this.game.collectedItems.has(this.collectedKey)) {
       this.removeFromWorld = true;
@@ -41,10 +50,13 @@ class ItemPickup {
   pickup() {
     if (!this.player) return;
     this.player.addItem(this.itemId);
+
     if (this.game.collectedItems) {
       this.game.collectedItems.add(this.collectedKey);
     }
+
     this.removeFromWorld = true;
+
     if (this.game.debug) {
       console.log("[PICKUP] Collected item", {
         itemId: this.itemId,
@@ -54,31 +66,62 @@ class ItemPickup {
     }
   }
 
-  draw(ctx) {
-    const sprite = this.spritePath ? ASSET_MANAGER.getAsset(this.spritePath) : null;
-    const spriteReady = !!(sprite && sprite.complete && sprite.naturalWidth > 0);
-    if (spriteReady) {
-      ctx.drawImage(sprite, this.x, this.y, this.width, this.height);
+draw(ctx) {
+  const sprite = this.spritePath ? ASSET_MANAGER.getAsset(this.spritePath) : null;
+  const spriteReady = !!(sprite && sprite.complete && sprite.naturalWidth > 0);
+
+  if (spriteReady) {
+    const frameIndex =
+      this.frameCount > 1
+        ? Math.floor(this.animTime / this.frameDuration) % this.frameCount
+        : 0;
+
+    let sx = 0;
+    let sy = 0;
+
+    if (this.itemId === "key") {
+      // vertical strip
+      sx = 0;
+      sy = frameIndex * this.frameHeight;
     } else {
-      if (this.spritePath && !this.warnedMissingSprite) {
-        console.warn("Pickup sprite missing, using fallback:", this.spritePath);
-        this.warnedMissingSprite = true;
-      }
-      ctx.save();
-      ctx.fillStyle = "#ddb85b";
-      ctx.strokeStyle = "#4a3a15";
-      ctx.lineWidth = 2;
-      ctx.fillRect(this.x, this.y, this.width, this.height);
-      ctx.strokeRect(this.x, this.y, this.width, this.height);
-      ctx.restore();
+      // horizontal strip / normal sprite
+      const columns = Math.max(1, Math.floor(sprite.width / this.frameWidth));
+      sx = (frameIndex % columns) * this.frameWidth;
+      sy = Math.floor(frameIndex / columns) * this.frameHeight;
     }
 
-    if (this.showHint) {
-      ctx.save();
-      ctx.font = "12px monospace";
-      ctx.fillStyle = "#ffffff";
-      ctx.fillText("Press E", this.x - 6, this.y - 8);
-      ctx.restore();
+    ctx.drawImage(
+      sprite,
+      sx,
+      sy,
+      this.frameWidth,
+      this.frameHeight,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
+  } else {
+    if (this.spritePath && !this.warnedMissingSprite) {
+      console.warn("Pickup sprite missing, using fallback:", this.spritePath);
+      this.warnedMissingSprite = true;
     }
+
+    ctx.save();
+    ctx.fillStyle = "#ddb85b";
+    ctx.strokeStyle = "#4a3a15";
+    ctx.lineWidth = 2;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
+    ctx.restore();
   }
+
+  if (this.showHint) {
+    ctx.save();
+    ctx.font = "12px monospace";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("Press E", this.x - 6, this.y - 8);
+    ctx.restore();
+  }
+}
 }

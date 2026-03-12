@@ -10,6 +10,7 @@ const ASSET_MANAGER = new AssetManager();
 const MAP_PATH = "./maps/bedroom.tmj";
 const BAT_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Bat.png";
 const KNIFE_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Knife.png";
+const KEY_SPRITE_PATH = "./Room/sewerkey.png";
 const MAP_SCALE = 4;
 const START_SPAWN = "PlayerSpawn";
 const PLAYER_SPEED = 140; // pixels per second
@@ -45,25 +46,34 @@ function getMapObjectLayers(mapData) {
 function resolvePickupType(obj) {
   const fromProp = getObjectProperty(obj, "itemId");
   const raw = String(fromProp || obj.name || obj.type || obj.class || "").toLowerCase();
+
   if (raw.includes("bat")) return "bat";
   if (raw.includes("knife")) return "knife";
+  if (raw.includes("key")) return "key";
+
   return null;
 }
 
 function getPickupSpritePath(itemId) {
   if (itemId === "bat") return BAT_SPRITE_PATH;
   if (itemId === "knife") return KNIFE_SPRITE_PATH;
+  if (itemId === "key") return KEY_SPRITE_PATH;
   return "";
 }
 
 function restoreCollectedItemsToPlayer(player) {
   if (!player || !gameEngine.collectedItems) return;
+
   for (const key of gameEngine.collectedItems) {
     const parts = String(key || "").split(":");
     const itemId = parts[parts.length - 1];
     if (!itemId) continue;
-    if (!player.inventory[itemId]) player.addItem(itemId);
+
+    if (!player.inventory[itemId]) {
+      player.addItem(itemId);
+    }
   }
+
   // Keep bat equipped across restart if it was previously collected.
   if (player.hasItem && player.hasItem("bat")) {
     player.equippedWeapon = "bat";
@@ -77,9 +87,13 @@ function spawnPickupsForMap(player, mapData, mapPath) {
   const mapPathLower = String(mapPath || "").toLowerCase();
   const objectLayers = getMapObjectLayers(mapData);
   const pickupObjects = [];
+
   for (const layer of objectLayers) {
     const layerName = String(layer.name || "").toLowerCase();
+
+    // Only read layers named like "items" or "pickup"
     if (!layerName.includes("item") && !layerName.includes("pickup")) continue;
+
     for (const obj of layer.objects || []) {
       const itemType = resolvePickupType(obj);
       if (!itemType) continue;
@@ -95,27 +109,33 @@ function spawnPickupsForMap(player, mapData, mapPath) {
     const isPoint = !!obj.point || (!obj.width && !obj.height);
     const x = isPoint ? rawX - width / 2 : rawX;
     const y = isPoint ? rawY - height / 2 : rawY;
-     const pickedAsBat = itemType === "knife";
-    const itemId = pickedAsBat ? "bat" : itemType;
-   //const itemId = itemType;
+
+    const itemId = itemType;
     const spritePath = getPickupSpritePath(itemId);
     const collectedKey = `${mapPathLower}:${itemId}`;
+    const isAnimatedKey = itemId === "key";
+
     if (gameEngine.collectedItems.has(collectedKey)) continue;
 
     gameEngine.addEntity(new ItemPickup(gameEngine, player, {
-      x,
-      y,
-      width,
-      height,
-      itemId,
-      spritePath,
-      collectedKey
-    }));
+  x,
+  y,
+  width,
+  height,
+  itemId,
+  spritePath,
+  collectedKey,
+frameCount: isAnimatedKey ? 8 : 1,
+frameDuration: isAnimatedKey ? 0.12 : 0.12,
+frameWidth: isAnimatedKey ? 16 : width,
+frameHeight: isAnimatedKey ? 16 : height
+}));
   }
 
   // Fallback spawn for bedroom if no pickups detected.
   if (pickupObjects.length === 0 && mapPathLower.includes("bedroom")) {
     const fallbackKey = `${mapPathLower}:bat`;
+
     if (!gameEngine.collectedItems.has(fallbackKey)) {
       gameEngine.addEntity(new ItemPickup(gameEngine, player, {
         x: 64,
@@ -135,22 +155,27 @@ function spawnPickupsForMap(player, mapData, mapPath) {
 function isMapZombieEnabled(mapPath, mapData) {
   const mapProp = (mapData && mapData.properties || []).find((p) => p.name === "zombiesEnabled");
   if (mapProp) return !!mapProp.value;
+
   const path = (mapPath || "").toLowerCase();
+
   // Bedroom/inside map is always safe.
   if (path.includes("bedroom")) return false;
   if (path.includes("bethhouse")) return false;
+
   return true;
-  }
+}
 
 function isZombieSpawnValid(x, y, zombieWidth, zombieHeight, player) {
   if (x < 0 || y < 0) return false;
   if (x + zombieWidth > gameEngine.worldWidth || y + zombieHeight > gameEngine.worldHeight) return false;
   if (gameEngine.collisionGrid && gameEngine.collisionGrid.isBlockedRect(x, y, zombieWidth, zombieHeight)) return false;
+
   if (player) {
     const dx = x - player.x;
     const dy = y - player.y;
     if (Math.hypot(dx, dy) < 80) return false;
   }
+
   return true;
 }
 
@@ -175,7 +200,6 @@ function spawnZombies(player, mapPath, mapData) {
   keepMapManagerLast();
 }
 
-
 async function loadMapData(mapPath) {
   const mapResponse = await fetch(mapPath);
   if (!mapResponse.ok) {
@@ -186,6 +210,7 @@ async function loadMapData(mapPath) {
 
 async function setupWorld(mapPath, spawnName) {
   let mapData = null;
+
   try {
     mapData = await loadMapData(mapPath);
   } catch (error) {
@@ -202,7 +227,10 @@ async function setupWorld(mapPath, spawnName) {
   gameEngine.keys = {};
   gameEngine.pendingTeleport = null;
   gameEngine.zombiesEnabled = false;
-  if (!gameEngine.collectedItems) gameEngine.collectedItems = new Set();
+
+  if (!gameEngine.collectedItems) {
+    gameEngine.collectedItems = new Set();
+  }
 
   if (mapData) {
     const tilePaths = collectTilesetImagePaths(mapData, mapPath);
@@ -212,7 +240,9 @@ async function setupWorld(mapPath, spawnName) {
     const spawn = getSpawnPosition(mapData, MAP_SCALE, spawnName);
     const player = new Player(gameEngine, spawn.x, spawn.y, PLAYER_SPEED);
     restoreCollectedItemsToPlayer(player);
+
     const mapManager = new MapManager(gameEngine, player, MAP_SCALE);
+
     gameEngine.onMapChanged = (newMapPath, newMapData) => {
       gameEngine.zombiesEnabled = isMapZombieEnabled(newMapPath, newMapData);
       spawnZombies(player, newMapPath, newMapData);
@@ -220,6 +250,7 @@ async function setupWorld(mapPath, spawnName) {
     };
 
     mapManager.setMap(mapData, mapPath, spawnName);
+
     const notebook = new Notebook(gameEngine);
     const teleportPrompt = new TeleportPrompt(gameEngine);
     const hintArrow = new HintArrow(gameEngine);
@@ -235,30 +266,33 @@ async function setupWorld(mapPath, spawnName) {
     gameEngine.entities.unshift(hintArrow);
     gameEngine.entities.unshift(inventory);
 
-   gameEngine.cameraTarget = player;
-   gameEngine.addEntity(player);
+    gameEngine.cameraTarget = player;
+    gameEngine.addEntity(player);
 
     // Map manager is added last because engine draws in reverse order.
     // This makes the map draw first (background), then zombies, then player.
     gameEngine.addEntity(mapManager);
+
     currentPlayer = player;
     currentMapManager = mapManager;
+
     spawnPickupsForMap(player, mapData, mapPath);
-} else {
-  const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
-  const teleportPrompt = new TeleportPrompt(gameEngine);
+  } else {
+    const player = new Player(gameEngine, 400, 300, PLAYER_SPEED);
+    const teleportPrompt = new TeleportPrompt(gameEngine);
 
-  restoreCollectedItemsToPlayer(player);
+    restoreCollectedItemsToPlayer(player);
 
-  gameEngine.teleportPrompt = teleportPrompt;
-  gameEngine.entities.unshift(teleportPrompt);
+    gameEngine.teleportPrompt = teleportPrompt;
+    gameEngine.entities.unshift(teleportPrompt);
 
-  gameEngine.cameraTarget = player;
-  gameEngine.addEntity(player);
-  gameEngine.zombiesEnabled = false;
-  currentPlayer = player;
-  currentMapManager = null;
-}
+    gameEngine.cameraTarget = player;
+    gameEngine.addEntity(player);
+    gameEngine.zombiesEnabled = false;
+
+    currentPlayer = player;
+    currentMapManager = null;
+  }
 }
 
 // Loads the map JSON, preloads tiles, then starts the game loop.
@@ -272,6 +306,7 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_up_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side-left_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side_punch-Sheet4.png");
+
   ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_down_idle-and-run-Sheet6.png");
   ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_up_idle-and-run-Sheet6.png");
   ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_side-left_idle-and-run-Sheet6.png");
@@ -280,59 +315,62 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_up_attack-Sheet4.png");
   ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_side-left_attack-Sheet4.png");
   ASSET_MANAGER.queueDownload("./PostApocalypse_AssetPack_v1.1.2/Character/Bat/Bat_side_attack-Sheet4.png");
+
   ASSET_MANAGER.queueDownload(BAT_SPRITE_PATH);
   ASSET_MANAGER.queueDownload(KNIFE_SPRITE_PATH);
-  
+  ASSET_MANAGER.queueDownload(KEY_SPRITE_PATH);
 
   // Queue all zombie variants
-queueZombieSkins(ASSET_MANAGER);
+  queueZombieSkins(ASSET_MANAGER);
 
-console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
+  console.log("[ASSET QUEUE] zombie path:", Zombie.SPRITE_PATH);
 
-ASSET_MANAGER.downloadAll(async () => {
-  console.log("Game starting");
+  ASSET_MANAGER.downloadAll(async () => {
+    console.log("Game starting");
 
-  const canvas = document.getElementById("gameWorld");
-  const ctx = canvas.getContext("2d");
+    const canvas = document.getElementById("gameWorld");
+    const ctx = canvas.getContext("2d");
 
-  gameEngine.init(ctx);
-  canvas.focus();
+    gameEngine.init(ctx);
+    canvas.focus();
 
-  function showTitleScreen() {
-    // reset engine state
-    gameEngine.entities = [];
-    
-    gameEngine.gameOver = false;
-    gameEngine.gameWon = false;
-    gameEngine.paused = false;
-    gameEngine.keys = {};
-    gameEngine.cameraTarget = null;
-    gameEngine.onMapChanged = null;
-    // optional: stop music on main screen
-    if (typeof AudioEngine !== "undefined") {
-      AudioEngine.stopMusic();
+    function showTitleScreen() {
+      // reset engine state
+      gameEngine.entities = [];
+      gameEngine.gameOver = false;
+      gameEngine.gameWon = false;
+      gameEngine.paused = false;
+      gameEngine.keys = {};
+      gameEngine.cameraTarget = null;
+      gameEngine.onMapChanged = null;
+
+      // optional: stop music on main screen
+      if (typeof AudioEngine !== "undefined") {
+        AudioEngine.stopMusic();
+      }
+
+      const title = new TitleScreen(gameEngine, async () => {
+        // audio must start after click
+        AudioEngine.init();
+        AudioEngine.playMusic();
+
+        await setupWorld(MAP_PATH, START_SPAWN);
+      });
+
+      gameEngine.addEntity(title);
     }
-    const title = new TitleScreen(gameEngine, async () => {
-      // audio must start after click
-      AudioEngine.init();
-      AudioEngine.playMusic();
 
-      await setupWorld(MAP_PATH, START_SPAWN);
-    });
-
-    gameEngine.addEntity(title);
-  }
-  // first boot -> title screen
-  showTitleScreen();
-  // restart button -> back to title screen
-  gameEngine.restart = () => {
+    // first boot -> title screen
     showTitleScreen();
-  };
-  gameEngine.start();
-});
+
+    // restart button -> back to title screen
+    gameEngine.restart = () => {
+      showTitleScreen();
+    };
+
+    gameEngine.start();
+  });
 }
-
-
 
 loadGame().catch((error) => {
   console.error("Failed to load game assets", error);

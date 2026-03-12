@@ -1708,6 +1708,12 @@
                  "id":59,
                  "name":"Gun",
                  "point":true,
+                 "properties":[
+                        {
+                         "name":"itemId",
+                         "type":"string",
+                         "value":"gun"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

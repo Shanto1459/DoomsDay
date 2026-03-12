@@ -12,34 +12,35 @@ class Inventory {
     this.y = 580; // above HP bar
   }
 
-update() {
-  const player = this.game.cameraTarget;
-  if (!player) return;
+  update() {
+    const player = this.game.cameraTarget;
+    if (!player) return;
 
-  if (!this.game.click) return;
+    if (!this.game.click) return;
 
-  const items = this.getItems();
-  const click = this.game.click;
+    const items = this.getItems();
+    const click = this.game.click;
 
-  for (let i = 0; i < this.slotCount; i++) {
-    const slotRect = this.getSlotRect(i);
+    for (let i = 0; i < this.slotCount; i++) {
+      const slotRect = this.getSlotRect(i);
 
-    if (this.pointInRect(click, slotRect)) {
-      const itemId = items[i];
+      if (this.pointInRect(click, slotRect)) {
+        const itemId = items[i];
 
-      if (!itemId) {
-        player.equippedWeapon = null;
-      } else if (player.equippedWeapon === itemId) {
-        player.equippedWeapon = null;
-      } else {
-        player.equippedWeapon = itemId;
+        if (!itemId) {
+          player.equippedWeapon = null;
+        } else if (player.equippedWeapon === itemId) {
+          player.equippedWeapon = null;
+        } else {
+          player.equippedWeapon = itemId;
+        }
+
+        this.game.click = null;
+        return;
       }
-
-      this.game.click = null;
-      return;
     }
   }
-}
+
   getItems() {
     const player = this.game.cameraTarget;
     if (!player || !player.inventory) return [];
@@ -48,7 +49,7 @@ update() {
 
     if (player.inventory.bat) items.push("bat");
     if (player.inventory.knife) items.push("knife");
-    if (player.inventory.car_key) items.push("car_key");
+    if (player.inventory.key) items.push("key");
 
     return items;
   }
@@ -60,27 +61,52 @@ update() {
     if (itemId === "knife") {
       return "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Knife.png";
     }
-    if (itemId === "car_key") {
-      return "./sprites/items/car_key.png"; // change this to your real key path
+    if (itemId === "key") {
+      return "./Room/sewerkey.png";
     }
     return null;
   }
 
-   getSlotRect(index) {
-  const sx = this.x + this.padding + index * (this.slotSize + this.spacing);
-  const sy = this.y + this.padding;
+  getSlotRect(index) {
+    const sx = this.x + this.padding + index * (this.slotSize + this.spacing);
+    const sy = this.y + this.padding;
 
-  return {
-    x: sx,
-    y: sy,
-    w: this.slotSize,
-    h: this.slotSize
-  };
-}
+    return {
+      x: sx,
+      y: sy,
+      w: this.slotSize,
+      h: this.slotSize
+    };
+  }
 
-pointInRect(p, r) {
-  return p.x >= r.x && p.x <= r.x + r.w &&
-         p.y >= r.y && p.y <= r.y + r.h;
+  pointInRect(p, r) {
+    return p.x >= r.x && p.x <= r.x + r.w &&
+           p.y >= r.y && p.y <= r.y + r.h;
+  }
+
+ drawAnimatedKey(ctx, img, dx, dy, dw, dh) {
+  const frameCount = 8;
+  const frameWidth = 16;
+  const frameHeight = 16;
+  const frameDuration = 0.12;
+
+  const frameIndex =
+    Math.floor(this.game.timer.gameTime / frameDuration) % frameCount;
+
+  const sx = 0;
+  const sy = frameIndex * frameHeight;
+
+  ctx.drawImage(
+    img,
+    sx,
+    sy,
+    frameWidth,
+    frameHeight,
+    dx,
+    dy,
+    dw,
+    dh
+  );
 }
 
   draw(ctx) {
@@ -135,13 +161,16 @@ pointInRect(p, r) {
 
         if (img) {
           const iconPadding = 4;
-          ctx.drawImage(
-            img,
-            sx + iconPadding,
-            sy + iconPadding,
-            this.slotSize - iconPadding * 2,
-            this.slotSize - iconPadding * 2
-          );
+          const drawX = sx + iconPadding;
+          const drawY = sy + iconPadding;
+          const drawW = this.slotSize - iconPadding * 2;
+          const drawH = this.slotSize - iconPadding * 2;
+
+          if (itemId === "key") {
+            this.drawAnimatedKey(ctx, img, drawX, drawY, drawW, drawH);
+          } else {
+            ctx.drawImage(img, drawX, drawY, drawW, drawH);
+          }
         } else {
           // fallback text if image missing
           ctx.fillStyle = "white";
@@ -155,5 +184,4 @@ pointInRect(p, r) {
 
     ctx.restore();
   }
-
 }
