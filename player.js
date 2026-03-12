@@ -395,6 +395,14 @@ class Player {
     }
     return true;
   }
+  heal(amount) {
+  if (this.isDead) return false;
+
+  const oldHealth = this.health;
+  this.health = Math.min(this.maxHealth, this.health + amount);
+
+  return this.health > oldHealth;
+  }  
 
 draw(ctx) {
   ctx.imageSmoothingEnabled = false;
