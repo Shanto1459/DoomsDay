@@ -19,6 +19,11 @@ const ZOMBIE_COUNT = 1;
 let currentPlayer = null;
 let currentMapManager = null;
 
+function normalizeItemId(itemId) {
+  if (itemId === "key") return "beth_house_key";
+  return itemId;
+}
+
 function removeZombies() {
   gameEngine.entities = gameEngine.entities.filter(
     (e) => !(e && e.constructor && e.constructor.name === "Zombie")
@@ -49,7 +54,7 @@ function resolvePickupType(obj) {
 
   if (raw.includes("bat")) return "bat";
   if (raw.includes("knife")) return "knife";
-  if (raw.includes("key")) return "key";
+  if (raw.includes("beth_house_key") || raw.includes("house_key") || raw === "key" || raw.includes("key")) return "beth_house_key";
 
   return null;
 }
@@ -57,7 +62,7 @@ function resolvePickupType(obj) {
 function getPickupSpritePath(itemId) {
   if (itemId === "bat") return BAT_SPRITE_PATH;
   if (itemId === "knife") return KNIFE_SPRITE_PATH;
-  if (itemId === "key") return KEY_SPRITE_PATH;
+  if (itemId === "beth_house_key") return KEY_SPRITE_PATH;
   return "";
 }
 
@@ -66,7 +71,7 @@ function restoreCollectedItemsToPlayer(player) {
 
   for (const key of gameEngine.collectedItems) {
     const parts = String(key || "").split(":");
-    const itemId = parts[parts.length - 1];
+    const itemId = normalizeItemId(parts[parts.length - 1]);
     if (!itemId) continue;
 
     if (!player.inventory[itemId]) {
@@ -104,16 +109,26 @@ function spawnPickupsForMap(player, mapData, mapPath) {
   for (const { obj, itemType } of pickupObjects) {
     const rawX = (obj.x || 0) * MAP_SCALE;
     const rawY = (obj.y || 0) * MAP_SCALE;
-    const width = Math.max(24, (obj.width || 8) * MAP_SCALE);
-    const height = Math.max(24, (obj.height || 8) * MAP_SCALE);
+    let width = Math.max(24, (obj.width || 8) * MAP_SCALE);
+    let height = Math.max(24, (obj.height || 8) * MAP_SCALE);
     const isPoint = !!obj.point || (!obj.width && !obj.height);
+
+    // Bedroom map currently has a Knife marker; treat it as Bat so weapon flow stays consistent.
+    const mappedType =
+      mapPathLower.includes("bedroom") && itemType === "knife"
+        ? "bat"
+        : itemType;
+    const itemId = normalizeItemId(mappedType);
+    if (itemId === "bat") {
+      // Make bat on table clearly visible.
+      width = Math.max(width, 72);
+      height = Math.max(height, 72);
+    }
     const x = isPoint ? rawX - width / 2 : rawX;
     const y = isPoint ? rawY - height / 2 : rawY;
-
-    const itemId = itemType;
     const spritePath = getPickupSpritePath(itemId);
     const collectedKey = `${mapPathLower}:${itemId}`;
-    const isAnimatedKey = itemId === "key";
+    const isAnimatedKey = itemId === "beth_house_key";
 
     if (gameEngine.collectedItems.has(collectedKey)) continue;
 
@@ -132,8 +147,10 @@ frameHeight: isAnimatedKey ? 16 : height
 }));
   }
 
-  // Fallback spawn for bedroom if no pickups detected.
-  if (pickupObjects.length === 0 && mapPathLower.includes("bedroom")) {
+  // Bedroom safety fallback: always ensure a bat pickup exists unless already collected.
+  // This keeps bat available even if the map currently only has non-bat pickups (like Knife).
+  const hasBatPickupObject = pickupObjects.some((p) => normalizeItemId(p.itemType) === "bat");
+  if (mapPathLower.includes("bedroom") && !hasBatPickupObject) {
     const fallbackKey = `${mapPathLower}:bat`;
 
     if (!gameEngine.collectedItems.has(fallbackKey)) {
@@ -150,6 +167,14 @@ frameHeight: isAnimatedKey ? 16 : height
   }
 
   keepMapManagerLast();
+}
+
+function onStoryItemCollected(itemId) {
+  const normalized = normalizeItemId(itemId);
+  if (normalized === "beth_house_key") {
+    gameEngine.hasSewerKey = true;
+    gameEngine.showDialogue("Found Beth's house key.", 2200);
+  }
 }
 
 function isMapZombieEnabled(mapPath, mapData) {
@@ -248,6 +273,7 @@ async function setupWorld(mapPath, spawnName) {
       spawnZombies(player, newMapPath, newMapData);
       spawnPickupsForMap(player, newMapData, newMapPath);
     };
+    gameEngine.onStoryItemCollected = onStoryItemCollected;
 
     mapManager.setMap(mapData, mapPath, spawnName);
 
@@ -343,6 +369,9 @@ async function loadGame() {
       gameEngine.keys = {};
       gameEngine.cameraTarget = null;
       gameEngine.onMapChanged = null;
+      gameEngine.hasTriedBethDoor = false;
+      gameEngine.hasSewerKey = false;
+      gameEngine.bethDoorUnlocked = false;
 
       // optional: stop music on main screen
       if (typeof AudioEngine !== "undefined") {

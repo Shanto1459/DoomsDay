@@ -49,20 +49,33 @@ class ItemPickup {
 
   pickup() {
     if (!this.player) return;
-    this.player.addItem(this.itemId);
+    try {
+      const resolvedItemId = this.itemId === "key" ? "beth_house_key" : this.itemId;
+      this.player.addItem(resolvedItemId);
+      // Bat should become active immediately after pickup.
+      if (resolvedItemId === "bat") {
+        this.player.equippedWeapon = "bat";
+      }
+      if (this.game && typeof this.game.onStoryItemCollected === "function") {
+        this.game.onStoryItemCollected(resolvedItemId);
+      }
 
-    if (this.game.collectedItems) {
-      this.game.collectedItems.add(this.collectedKey);
-    }
+      if (this.game.collectedItems) {
+        this.game.collectedItems.add(this.collectedKey);
+      }
 
-    this.removeFromWorld = true;
+      this.removeFromWorld = true;
 
-    if (this.game.debug) {
-      console.log("[PICKUP] Collected item", {
-        itemId: this.itemId,
-        key: this.collectedKey,
-        equippedWeapon: this.player.equippedWeapon
-      });
+      if (this.game.debug) {
+        console.log("[PICKUP] Collected item", {
+          itemId: this.itemId,
+          key: this.collectedKey,
+          equippedWeapon: this.player.equippedWeapon
+        });
+      }
+    } catch (error) {
+      // Prevent a runtime pickup error from freezing the whole game loop.
+      console.error("[PICKUP ERROR]", this.itemId, error);
     }
   }
 

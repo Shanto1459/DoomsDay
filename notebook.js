@@ -31,25 +31,9 @@ toggle() {
   
 
   getObjectiveSignature() {
-  const path = String(this.game.currentMapPath || "").toLowerCase();
-
-  if (path.includes("bedroom") || path === "") {
-    return "bedroom:check_window|find_weapon|leave_bedroom";
-  }
-
-  if (path.includes("mainforest")) {
-    if (!this.game.foundBeth) {
-      return "mainforest:knock_on_beths_door";
-    }
-
-    if (!this.game.hasSewerKey) {
-      return "mainforest:avenge_beth|find_sewer";
-    }
-
-    return "mainforest:open_beths_house|read_letter";
-  }
-
-  return "default:explore|look_for_supplies";
+    if (this.game.hasSewerKey) return "objective:return_beth_house";
+    if (this.game.hasTriedBethDoor) return "objective:check_sewer_key";
+    return "objective:check_on_beth";
 }
 
   // Count living zombies (ignore dead/corpse ones)
@@ -92,62 +76,15 @@ toggle() {
 }
 
   getObjectives() {
-    const path = String(this.game.currentMapPath || "").toLowerCase();
+    let objective = "Check on Beth";
+    if (this.game.hasSewerKey) objective = "Return to Beth's house";
+    else if (this.game.hasTriedBethDoor) objective = "Check the sewer for the key";
 
-    // Bedroom objectives
-    if (path.includes("bedroom") || path === "") {
-      return {
-        title: "Notebook",
-        lines: [
-          "☐ Check why your window is broken.",
-          "☐ Find a weapon in your room.",
-          "☐ Leave the bedroom when you are ready."
-        ],
-        footer: "Press N to close."
-      };
-    }
-
-if (path.includes("mainforest")) {
-
-  const alive = this.getAliveZombies();
-
-  // BEFORE finding Beth
-  if (!this.game.foundBeth) {
     return {
       title: "Notebook",
-      lines: [
-        "☐ Knock on Beth's door."
-      ],
+      lines: [`☐ ${objective}`],
       footer: "Press N to close."
     };
-  }
-
-
-
-  // AFTER finding Beth
-  return {
-    title: "Notebook",
-    lines: [
-      `☐ Find & kill all the weird creatures. (${alive} remaining)`,
-      `☐ Find Beth's spare house key in the sewer.`,
-      "   I remember she dropped it in there.",
-      "   Maybe she already made it out of the city."
-    ],
-    footer: "Press N to close."
-  };
-}
-
-// Sewer objectives
-if (path.includes("sewer")) {
-  return {
-    title: "Notebook",
-    lines: [
-      "☐ Look for Beth's spare key.",
-      "☐ Find a way out of the sewer."
-    ],
-    footer: "Press N to close."
-  };
-}
   }
 
   update() {
@@ -219,38 +156,9 @@ if (path.includes("sewer")) {
     ctx.font = "20px Arial";
     let ty = y + 105;
     let index = 0;
-    const path = String(this.game.currentMapPath || "").toLowerCase();
 
     for (const line of lines) {
       let completed = false;
-
-if (path.includes("bedroom") || path === "") {
-  // index 0 = check window
-  // index 1 = find weapon
-  // index 2 = leave bedroom
-
-  if (index === 0 && this.windowChecked()) {
-    completed = true;
-  }
-
-  if (index === 1 && this.playerHasWeapon()) {
-    completed = true;
-  }
-}
-
-      // MAINFOREST TASKS
-      else if (path.includes("mainforest")) {
-        // index 0 = kill zombies
-        // index 1 = reach sewer
-
-        if (index === 0 && this.getAliveZombies() === 0) {
-          completed = true;
-        }
-
-        if (index === 1 && this.playerNearSewer()) {
-          completed = true;
-        }
-      }
 
       const text = completed ? line.replace("☐", "☑") : line;
 

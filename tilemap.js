@@ -559,6 +559,17 @@ class MapManager {
     this.isTransitioning = false;
   }
 
+  isBethHouseDoorPortal(portal) {
+    const portalName = String(portal.name || "").toLowerCase();
+    const targetMap = String(getObjectProperty(portal, "targetMap") || "").toLowerCase();
+    const onMainForest = String(this.mapPath || "").toLowerCase().includes("mainforest");
+    return onMainForest && portalName === "backtohouse" && targetMap.includes("bethhouse");
+  }
+
+  isDoorInteractPressed() {
+    return !!(this.player && (this.player.interactPressed || this.game.keys[" "]));
+  }
+
   // Applies a new map, builds collisions/portals, and moves the player.
   setMap(mapData, mapPath, spawnName) {
     console.log("MAP LOADED NAME:", mapData?.properties);
@@ -712,6 +723,36 @@ for (const portal of this.portals) {
   }
 
   if (overlap && this.portalCooldown <= 0 && this.activePortalId !== portal.id) {
+    if (this.isBethHouseDoorPortal(portal)) {
+      const hasBethKey = !!(this.player && this.player.hasItem && this.player.hasItem("beth_house_key"));
+      const unlocked = !!this.game.bethDoorUnlocked;
+      const interactPressed = this.isDoorInteractPressed();
+
+      if (!hasBethKey && !unlocked) {
+        if (interactPressed) {
+          this.game.hasTriedBethDoor = true;
+          this.game.showDialogue("The door is locked. I need a key.", 2300);
+          this.portalCooldown = 0.4;
+        }
+        continue;
+      }
+
+      if (hasBethKey && !unlocked) {
+        this.game.bethDoorUnlocked = true;
+      }
+
+      // Require explicit interaction (E or Space) for Beth's door.
+      if (!interactPressed) {
+        continue;
+      }
+
+      // Beth's door transitions immediately after interaction (no extra mouse prompt).
+      this.activePortalId = portal.id;
+      this.portalCooldown = 0.4;
+      this.transitionTo(portal);
+      break;
+    }
+
     console.log("Portal overlap detected:", portal.name || "(unnamed)", portalRect);
 
     if (!this.game.pendingTeleport) {
@@ -748,6 +789,10 @@ for (const portal of this.portals) {
 
       if (dialogName.includes("door")) {
       this.game.foundBeth = true;
+      // Move objective to sewer as soon as Beth's locked-door dialog is discovered.
+      if (!this.game.hasSewerKey) {
+        this.game.hasTriedBethDoor = true;
+      }
       }
 
 

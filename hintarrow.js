@@ -3,7 +3,7 @@ class HintArrow {
     this.game = game;
     this.active = true;
     this.target = null;
-    this.prevCDown = false;  }
+  }
 
   setTarget(x, y, label = "Objective") {
     this.target = { x, y, label };
@@ -11,29 +11,128 @@ class HintArrow {
 
   clearTarget() {
     this.target = null;
-    this.active = false;
+    this.active = true;
+  }
+
+  getMapManager() {
+    return (this.game.entities || []).find(
+      (e) => e && e.constructor && e.constructor.name === "MapManager"
+    ) || null;
+  }
+
+  getPortalWorldPoint(mapManager, predicate) {
+    if (!mapManager || !Array.isArray(mapManager.portals)) return null;
+    const portal = mapManager.portals.find(predicate);
+    if (!portal) return null;
+    const scale = mapManager.mapScale || 1;
+    return {
+      x: (portal.x || 0) * scale,
+      y: (portal.y || 0) * scale
+    };
+  }
+
+  getKeyPickupWorldPoint() {
+    const keyPickup = (this.game.entities || []).find(
+      (e) =>
+        e &&
+        e.constructor &&
+        e.constructor.name === "ItemPickup" &&
+        !e.removeFromWorld &&
+        e.itemId === "beth_house_key"
+    );
+    if (!keyPickup) return null;
+    return {
+      x: keyPickup.x + keyPickup.width / 2,
+      y: keyPickup.y + keyPickup.height / 2
+    };
+  }
+
+  getPortalToMainForest(mapManager) {
+    return this.getPortalWorldPoint(mapManager, (portal) => {
+      const targetMap = String(getObjectProperty(portal, "targetMap") || "").toLowerCase();
+      return targetMap.includes("mainforest");
+    });
+  }
+
+  getBethDoorPoint(mapManager) {
+    return this.getPortalWorldPoint(mapManager, (portal) => {
+      const portalName = String(portal.name || "").toLowerCase();
+      const targetMap = String(getObjectProperty(portal, "targetMap") || "").toLowerCase();
+      return portalName === "backtohouse" && targetMap.includes("bethhouse");
+    });
+  }
+
+  getSewerPortalPoint(mapManager) {
+    return this.getPortalWorldPoint(mapManager, (portal) => {
+      const portalName = String(portal.name || "").toLowerCase();
+      const targetMap = String(getObjectProperty(portal, "targetMap") || "").toLowerCase();
+      return portalName === "sewer" || targetMap.includes("sewer");
+    });
   }
 
 update() {
   const path = String(this.game.currentMapPath || "").toLowerCase();
+  const mapManager = this.getMapManager();
+  this.active = true;
 
-  if (path.includes("mainforest")) {
-    if (!this.game.foundBeth) {
-      this.setTarget(576, 704, "Beth's House");
-    } else {
-      this.setTarget(2942, 3682, "Sewer Cover");
-    }
-  } else {
+  // No guiding arrow on the starting bedroom map.
+  if (path.includes("bedroom") || path === "") {
     this.clearTarget();
+    return;
   }
 
-  const cDown = !!this.game.keys["c"];
-  const cPressed = cDown && !this.prevCDown;
-  this.prevCDown = cDown;
+  // Objective phase:
+  // 1) Before checking Beth's door -> point to Beth's door.
+  // 2) After locked door check, before key -> point to sewer (or key when in sewer).
+  // 3) After key, before unlock -> point back to Beth's door.
+  if (!this.game.hasTriedBethDoor) {
+    const bethDoor = this.getBethDoorPoint(mapManager);
+    const toMain = this.getPortalToMainForest(mapManager);
+    if (bethDoor) {
+      this.setTarget(bethDoor.x, bethDoor.y, "Beth's Door");
+    } else if (toMain) {
+      this.setTarget(toMain.x, toMain.y, "Go Outside");
+    } else {
+      this.clearTarget();
+    }
+    return;
+  } else {
+    if (!this.game.hasSewerKey) {
+      if (path.includes("sewer")) {
+        const key = this.getKeyPickupWorldPoint();
+        if (key) {
+          this.setTarget(key.x, key.y, "Beth's Key");
+        } else {
+          this.clearTarget();
+        }
+      } else {
+        const sewerPortal = this.getSewerPortalPoint(mapManager);
+        const toMain = this.getPortalToMainForest(mapManager);
+        if (sewerPortal) {
+          this.setTarget(sewerPortal.x, sewerPortal.y, "Sewer");
+        } else if (toMain) {
+          this.setTarget(toMain.x, toMain.y, "Go Outside");
+        } else {
+          this.clearTarget();
+        }
+      }
+      return;
+    }
 
-  if (cPressed && this.target && !this.game.gameOver && !this.game.gameWon) {
-    this.active = !this.active;
+    if (!this.game.bethDoorUnlocked) {
+      const bethDoor = this.getBethDoorPoint(mapManager);
+      const toMain = this.getPortalToMainForest(mapManager);
+      if (bethDoor) {
+        this.setTarget(bethDoor.x, bethDoor.y, "Unlock Beth's Door");
+      } else if (toMain) {
+        this.setTarget(toMain.x, toMain.y, "Go Outside");
+      } else {
+        this.clearTarget();
+      }
+      return;
+    }
   }
+  this.clearTarget();
 }
 
   draw(ctx) {

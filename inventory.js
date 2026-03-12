@@ -49,7 +49,7 @@ class Inventory {
 
     if (player.inventory.bat) items.push("bat");
     if (player.inventory.knife) items.push("knife");
-    if (player.inventory.key) items.push("key");
+    if (player.inventory.beth_house_key) items.push("beth_house_key");
 
     return items;
   }
@@ -61,7 +61,7 @@ class Inventory {
     if (itemId === "knife") {
       return "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Knife.png";
     }
-    if (itemId === "key") {
+    if (itemId === "beth_house_key") {
       return "./Room/sewerkey.png";
     }
     return null;
@@ -166,7 +166,7 @@ class Inventory {
           const drawW = this.slotSize - iconPadding * 2;
           const drawH = this.slotSize - iconPadding * 2;
 
-          if (itemId === "key") {
+          if (itemId === "beth_house_key") {
             this.drawAnimatedKey(ctx, img, drawX, drawY, drawW, drawH);
           } else {
             ctx.drawImage(img, drawX, drawY, drawW, drawH);
