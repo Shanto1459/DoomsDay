@@ -11,6 +11,9 @@ const MAP_PATH = "./maps/sewer.tmj";
 const BAT_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Bat.png";
 const KNIFE_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Knife.png";
 const KEY_SPRITE_PATH = "./Room/sewerkey.png";
+const MEDKIT_SPRITE_PATH = "./sprites/character/medkit/medkit.png";
+const TITLE_BG_PATH = "./sprites/ui/title-bg.png";
+const SAVE_KEY = "doomsday_save";
 const MAP_SCALE = 4;
 const START_SPAWN = "PlayerSpawn";
 const PLAYER_SPEED = 140; // pixels per second
@@ -49,6 +52,11 @@ function getAliveZombieCount() {
 function removePickups() {
   gameEngine.entities = gameEngine.entities.filter(
     (e) => !(e && e.constructor && e.constructor.name === "ItemPickup")
+  );
+}
+function removeHealthPickups() {
+  gameEngine.entities = gameEngine.entities.filter(
+    (e) => !(e && e.constructor && e.constructor.name === "HealthPickup")
   );
 }
 
@@ -104,6 +112,7 @@ function restoreCollectedItemsToPlayer(player) {
 
 function spawnPickupsForMap(player, mapData, mapPath) {
   removePickups();
+  removeHealthPickups();
   if (!mapData) return;
 
   const mapPathLower = String(mapPath || "").toLowerCase();
@@ -182,7 +191,7 @@ frameHeight: isAnimatedKey ? 16 : height
       }));
     }
   }
-
+  spawnHealthPickupsFromMap(gameEngine, player, mapData, MAP_SCALE);
   keepMapManagerLast();
 }
 
@@ -332,6 +341,7 @@ async function setupWorld(mapPath, spawnName) {
 
     currentPlayer = player;
     currentMapManager = mapManager;
+    gameEngine.currentMapPath = mapPath;
 
     spawnPickupsForMap(player, mapData, mapPath);
   } else {
@@ -348,8 +358,146 @@ async function setupWorld(mapPath, spawnName) {
     gameEngine.zombiesEnabled = false;
 
     currentPlayer = player;
-    currentMapManager = null;
+    currentMapManager = mapManager;
   }
+}
+function saveGame() {
+    console.log("SAVE BUTTON CLICKED");
+
+    const player = gameEngine.cameraTarget;
+    if (!player) {
+        console.log("No player found");
+        return;
+    }
+
+    const aliveZombies = (gameEngine.entities || [])
+        .filter(e =>
+            e &&
+            e.constructor &&
+            e.constructor.name === "Zombie" &&
+            !e.removeFromWorld &&
+            e.state !== "death"
+        )
+        .map(z => ({
+            x: z.x,
+            y: z.y,
+            width: z.width,
+            height: z.height,
+            speed: z.speed,
+            damage: z.damage,
+            maxHealth: z.maxHealth,
+            health: z.health,
+            variant: z.variant,
+            facing: z.lastDirection || "down"
+        }));
+
+    const remainingMedkits = (gameEngine.entities || [])
+        .filter(e =>
+            e &&
+            e.constructor &&
+            e.constructor.name === "HealthPickup" &&
+            !e.removeFromWorld
+        )
+        .map(m => ({
+            x: m.x,
+            y: m.y,
+            width: m.width,
+            height: m.height,
+            healAmount: m.healAmount,
+            spritePath: m.spritePath
+        }));
+
+    const saveData = {
+        map: gameEngine.currentMapPath || MAP_PATH,
+        player: {
+            x: player.x,
+            y: player.y,
+            health: player.health,
+            maxHealth: player.maxHealth
+        },
+        zombies: aliveZombies,
+        medkits: remainingMedkits
+    };
+
+    localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+    console.log("Game saved", saveData);
+}
+
+function loadSavedGame() {
+    console.log("LOAD BUTTON CLICKED");
+
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) {
+        console.log("No save found");
+        return;
+    }
+
+    const saveData = JSON.parse(raw);
+    const player = gameEngine.cameraTarget;
+
+    if (!player) {
+        console.log("No player found");
+        return;
+    }
+
+    // Restore player
+    player.x = saveData.player.x;
+    player.y = saveData.player.y;
+    player.health = saveData.player.health;
+    player.maxHealth = saveData.player.maxHealth;
+
+    // Remove all current zombies
+    gameEngine.entities = gameEngine.entities.filter(
+        e => !(e && e.constructor && e.constructor.name === "Zombie")
+    );
+
+    // Remove all current medkits
+    gameEngine.entities = gameEngine.entities.filter(
+        e => !(e && e.constructor && e.constructor.name === "HealthPickup")
+    );
+
+    // Restore zombies from save
+    if (Array.isArray(saveData.zombies)) {
+        saveData.zombies.forEach(z => {
+            const zombie = new Zombie(gameEngine, player, z.x, z.y, {
+                width: z.width,
+                height: z.height,
+                speed: z.speed,
+                damage: z.damage,
+                maxHealth: z.maxHealth,
+                variant: z.variant,
+                facing: z.facing
+            });
+
+            zombie.health = z.health;
+            gameEngine.addEntity(zombie);
+        });
+    }
+
+    // Restore medkits from save
+    if (Array.isArray(saveData.medkits)) {
+        saveData.medkits.forEach(m => {
+            const medkit = new HealthPickup(
+                gameEngine,
+                player,
+                m.x,
+                m.y,
+                m.width,
+                m.height,
+                {
+                    healAmount: m.healAmount,
+                    spritePath: m.spritePath
+                }
+            );
+
+            gameEngine.addEntity(medkit);
+        });
+    }
+
+    // Keep map manager drawn correctly
+    keepMapManagerLast();
+
+    console.log("Game loaded", saveData);
 }
 
 // Loads the map JSON, preloads tiles, then starts the game loop.
@@ -388,6 +536,10 @@ ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.png");
   ASSET_MANAGER.queueDownload(BAT_SPRITE_PATH);
   ASSET_MANAGER.queueDownload(KNIFE_SPRITE_PATH);
   ASSET_MANAGER.queueDownload(KEY_SPRITE_PATH);
+  ASSET_MANAGER.queueDownload(MEDKIT_SPRITE_PATH);
+  ASSET_MANAGER.queueDownload("./sprites/ui/title-bg.png");
+
+
 
   // Queue all zombie variants
   queueZombieSkins(ASSET_MANAGER);
@@ -444,6 +596,14 @@ ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.png");
 
     gameEngine.start();
   });
+}
+const saveBtn = document.getElementById("saveBtn");
+if (saveBtn) {
+    saveBtn.addEventListener("click", saveGame);
+}
+const loadBtn = document.getElementById("loadBtn");
+if (loadBtn) {
+    loadBtn.addEventListener("click", loadSavedGame);
 }
 
 loadGame().catch((error) => {
