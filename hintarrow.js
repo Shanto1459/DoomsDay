@@ -83,6 +83,33 @@ class HintArrow {
     );
   }
 
+  getNonSewerEnemyProgress() {
+    const spawnIds = this.game.enemySpawnIds instanceof Set ? [...this.game.enemySpawnIds] : [];
+    const defeatedIds = this.game.defeatedEnemyIds instanceof Set ? this.game.defeatedEnemyIds : new Set();
+    const objectiveIds = spawnIds.filter((id) => !String(id).toLowerCase().includes("sewer"));
+    let defeated = 0;
+    for (const id of objectiveIds) {
+      if (defeatedIds.has(id)) defeated += 1;
+    }
+    const total = objectiveIds.length;
+    const alive = Math.max(0, total - defeated);
+    return { total, defeated, alive };
+  }
+
+  getFinalExitPoint(mapManager) {
+    if (!mapManager || !Array.isArray(mapManager.finalExits) || mapManager.finalExits.length === 0) return null;
+    const exitObj = mapManager.finalExits[0];
+    const scale = mapManager.mapScale || 1;
+    const tileW = (mapManager.mapData && mapManager.mapData.tilewidth) || 16;
+    const tileH = (mapManager.mapData && mapManager.mapData.tileheight) || 16;
+    const width = ((exitObj.width || tileW) * scale);
+    const height = ((exitObj.height || tileH) * scale);
+    return {
+      x: (exitObj.x || 0) * scale + width / 2,
+      y: (exitObj.y || 0) * scale + height / 2
+    };
+  }
+
 update() {
   const zDown = !!this.game.keys["z"];
   const zPressed = zDown && !this.prevZDown;
@@ -92,6 +119,15 @@ update() {
   const path = String(this.game.currentMapPath || "").toLowerCase();
   const mapManager = this.getMapManager();
   this.active = true;
+  const progress = this.getNonSewerEnemyProgress();
+  const mapCleared = progress.total > 0 && progress.alive <= 0;
+  const finalExitPoint = this.getFinalExitPoint(mapManager);
+
+  // After clearing the map objective, keep compass guiding the player to the final gate.
+  if (!this.game.gameWon && mapCleared && finalExitPoint) {
+    this.setTarget(finalExitPoint.x, finalExitPoint.y, "Final Gate");
+    return;
+  }
 
   // No guiding arrow on the starting bedroom map.
   if (path.includes("bedroom") || path === "") {
@@ -170,64 +206,89 @@ update() {
 
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const compassX = ctx.canvas.width - 86;
+      const compassY = 146;
+      const compassRadius = 36;
 
-      const arrowX = ctx.canvas.width - 70;
-      const arrowY = 140;
-
-      ctx.translate(arrowX, arrowY);
-      ctx.rotate(angle);
-      ctx.scale(1.3, 1.3);
-      // prettier arrow
-      ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
-      ctx.shadowBlur = 8;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-
-      // main body
+      // Compass body
       ctx.beginPath();
-      ctx.moveTo(26, 0);      // tip
-      ctx.lineTo(-8, -12);    // upper inner
-      ctx.lineTo(-2, 0);      // center notch
-      ctx.lineTo(-8, 12);     // lower inner
-      ctx.closePath();
-
-      ctx.fillStyle = "#f4d03f";   // gold
+      ctx.arc(compassX, compassY, compassRadius, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(9, 13, 17, 0.74)";
       ctx.fill();
-
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = "#2b1b0f"; // dark brown outline
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(255, 222, 140, 0.9)";
       ctx.stroke();
 
-      // inner highlight
-      ctx.shadowColor = "transparent";
+      // Inner ring and crosshair
       ctx.beginPath();
-      ctx.moveTo(15, 0);
-      ctx.lineTo(-4, -6);
-      ctx.lineTo(0, 0);
-      ctx.lineTo(-4, 6);
+      ctx.arc(compassX, compassY, compassRadius * 0.64, 0, Math.PI * 2);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(255, 222, 140, 0.4)";
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(compassX - compassRadius + 8, compassY);
+      ctx.lineTo(compassX + compassRadius - 8, compassY);
+      ctx.moveTo(compassX, compassY - compassRadius + 8);
+      ctx.lineTo(compassX, compassY + compassRadius - 8);
+      ctx.strokeStyle = "rgba(255, 222, 140, 0.28)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Cardinal letters
+      ctx.font = "10px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "rgba(255, 240, 200, 0.95)";
+      ctx.fillText("N", compassX, compassY - compassRadius - 9);
+      ctx.fillText("E", compassX + compassRadius + 9, compassY);
+      ctx.fillText("S", compassX, compassY + compassRadius + 9);
+      ctx.fillText("W", compassX - compassRadius - 9, compassY);
+
+      // Rotating objective needle
+      ctx.save();
+      ctx.translate(compassX, compassY);
+      ctx.rotate(angle);
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 5;
+
+      ctx.beginPath();
+      ctx.moveTo(compassRadius - 8, 0);
+      ctx.lineTo(-8, -6);
+      ctx.lineTo(-2, 0);
+      ctx.lineTo(-8, 6);
       ctx.closePath();
-
-      ctx.fillStyle = "#fff3a6";
+      ctx.fillStyle = "#ffd166";
       ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#3d2c12";
+      ctx.stroke();
 
+      ctx.beginPath();
+      ctx.arc(0, 0, 3.8, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff";
+      ctx.fill();
       ctx.restore();
 
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-      ctx.font = "14px monospace";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "top";
-      ctx.fillStyle = "rgba(255,255,255,0.95)";
-      ctx.strokeStyle = "rgba(0,0,0,0.9)";
-      ctx.lineWidth = 3;
-
+      // Objective label card
       const text = `${this.target.label} (${Math.round(distance)})`;
-      const labelX = arrowX;
-      const labelY = arrowY + 28;
+      ctx.font = "13px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const textWidth = ctx.measureText(text).width;
+      const cardWidth = Math.max(140, textWidth + 20);
+      const cardHeight = 22;
+      const cardX = compassX - cardWidth / 2;
+      const cardY = compassY + compassRadius + 12;
 
-      ctx.strokeText(text, labelX, labelY);
-      ctx.fillText(text, labelX, labelY);
+      ctx.fillStyle = "rgba(0,0,0,0.55)";
+      ctx.fillRect(cardX, cardY, cardWidth, cardHeight);
+      ctx.strokeStyle = "rgba(255, 230, 167, 0.85)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(cardX, cardY, cardWidth, cardHeight);
+
+      ctx.fillStyle = "rgba(255,245,220,0.96)";
+      ctx.fillText(text, compassX, cardY + cardHeight / 2);
 
       ctx.restore();
     }
@@ -238,36 +299,119 @@ update() {
     if (enemies.length === 0) return;
 
     const centerX = ctx.canvas.width - 80;
-    const centerY = 230;
-    const radius = 46;
+    const centerY = 282;
+    const radius = 56;
+    const innerRadius = radius - 8;
+    const maxDetectDistance = 850;
 
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    // Outer radar body
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(10,14,18,0.72)";
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(153, 231, 255, 0.75)";
+    ctx.stroke();
+
+    // Inner ring
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius * 0.63, 0, Math.PI * 2);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(153, 231, 255, 0.36)";
+    ctx.stroke();
+
+    // Crosshair lines
+    ctx.strokeStyle = "rgba(153, 231, 255, 0.25)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(centerX - innerRadius, centerY);
+    ctx.lineTo(centerX + innerRadius, centerY);
+    ctx.moveTo(centerX, centerY - innerRadius);
+    ctx.lineTo(centerX, centerY + innerRadius);
+    ctx.stroke();
+
+    // Compass ticks every 45 degrees
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      const tickOuter = radius + (i % 2 === 0 ? 0 : -2);
+      const tickInner = radius - (i % 2 === 0 ? 8 : 5);
+      const ox = centerX + Math.cos(a) * tickOuter;
+      const oy = centerY + Math.sin(a) * tickOuter;
+      const ix = centerX + Math.cos(a) * tickInner;
+      const iy = centerY + Math.sin(a) * tickInner;
+      ctx.beginPath();
+      ctx.moveTo(ix, iy);
+      ctx.lineTo(ox, oy);
+      ctx.strokeStyle = "rgba(153, 231, 255, 0.65)";
+      ctx.lineWidth = i % 2 === 0 ? 2 : 1;
+      ctx.stroke();
+    }
+
+    // Radar sweep
+    const sweepAngle = (performance.now() / 1000) * 1.8;
+    const sweepWidth = 0.32;
+    const sweepGradient = ctx.createRadialGradient(centerX, centerY, 6, centerX, centerY, innerRadius);
+    sweepGradient.addColorStop(0, "rgba(130, 255, 226, 0.00)");
+    sweepGradient.addColorStop(1, "rgba(130, 255, 226, 0.22)");
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, innerRadius, sweepAngle - sweepWidth, sweepAngle + sweepWidth);
+    ctx.closePath();
+    ctx.fillStyle = sweepGradient;
+    ctx.fill();
+
+    // Cardinal labels
+    ctx.font = "10px monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(220,245,255,0.9)";
+    ctx.fillText("N", centerX, centerY - radius - 10);
+    ctx.fillText("E", centerX + radius + 10, centerY);
+    ctx.fillText("S", centerX, centerY + radius + 10);
+    ctx.fillText("W", centerX - radius - 10, centerY);
+
+    // Player center dot
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.fill();
+
     ctx.font = "12px monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
-    ctx.fillStyle = "rgba(255,110,110,0.95)";
+    ctx.fillStyle = "rgba(153, 231, 255, 0.95)";
     ctx.fillText(`Z radar: ${enemies.length}`, centerX, centerY + radius + 12);
 
     for (const enemy of enemies) {
       const dx = enemy.x - player.x;
       const dy = enemy.y - player.y;
       const angle = Math.atan2(dy, dx);
-      const px = centerX + Math.cos(angle) * radius;
-      const py = centerY + Math.sin(angle) * radius;
+      const distance = Math.hypot(dx, dy);
+      const distRatio = Math.min(1, distance / maxDetectDistance);
+      const blipRadius = Math.max(5, distRatio * innerRadius);
+      const px = centerX + Math.cos(angle) * blipRadius;
+      const py = centerY + Math.sin(angle) * blipRadius;
 
       ctx.save();
       ctx.translate(px, py);
-      ctx.rotate(angle);
       ctx.beginPath();
-      ctx.moveTo(10, 0);
-      ctx.lineTo(-5, -4);
-      ctx.lineTo(-5, 4);
-      ctx.closePath();
-      ctx.fillStyle = "rgba(255,80,80,0.95)";
+      ctx.arc(0, 0, 3.2, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,95,95,0.95)";
       ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.75)";
-      ctx.lineWidth = 1.5;
+
+      ctx.strokeStyle = "rgba(18,18,18,0.85)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Small heading marker from center toward blip direction
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-Math.cos(angle) * 4, -Math.sin(angle) * 4);
+      ctx.strokeStyle = "rgba(255,130,130,0.55)";
+      ctx.lineWidth = 1;
       ctx.stroke();
       ctx.restore();
     }

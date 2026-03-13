@@ -985,9 +985,7 @@ for (const portal of this.portals) {
 
   if (overlap && this.portalCooldown <= 0 && this.activePortalId !== portal.id) {
     if (this.isBedroomExitPortal(portal) && !this.canLeaveBedroom()) {
-      if (this.isDoorInteractPressed()) {
-        this.showDialogueOnce(`${this.mapPath}:bedroom_exit_locked`, "I should check the window and grab a weapon first.", 2400);
-      }
+      this.showDialogueOnce(`${this.mapPath}:bedroom_exit_locked`, "Complete the tasks in your notebook first.", 2400);
       this.portalCooldown = 0.35;
       continue;
     }

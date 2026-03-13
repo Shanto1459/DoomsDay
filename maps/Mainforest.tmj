@@ -1577,8 +1577,8 @@
                  "type":"Exit",
                  "visible":true,
                  "width":24,
-                 "x":909,
-                 "y":864.5
+                 "x":909.333333333333,
+                 "y":873.833333333333
                 }],
          "opacity":1,
          "type":"objectgroup",

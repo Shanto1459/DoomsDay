@@ -369,11 +369,11 @@ handleTopRightUiClick() {
 
     this.ctx.font = "12px monospace";
     this.ctx.fillStyle = "rgba(255,255,255,0.85)";
-    this.ctx.textAlign = "center";
+    this.ctx.textAlign = "left";
     this.ctx.textBaseline = "top";
 
-    const centerX = rects.restart.x + rects.restart.width / 2;
-    const firstY = rects.restart.y + rects.restart.height + 6;
+    const leftX = this.uiMargin;
+    const firstY = this.uiMargin;
 
     const hintOn = this.hintArrow && this.hintArrow.active;
     const zombieRadarOn = this.hintArrow && this.hintArrow.showZombieRadar;
@@ -386,10 +386,10 @@ handleTopRightUiClick() {
         this.ctx.fillStyle = "rgba(255,255,255,0.85)";
     }
 
-    this.ctx.fillText("Press N: Notebook", centerX, firstY);
-    this.ctx.fillText("Press C: Compass", centerX, firstY + 16);
-    this.ctx.fillText("Press Z: Zombie Radar", centerX, firstY + 32);
-    this.ctx.fillText(`Compass ${hintOn ? "ON" : "OFF"} | Radar ${zombieRadarOn ? "ON" : "OFF"}`, centerX, firstY + 48);
+    this.ctx.fillText("Press N: Notebook", leftX, firstY);
+    this.ctx.fillText("Press C: Compass", leftX, firstY + 16);
+    this.ctx.fillText("Press Z: Zombie Radar", leftX, firstY + 32);
+    this.ctx.fillText(`Compass ${hintOn ? "ON" : "OFF"} | Radar ${zombieRadarOn ? "ON" : "OFF"}`, leftX, firstY + 48);
 
     this.ctx.restore();
     }

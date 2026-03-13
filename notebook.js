@@ -11,24 +11,22 @@ class Notebook {
     this.btnClose = { x: 0, y: 0, w: 120, h: 34 };
   }
 
-toggle() {
-  this.isOpen = !this.isOpen;
+  toggle() {
+    this.isOpen = !this.isOpen;
 
-  // stop movement instantly when opening
-  if (this.isOpen) {
-    this.game.keys = {};
-    this.hasUnreadUpdate = false;
+    // stop movement instantly when opening
+    if (this.isOpen) {
+      this.game.keys = {};
+      this.hasUnreadUpdate = false;
+    }
+
+    this.game.ignoreClicksUntil = performance.now() + 120;
+    this.game.click = null;
   }
-
-  this.game.ignoreClicksUntil = performance.now() + 120;
-  this.game.click = null;
-}
 
   pointInRect(p, r) {
     return p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h;
   }
-
-  
 
   getObjectiveSignature() {
     const path = String(this.game.currentMapPath || "").toLowerCase();
@@ -36,45 +34,69 @@ toggle() {
     const inBethUpstairs = path.includes("bethroom");
     const inBethPhase = inBethDownstairs || inBethUpstairs || !!this.game.visitedBethUpstairs;
     const { total, dead } = this.getEnemyProgress();
+
     if (path.includes("bedroom") || path === "") {
       return `objective:bedroom:${this.windowChecked() ? 1 : 0}:${this.playerHasWeapon() ? 1 : 0}`;
     }
 
     if (path.includes("sewer")) {
-    const alive = this.getAliveZombies(4);
-    const hasKey = this.game.hasSewerKey ? 1 : 0;
-    return `objective:sewer:${hasKey}:${alive}`;
+      const sewer = this.getSewerObjectiveProgress();
+      return `objective:sewer:key:${sewer.hasKey ? 1 : 0}:dead:${sewer.dead}:alive:${sewer.alive}:done:${sewer.allDone ? 1 : 0}`;
     }
 
     if (inBethPhase) {
       return `objective:beth_phase:${inBethUpstairs ? 1 : 0}:${dead}/${total}:escaped:${this.game.bethEscapeComplete ? 1 : 0}`;
     }
+
     if (this.game.bossDefeated) {
-      const total =
+      const totalEnemies =
         this.game.enemyObjectiveTotal ||
         (this.game.enemySpawnIds ? this.game.enemySpawnIds.size : 0);
       const defeated =
         this.game.enemyObjectiveDefeated ||
         (this.game.defeatedEnemyIds ? this.game.defeatedEnemyIds.size : 0);
-      return `objective:clear_remaining:${defeated}/${total}`;
+      return `objective:clear_remaining:${defeated}/${totalEnemies}`;
     }
+
     if (this.game.hasSewerKey) return "objective:return_beth_house";
     if (this.game.hasTriedBethDoor) return "objective:check_sewer_key";
     return "objective:check_on_beth";
-}
+  }
 
   getAliveZombies(ignoreCount = 0) {
-  const ents = this.game.entities || [];
-  const alive = ents.filter(e =>
-    e &&
-    e.constructor &&
-    e.constructor.name === "Zombie" &&
-    !e.removeFromWorld &&
-    e.state !== "death"
-  ).length;
+    const ents = this.game.entities || [];
+    const alive = ents.filter(
+      (e) =>
+        e &&
+        e.constructor &&
+        e.constructor.name === "Zombie" &&
+        !e.removeFromWorld &&
+        e.state !== "death"
+    ).length;
 
-  return Math.max(0, alive - ignoreCount);
-}
+    return Math.max(0, alive - ignoreCount);
+  }
+
+  getSewerObjectiveProgress() {
+    const REQUIRED_SEWER_KILLS = 3;
+    const IGNORED_SEWER_ZOMBIES = 4;
+
+    const alive = this.getAliveZombies(IGNORED_SEWER_ZOMBIES);
+    const dead = Math.max(0, REQUIRED_SEWER_KILLS - alive);
+    const hasKey = !!this.game.hasSewerKey;
+    const zombiesCleared = alive <= 0;
+    const allDone = hasKey && zombiesCleared;
+
+    return {
+      requiredKills: REQUIRED_SEWER_KILLS,
+      ignoredZombies: IGNORED_SEWER_ZOMBIES,
+      alive,
+      dead,
+      hasKey,
+      zombiesCleared,
+      allDone
+    };
+  }
 
   getEnemyProgress() {
     // Global objective counter: include all tracked zombies/boss spawns EXCEPT sewer map spawns.
@@ -96,32 +118,33 @@ toggle() {
     const alive = Math.max(0, total - dead);
     return { total, dead, alive };
   }
-  playerHasWeapon() {
-  const player = this.game.cameraTarget;
-  if (!player) return false;
 
-  return !!(
-    player.equippedWeapon ||
-    (player.inventory && (player.inventory.bat || player.inventory.knife))
-  );
+  playerHasWeapon() {
+    const player = this.game.cameraTarget;
+    if (!player) return false;
+
+    return !!(
+      player.equippedWeapon ||
+      (player.inventory && (player.inventory.bat || player.inventory.knife))
+    );
   }
-  
+
   windowChecked() {
-  return !!this.game.checkedWindow;
+    return !!this.game.checkedWindow;
   }
 
   playerNearSewer() {
-  const player = this.game.cameraTarget;
-  if (!player) return false;
+    const player = this.game.cameraTarget;
+    if (!player) return false;
 
-  const sewerX = 3147;
-  const sewerY = 3164;
+    const sewerX = 3147;
+    const sewerY = 3164;
 
-  const dx = sewerX - player.x;
-  const dy = sewerY - player.y;
+    const dx = sewerX - player.x;
+    const dy = sewerY - player.y;
 
-  return Math.sqrt(dx * dx + dy * dy) < 70;
-}
+    return Math.sqrt(dx * dx + dy * dy) < 70;
+  }
 
   getObjectives() {
     const path = String(this.game.currentMapPath || "").toLowerCase();
@@ -142,6 +165,21 @@ toggle() {
       };
     }
 
+    if (path.includes("sewer")) {
+      const sewer = this.getSewerObjectiveProgress();
+
+      return {
+        title: "Notebook",
+        lines: [
+          `${sewer.hasKey ? "☑" : "☐"} Find the sewer key`,
+          `${sewer.zombiesCleared ? "☑" : "☐"} Kill sewer zombies (${sewer.dead}/${sewer.requiredKills})`
+        ],
+        footer: sewer.allDone
+          ? "All sewer objectives complete."
+          : "Finish both objectives before leaving."
+      };
+    }
+
     if (inBethPhase) {
       if (!upstairsDone) {
         return {
@@ -158,46 +196,50 @@ toggle() {
           `☐ Zombies + Beth: Alive ${alive} | Dead ${dead}/${total}`,
           "☐ Escape through the gate"
         ],
-        footer: alive > 0 ? "Clear all zombies first, then go to the gate." : "Area clear. Go to the gate to escape."
+        footer: alive > 0
+          ? "Clear all zombies first, then go to the gate."
+          : "Area clear. Go to the gate to escape."
       };
     }
 
-  if (this.game.bossDefeated) {
-    const total =
+    if (this.game.bossDefeated) {
+      const totalEnemies =
         this.game.enemyObjectiveTotal ||
         (this.game.enemySpawnIds ? this.game.enemySpawnIds.size : 0);
-    const defeated =
+      const defeated =
         this.game.enemyObjectiveDefeated ||
-      (this.game.defeatedEnemyIds ? this.game.defeatedEnemyIds.size : 0);
+        (this.game.defeatedEnemyIds ? this.game.defeatedEnemyIds.size : 0);
 
-    if (total > 0 && defeated >= total) {
+      if (totalEnemies > 0 && defeated >= totalEnemies) {
+        return {
+          title: "Notebook",
+          lines: [
+            `☑ Eliminate Beth and all zombies (${totalEnemies}/${totalEnemies})`,
+            "☐ Escape the area"
+          ],
+          footer: "Area cleared. Find the way out."
+        };
+      }
+
       return {
         title: "Notebook",
-        lines: [`☑ Eliminate Beth and all zombies (${total}/${total})`, "☐ Escape the area"],
-        footer: "Area cleared. Find the way out."
-      };
-    }
-
-      return {
-        title: "Notebook",
-        lines: [`☐ Eliminate Beth and all zombies (${Math.min(defeated, total)}/${total})`],
+        lines: [`☐ Eliminate Beth and all zombies (${Math.min(defeated, totalEnemies)}/${totalEnemies})`],
         footer: "Track down every remaining zombie to win."
       };
     }
 
-  let objective = "Check on Beth";
-  if (this.game.hasSewerKey) objective = "Return to Beth's house";
-  else if (this.game.hasTriedBethDoor) objective = "Check the sewer for the key";
+    let objective = "Check on Beth";
+    if (this.game.hasSewerKey) objective = "Return to Beth's house";
+    else if (this.game.hasTriedBethDoor) objective = "Check the sewer for the key";
 
-  return {
-    title: "Notebook",
-    lines: [`☐ ${objective}`],
-    footer: "Press N to close."
-  };
-}
+    return {
+      title: "Notebook",
+      lines: [`☐ ${objective}`],
+      footer: "Press N to close."
+    };
+  }
 
   update() {
-
     const currentSignature = this.getObjectiveSignature();
 
     if (this.lastObjectiveSignature && currentSignature !== this.lastObjectiveSignature) {
@@ -261,26 +303,32 @@ toggle() {
     ctx.textAlign = "left";
     ctx.fillText(title, x + 22, y + 52);
 
-        // Text
+    // Text
     ctx.font = "20px Arial";
     let ty = y + 105;
     let index = 0;
+
     const path = String(this.game.currentMapPath || "").toLowerCase();
     const inBethDownstairs = path.includes("bethhouse");
     const inBethUpstairs = path.includes("bethroom");
     const inBethPhase = inBethDownstairs || inBethUpstairs || !!this.game.visitedBethUpstairs;
     const upstairsDone = inBethUpstairs || !!this.game.visitedBethUpstairs;
-    const { total, alive } = this.getEnemyProgress();
+    const { alive: bethAlive } = this.getEnemyProgress();
 
     for (const line of lines) {
       let completed = line.trim().startsWith("☑");
+
       if (!completed && (path.includes("bedroom") || path === "")) {
         if (index === 0) completed = this.windowChecked();
         if (index === 1) completed = this.playerHasWeapon();
+      } else if (!completed && path.includes("sewer")) {
+        const sewer = this.getSewerObjectiveProgress();
+        if (index === 0) completed = sewer.hasKey;
+        if (index === 1) completed = sewer.zombiesCleared;
       } else if (!completed && inBethPhase) {
         if (index === 0) completed = upstairsDone;
-        if (index === 1) completed = alive <= 0;
-        if (index === 2) completed = alive <= 0;
+        if (index === 1) completed = bethAlive <= 0;
+        if (index === 2) completed = bethAlive <= 0;
         if (index === 3) completed = !!this.game.bethEscapeComplete;
       }
 
@@ -289,10 +337,8 @@ toggle() {
       ctx.fillStyle = "rgba(40,25,10,0.95)";
       ctx.fillText(text, x + 28, ty);
 
-      // draw strike-through if completed
       if (completed) {
         const width = ctx.measureText(text).width;
-
         ctx.beginPath();
         ctx.moveTo(x + 28, ty - 8);
         ctx.lineTo(x + 28 + width, ty - 8);
@@ -304,6 +350,7 @@ toggle() {
       ty += 34;
       index++;
     }
+
     // Footer
     ctx.font = "16px Arial";
     ctx.globalAlpha = 0.8;

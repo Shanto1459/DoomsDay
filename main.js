@@ -1,7 +1,7 @@
 // Entry point: loads assets, then starts the game.
 const DEBUG_MODE = false;
 const DEBUG_WEAPON = false;
-const gameEngine = new GameEngine({ cameraDebug: true, debugging: DEBUG_MODE });
+const gameEngine = new GameEngine({ cameraDebug: false, debugging: DEBUG_MODE });
 gameEngine.debug = DEBUG_MODE;
 gameEngine.debugWeapon = DEBUG_WEAPON;
 const ASSET_MANAGER = new AssetManager();
