@@ -237,11 +237,6 @@ class GameEngine {
         const defeatedEnemies = this.defeatedEnemyIds ? this.defeatedEnemyIds.size : 0;
         this.enemyObjectiveTotal = totalEnemies;
         this.enemyObjectiveDefeated = defeatedEnemies;
-
-        // Win only after Beth + all enemies are eliminated and player leaves Beth's house area.
-        if (this.bossDefeated && totalEnemies > 0 && defeatedEnemies >= totalEnemies && this.bethEscapeComplete) {
-            this.winGame();
-        }
     }
 
     draw() {
@@ -465,7 +460,7 @@ handleTopRightUiClick() {
         this.ctx.textAlign = "center";
         this.ctx.font = "30px Creepster";
 
-        const title = this.gameOver ? "GAME OVER" : (this.gameWon ? "YOU WIN!" : "PAUSED");
+        const title = this.gameOver ? "GAME OVER" : (this.gameWon ? "YOU HAVE SUCCESSFULLY ESCAPED" : "PAUSED");
         this.ctx.fillText(title, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 - 20);
 
         this.ctx.font = "16px monospace";

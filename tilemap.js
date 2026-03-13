@@ -187,6 +187,27 @@ function getDialogObjects(mapData) {
 
   return dialogs;
 }
+
+function isFinalExitObject(obj) {
+  const name = String(obj && obj.name || "").toLowerCase();
+  const type = String(obj && obj.type || "").toLowerCase();
+  const klass = String(obj && obj.class || "").toLowerCase();
+  return name === "finalexit" && (type === "exit" || klass === "exit");
+}
+
+function getFinalExitObjects(mapData) {
+  if (!mapData || !Array.isArray(mapData.layers)) return [];
+  const exits = [];
+
+  walkLayers(mapData.layers, (layer) => {
+    if (layer.type !== "objectgroup") return;
+    for (const obj of layer.objects || []) {
+      if (isFinalExitObject(obj)) exits.push(obj);
+    }
+  });
+
+  return exits;
+}
 // Collects all tileset image paths used by a map.
 function collectTilesetImagePaths(mapData, mapPath) {
   if (!mapData || !Array.isArray(mapData.tilesets)) return [];
@@ -608,6 +629,7 @@ class MapManager {
     this.renderer = null;
     this.collisionGrid = null;
     this.portals = [];
+    this.finalExits = [];
     this.dialogs = [];
     this.usedTriggers = new Set();
     this.activeDialog = null;
@@ -637,6 +659,54 @@ class MapManager {
 
   isDoorInteractPressed() {
     return !!(this.player && (this.player.interactPressed || this.game.keys[" "]));
+  }
+
+  parseBoolProp(value) {
+    if (typeof value === "boolean") return value;
+    const raw = String(value || "").trim().toLowerCase();
+    return raw === "true" || raw === "1" || raw === "yes";
+  }
+
+  getNonSewerEnemyProgress() {
+    const spawnIds = this.game.enemySpawnIds instanceof Set ? [...this.game.enemySpawnIds] : [];
+    const defeatedIds = this.game.defeatedEnemyIds instanceof Set ? this.game.defeatedEnemyIds : new Set();
+    const objectiveIds = spawnIds.filter((id) => !String(id).toLowerCase().includes("sewer"));
+    let defeated = 0;
+    for (const id of objectiveIds) {
+      if (defeatedIds.has(id)) defeated += 1;
+    }
+    const total = objectiveIds.length;
+    const alive = Math.max(0, total - defeated);
+    return { total, defeated, alive };
+  }
+
+  isFinalExitUnlocked(exitObj) {
+    const requiresBethDefeated = this.parseBoolProp(getObjectProperty(exitObj, "requiresBethDefeated"));
+    const requiredKey = String(getObjectProperty(exitObj, "requiresKey") || "").trim();
+    const progress = this.getNonSewerEnemyProgress();
+    const isAreaCleared = progress.total > 0 && progress.alive <= 0;
+
+    const hasBethDefeated = !requiresBethDefeated || !!this.game.bossDefeated;
+    const hasRequiredKey = !requiredKey || !!(this.player && this.player.hasItem && this.player.hasItem(requiredKey));
+
+    return hasBethDefeated && hasRequiredKey && isAreaCleared;
+  }
+
+  setLayerVisibilityByName(layerName, visible) {
+    if (!this.mapData || !layerName) return;
+    const target = String(layerName).toLowerCase();
+    walkLayers(this.mapData.layers, (layer) => {
+      if (String(layer.name || "").toLowerCase() === target && layer.type === "tilelayer") {
+        layer.visible = !!visible;
+      }
+    });
+  }
+
+  updateFinalExitDoorLayers() {
+    if (!Array.isArray(this.finalExits) || this.finalExits.length === 0) return;
+    const unlocked = this.isFinalExitUnlocked(this.finalExits[0]);
+    this.setLayerVisibilityByName("lockeddoor", !unlocked);
+    this.setLayerVisibilityByName("unlockeddoor", unlocked);
   }
 
   // Applies a new map, builds collisions/portals, and moves the player.
@@ -669,7 +739,9 @@ class MapManager {
     this.renderer = new TiledMapRenderer(this.game, mapData, mapPath, this.mapScale);
     this.collisionGrid = new CollisionGrid(mapData, this.mapScale, "Collision");
     this.portals = getPortalObjects(mapData);
+    this.finalExits = getFinalExitObjects(mapData);
     this.dialogs = getDialogObjects(mapData);
+    this.updateFinalExitDoorLayers();
 
 // SWIM ZONES FROM TILE LAYERS
 this.swimZones = [];
@@ -837,6 +909,46 @@ update() {
   }
 
   const playerBounds = this.player.getBounds();
+  this.updateFinalExitDoorLayers();
+
+  // --- final exit trigger logic ---
+  for (const exitObj of this.finalExits || []) {
+    const exitRect = this.getTriggerRect(exitObj);
+    if (!rectsOverlap(playerBounds, exitRect)) continue;
+    if (this.portalCooldown > 0) break;
+
+    const requiresBethDefeated = this.parseBoolProp(getObjectProperty(exitObj, "requiresBethDefeated"));
+    const requiredKey = String(getObjectProperty(exitObj, "requiresKey") || "").trim();
+    const progress = this.getNonSewerEnemyProgress();
+
+    if (requiresBethDefeated && !this.game.bossDefeated) {
+      this.game.showDialogue("I can't leave yet.", 1800);
+      this.portalCooldown = 0.45;
+      return;
+    }
+
+    if (requiredKey && !(this.player && this.player.hasItem && this.player.hasItem(requiredKey))) {
+      this.game.showDialogue("I need a key.", 1800);
+      this.portalCooldown = 0.45;
+      return;
+    }
+
+    if (!(progress.total > 0 && progress.alive <= 0)) {
+      this.game.showDialogue("I need to clear the area first.", 1800);
+      this.portalCooldown = 0.45;
+      return;
+    }
+
+    this.updateFinalExitDoorLayers();
+    if (typeof this.game.winGame === "function") {
+      this.game.winGame();
+    } else {
+      this.game.gameWon = true;
+    }
+    this.portalCooldown = 0.45;
+    return;
+  }
+
   if (this.game.pendingTeleport) return;
   // --- portal logic ---
 for (const portal of this.portals) {
