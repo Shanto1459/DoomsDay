@@ -668,7 +668,7 @@ class MapManager {
     this.lastSpawnName = spawnName || "PlayerSpawn";
     this.renderer = new TiledMapRenderer(this.game, mapData, mapPath, this.mapScale);
     this.collisionGrid = new CollisionGrid(mapData, this.mapScale, "Collision");
-    this.portals = getPortalObjects(mapData);
+    this.collisionPlayerGrid = new CollisionGrid(mapData, this.mapScale, "collisionPlayer");    this.portals = getPortalObjects(mapData);
     this.dialogs = getDialogObjects(mapData);
 
 // SWIM ZONES FROM TILE LAYERS
@@ -738,7 +738,9 @@ this.game.activeDialog = null;
     this.game.worldWidth = mapSize.width;
     this.game.worldHeight = mapSize.height;
     this.game.collisionGrid = this.collisionGrid;
+    this.game.collisionPlayerGrid = this.collisionPlayerGrid;
 
+    
     const spawn = getSpawnPosition(mapData, this.mapScale, spawnName);
     this.player.x = spawn.x;
     this.player.y = spawn.y;

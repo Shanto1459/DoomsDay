@@ -134,11 +134,19 @@ class ItemPickup {
       if (this.frameCount <= 1) {
         ctx.drawImage(sprite, this.x, this.y, this.width, this.height);
       } else {
-        const frameIndex =
-          Math.floor(this.animTime / this.frameDuration) % this.frameCount;
+      const frameIndex =
+      Math.floor(this.animTime / this.frameDuration) % this.frameCount;
 
-        const sx = frameIndex * this.frameWidth;
-        const sy = 0;
+    let sx = 0;
+    let sy = 0;
+
+    if (this.itemId === "beth_house_key") {
+      sx = 0;
+      sy = frameIndex * this.frameHeight; // vertical sheet
+    } else {
+      sx = frameIndex * this.frameWidth;  // horizontal sheet
+      sy = 0;
+    }
 
         ctx.drawImage(
           sprite,

@@ -83,7 +83,7 @@
             578, 579, 580, 581, 0, 1088, 1089, 1090, 1091, 1047, 1048, 1049,
             0, 0, 0, 0, 0, 1113, 1114, 1115, 1116, 1117, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            0, 0, 0, 0, 0, 1575, 1575, 0, 0, 0, 0, 0],
          "height":12,
          "id":8,
          "name":"decor",
@@ -465,6 +465,19 @@
          "name":"32 no outline",
          "spacing":0,
          "tilecount":324,
+         "tileheight":16,
+         "tilewidth":16
+        }, 
+        {
+         "columns":1,
+         "firstgid":1575,
+         "image":"..\/PostApocalypse_AssetPack_v1.1.2\/Objects\/Buildings\/Door_2_Ajar_Beige.png",
+         "imageheight":27,
+         "imagewidth":16,
+         "margin":0,
+         "name":"Door_2_Ajar_Beige",
+         "spacing":0,
+         "tilecount":1,
          "tileheight":16,
          "tilewidth":16
         }],

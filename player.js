@@ -284,13 +284,30 @@ class Player {
 
   // Ask the collision grid if the next position is blocked.
   canMoveTo(x, y) {
-    if (!this.game.collisionGrid) return true;
-    const blocked = this.game.collisionGrid.isBlockedRect(x, y, this.width, this.height);
-    if (blocked && this.game.debug) {
-      console.log("Collision blocked:", { x, y, width: this.width, height: this.height });
-    }
-    return !blocked;
+  const normalGrid = this.game.collisionGrid;
+  const playerOnlyGrid = this.game.collisionPlayerGrid;
+
+  const blockedByNormal =
+    normalGrid && normalGrid.isBlockedRect(x, y, this.width, this.height);
+
+  const blockedByPlayerOnly =
+    playerOnlyGrid && playerOnlyGrid.isBlockedRect(x, y, this.width, this.height);
+
+  const blocked = blockedByNormal || blockedByPlayerOnly;
+
+  if (blocked && this.game.debug) {
+    console.log("Player collision blocked:", {
+      x,
+      y,
+      width: this.width,
+      height: this.height,
+      blockedByNormal,
+      blockedByPlayerOnly
+    });
   }
+
+  return !blocked;
+}
 
 overlapsZone(zones) {
   const bounds = this.getBounds();

@@ -197,7 +197,29 @@
                  "width":960.667,
                  "x":-0.000166666666672199,
                  "y":80.3333333333333
+                }, 
+                {
+                 "height":16,
+                 "id":33,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":960.667,
+                 "x":-0.000166666666729043,
+                 "y":34.3333333333333
                 }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":20,
+         "name":"CollisionPlayer",
+         "objects":[],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -508,8 +530,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":378.5,
-                 "y":53.6666666666667
+                 "x":378.833333333333,
+                 "y":51
                 }, 
                 {
                  "height":16,
@@ -585,8 +607,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":20,
- "nextobjectid":33,
+ "nextlayerid":21,
+ "nextobjectid":34,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
