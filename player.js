@@ -292,6 +292,22 @@ class Player {
     return !blocked;
   }
 
+overlapsZone(zones) {
+  const bounds = this.getBounds();
+  return (zones || []).some((zone) =>
+    bounds.x < zone.x + zone.width &&
+    bounds.x + bounds.width > zone.x &&
+    bounds.y < zone.y + zone.height &&
+    bounds.y + bounds.height > zone.y
+  );
+}
+
+getWaterDepth() {
+  if (this.overlapsZone(this.game.swimZones)) return "deep";
+  if (this.overlapsZone(this.game.lessDeepZones)) return "shallow";
+  return "none";
+}
+
   applyPunchDamage() {
   // Allow ALL attack types (punch / bat / knife) to deal damage.
   const zombies = (this.game.entities || []).filter(
@@ -465,14 +481,26 @@ draw(ctx) {
 
   const tick = (this.moving || this.punching) ? this.game.clockTick : 0;
 
+  const waterDepth = this.getWaterDepth();
+
   // Bat layer behind body only when facing up.
   if (this.equippedWeapon === "bat" && this.direction === "up") {
     this.drawBat(ctx, true);
   }
   
   ctx.save();
-  ctx.translate(this.x, this.y);
-  ctx.scale(this.scale, this.scale);
+ctx.translate(this.x, this.y);
+ctx.scale(this.scale, this.scale);
+
+if (waterDepth === "deep") {
+  ctx.beginPath();
+  ctx.rect(0, 0, 20, 9);
+  ctx.clip();
+} else if (waterDepth === "shallow") {
+  ctx.beginPath();
+  ctx.rect(0, 0, 20, 13);
+  ctx.clip();
+}
 
   if (!this.punching && !this.moving) {
     const old = anim.elapsedTime;

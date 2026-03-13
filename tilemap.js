@@ -234,14 +234,32 @@ function preloadImages(paths) {
   ).then(() => ({ loaded, failed }));
 }
 
+function getCollisionObjects(mapData) {
+  if (!mapData || !Array.isArray(mapData.layers)) return [];
+
+  const objects = [];
+
+  for (const layer of mapData.layers) {
+    if (layer.type !== "objectgroup") continue;
+    if (String(layer.name || "").toLowerCase() !== "collisionobjects") continue;
+
+    for (const obj of layer.objects || []) {
+      objects.push(obj);
+    }
+  }
+
+  return objects;
+}
+
 // Collision grid built from the map's Collision layer.
 class CollisionGrid {
-  constructor(mapData, scale, collisionLayerName) {
-    this.mapData = mapData;
-    this.scale = scale || 1;
-    this.collisionLayerName = collisionLayerName || "Collision";
-    this.collisionLayer = this.findCollisionLayer();
-  }
+constructor(mapData, scale, collisionLayerName) {
+  this.mapData = mapData;
+  this.scale = scale || 1;
+  this.collisionLayerName = collisionLayerName || "Collision";
+  this.collisionLayer = this.findCollisionLayer();
+  this.collisionObjects = getCollisionObjects(mapData);
+}
 
   // Finds the tile layer named "Collision".
   findCollisionLayer() {
@@ -251,9 +269,10 @@ class CollisionGrid {
     );
   }
 
-  // Checks if a rectangle overlaps any blocked tiles.
   isBlockedRect(x, y, width, height) {
-    if (!this.collisionLayer || !Array.isArray(this.collisionLayer.data)) return false;
+  let blockedByTile = false;
+
+  if (this.collisionLayer && Array.isArray(this.collisionLayer.data)) {
     const tileWidth = this.mapData.tilewidth * this.scale;
     const tileHeight = this.mapData.tileheight * this.scale;
 
@@ -264,13 +283,51 @@ class CollisionGrid {
 
     for (let ty = top; ty <= bottom; ty++) {
       for (let tx = left; tx <= right; tx++) {
-        if (this.isBlockedTile(tx, ty)) return true;
+        if (this.isBlockedTile(tx, ty)) {
+          blockedByTile = true;
+          break;
+        }
       }
+      if (blockedByTile) break;
     }
-
-    return false;
   }
 
+  if (blockedByTile) return true;
+
+  return this.isBlockedByObject(x, y, width, height);
+}
+
+isBlockedByObject(x, y, width, height) {
+  const rect = { x, y, width, height };
+
+  for (const obj of this.collisionObjects || []) {
+    if (this.objectBlocksRect(obj, rect)) return true;
+  }
+
+  return false;
+}
+
+objectBlocksRect(obj, rect) {
+  // polygon object
+  if (Array.isArray(obj.polygon) && obj.polygon.length > 0) {
+    const points = obj.polygon.map((p) => ({
+      x: (obj.x + p.x) * this.scale,
+      y: (obj.y + p.y) * this.scale
+    }));
+
+    return polygonIntersectsRect(points, rect);
+  }
+
+  // rectangle object
+  const objRect = {
+    x: (obj.x || 0) * this.scale,
+    y: (obj.y || 0) * this.scale,
+    width: (obj.width || 0) * this.scale,
+    height: (obj.height || 0) * this.scale
+  };
+
+  return rectsOverlap(rect, objRect);
+}
   // Checks a single tile for collision.
   isBlockedTile(tx, ty) {
     if (!this.collisionLayer) return false;
@@ -597,6 +654,48 @@ class MapManager {
     this.collisionGrid = new CollisionGrid(mapData, this.mapScale, "Collision");
     this.portals = getPortalObjects(mapData);
     this.dialogs = getDialogObjects(mapData);
+
+// SWIM ZONES FROM TILE LAYERS
+this.swimZones = [];
+this.lessDeepZones = [];
+
+for (const layer of mapData.layers) {
+  if (layer.type !== "tilelayer") continue;
+
+  const name = (layer.name || "").toLowerCase();
+  if (name !== "swimzone" && name !== "lessdep") continue;
+
+  const tileW = mapData.tilewidth * this.mapScale;
+  const tileH = mapData.tileheight * this.mapScale;
+
+  for (let row = 0; row < layer.height; row++) {
+    for (let col = 0; col < layer.width; col++) {
+      const index = row * layer.width + col;
+      const tile = layer.data[index];
+      if (!tile) continue;
+
+      const zone = {
+        x: col * tileW,
+        y: row * tileH,
+        width: tileW,
+        height: tileH
+      };
+
+      if (name === "swimzone") this.swimZones.push(zone);
+      if (name === "lessdep") this.lessDeepZones.push(zone);
+    }
+  }
+}
+
+this.game.swimZones = this.swimZones;
+this.game.lessDeepZones = this.lessDeepZones;
+
+this.usedTriggers = new Set();
+this.activeDialog = null;
+this.game.activeDialog = null;
+
+
+
     this.usedTriggers = new Set();
     this.activeDialog = null;
     this.game.activeDialog = null;
@@ -775,6 +874,19 @@ for (const portal of this.portals) {
 
     console.log("Portal overlap detected:", portal.name || "(unnamed)", portalRect);
 
+    const isInSewer = String(this.mapPath || "").toLowerCase().includes("sewer");
+
+    if (isInSewer) {
+      const alive = this.game.notebook ? this.game.notebook.getAliveZombies(4) : 0;
+      const hasKey = this.game.hasSewerKey;
+
+      if (alive > 0 || !hasKey) {
+        this.game.showDialogue("I have to finish both objectives before leaving.", 2000);
+        this.portalCooldown = 0.4;
+        return;
+      }
+    }
+
     if (!this.game.pendingTeleport) {
       this.game.pendingTeleport = {
         mapManager: this,
@@ -836,6 +948,8 @@ for (const portal of this.portals) {
     }
   }
 }
+
+
 
     
 
@@ -932,4 +1046,50 @@ function rectsOverlap(a, b) {
     a.y < b.y + b.height &&
     a.y + a.height > b.y
   );
+}
+
+
+function pointInPolygon(point, polygon) {
+  let inside = false;
+
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x, yi = polygon[i].y;
+    const xj = polygon[j].x, yj = polygon[j].y;
+
+    const intersect =
+      ((yi > point.y) !== (yj > point.y)) &&
+      (point.x < ((xj - xi) * (point.y - yi)) / ((yj - yi) || 0.00001) + xi);
+
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
+}
+
+function polygonIntersectsRect(polygon, rect) {
+  // rect corners inside polygon
+  const rectPoints = [
+    { x: rect.x, y: rect.y },
+    { x: rect.x + rect.width, y: rect.y },
+    { x: rect.x, y: rect.y + rect.height },
+    { x: rect.x + rect.width, y: rect.y + rect.height }
+  ];
+
+  for (const p of rectPoints) {
+    if (pointInPolygon(p, polygon)) return true;
+  }
+
+  // polygon points inside rect
+  for (const p of polygon) {
+    if (
+      p.x >= rect.x &&
+      p.x <= rect.x + rect.width &&
+      p.y >= rect.y &&
+      p.y <= rect.y + rect.height
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 }

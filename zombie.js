@@ -109,6 +109,11 @@ tryLazyLoadSprite(spritePath) {
   img.src = spritePath;
 }
 
+canMoveTo(x, y) {
+  if (!this.game.collisionGrid) return true;
+  return !this.game.collisionGrid.isBlockedRect(x, y, this.width, this.height);
+}
+
   takeDamage(amount, source) {
     if (this.removeFromWorld) return false;
     const dmg = Math.max(0, amount || 0);
@@ -199,10 +204,27 @@ tryLazyLoadSprite(spritePath) {
     }
 
     if (this.state === "walk" && dist > this.attackRange) {
-    const len = dist || 1;
-    this.x += (dx / len) * this.speed * dt;
-    this.y += (dy / len) * this.speed * dt;
-    }
+  const len = dist || 1;
+  const moveX = (dx / len) * this.speed * dt;
+  const moveY = (dy / len) * this.speed * dt;
+
+  const nextX = this.x + moveX;
+  const nextY = this.y + moveY;
+
+  if (this.canMoveTo(nextX, this.y)) {
+    this.x = nextX;
+  }
+
+  if (this.canMoveTo(this.x, nextY)) {
+    this.y = nextY;
+  }
+
+  const worldWidth = this.game.worldWidth || 800;
+  const worldHeight = this.game.worldHeight || 600;
+
+  this.x = Math.max(0, Math.min(worldWidth - this.width, this.x));
+  this.y = Math.max(0, Math.min(worldHeight - this.height, this.y));
+}
     
     else if (this.attackTimer <= 0) {
       if (this.player && typeof this.player.takeDamage === "function") {
@@ -250,13 +272,32 @@ draw(ctx) {
     }
     const sx = frame * this.frameWidth;
 
-    ctx.drawImage(
-      sprite,
-      sx, 0,
-      this.frameWidth, this.frameHeight,
-      this.x, this.y,
-      this.width, this.height
-    );
+    const WATER_Y = 384;
+const isSewer = this.game.currentMapPath?.toLowerCase().includes("sewer");
+
+if (isSewer && this.y >= WATER_Y) {
+  const cropHeight = this.frameHeight * 0.5;
+
+  ctx.drawImage(
+    sprite,
+    sx, 0,
+    this.frameWidth, cropHeight,
+    this.x,
+    this.y,
+    this.width,
+    this.height * 0.5
+  );
+} else {
+  ctx.drawImage(
+    sprite,
+    sx, 0,
+    this.frameWidth, this.frameHeight,
+    this.x,
+    this.y,
+    this.width,
+    this.height
+  );
+}
 
     this.drawHealthBar(ctx);
     return;

@@ -473,8 +473,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":42,
-                 "y":149.333333333333
+                 "x":57.2727272727273,
+                 "y":128.969696969697
                 }, 
                 {
                  "height":16,
@@ -490,8 +490,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":229.5,
-                 "y":150
+                 "x":231.772727272727,
+                 "y":118.727272727273
                 }, 
                 {
                  "height":16,
@@ -543,6 +543,40 @@
                  "width":16,
                  "x":654,
                  "y":46.5
+                }, 
+                {
+                 "height":16,
+                 "id":23,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"zombie"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":360,
+                 "y":108
+                }, 
+                {
+                 "height":16,
+                 "id":24,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"zombie"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":540.727272727273,
+                 "y":136.909090909091
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -551,7 +585,7 @@
          "y":0
         }],
  "nextlayerid":19,
- "nextobjectid":23,
+ "nextobjectid":25,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

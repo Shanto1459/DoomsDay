@@ -37,7 +37,7 @@ toggle() {
     }
 
     if (path.includes("sewer")) {
-    const alive = this.getAliveZombies(2);
+    const alive = this.getAliveZombies(4);
     const hasKey = this.game.hasSewerKey ? 1 : 0;
     return `objective:sewer:${hasKey}:${alive}`;
     }
@@ -107,7 +107,7 @@ getObjectives() {
   }
 
   if (path.includes("sewer")) {
-    const alive = this.getAliveZombies(2);
+    const alive = this.getAliveZombies(4);
     const killDone = alive <= 0;
     const keyDone = !!this.game.hasSewerKey;
 
