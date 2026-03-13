@@ -16,7 +16,7 @@ const TITLE_BG_PATH = "./sprites/ui/title-bg.png";
 const SAVE_KEY = "doomsday_save";
 const MAP_SCALE = 4;
 const START_SPAWN = "PlayerSpawn";
-const PLAYER_SPEED = 1000; // pixels per second
+const PLAYER_SPEED = 140; // pixels per second 140
 const ZOMBIE_COUNT = 1;
 
 let currentPlayer = null;
