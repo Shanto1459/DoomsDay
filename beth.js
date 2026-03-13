@@ -94,6 +94,14 @@ class BethBoss {
     if (this.health <= 0) {
       this.state = "death";
       this.animations.death.reset();
+      if (this.game) {
+        this.game.bossDefeated = true;
+        if (this.spawnId) {
+          if (!this.game.defeatedEnemyIds) this.game.defeatedEnemyIds = new Set();
+          this.game.defeatedEnemyIds.add(this.spawnId);
+          this.game.enemyObjectiveDefeated = this.game.defeatedEnemyIds.size;
+        }
+      }
       return true;
     }
 

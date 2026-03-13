@@ -137,10 +137,12 @@ class TitleScreen {
       ctx.fillText("N  - View Objectives", ctx.canvas.width / 2, 320);
       ctx.fillText("SPACE  - Attack", ctx.canvas.width / 2, 370);
       ctx.fillText("Walk over items to pick them up", ctx.canvas.width / 2, 420);
+      ctx.fillText("Restart (Mac): Command + R", ctx.canvas.width / 2, 460);
+      ctx.fillText("Restart (Windows): Ctrl + Shift + F5", ctx.canvas.width / 2, 500);
 
       ctx.font = "18px Arial";
       ctx.fillStyle = "#b9ff9e";
-      ctx.fillText("Click anywhere to return", ctx.canvas.width / 2, 500);
+      ctx.fillText("Click anywhere to return", ctx.canvas.width / 2, 545);
 
       return;
     }

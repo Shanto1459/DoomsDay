@@ -254,7 +254,7 @@ function spawnZombies(player, mapPath, mapData) {
   }
 
   // Spawn zombies from Tiled object markers (type/name includes "zombie")
-  const spawned = spawnZombiesFromMap(gameEngine, mapData, MAP_SCALE);
+  const spawned = spawnZombiesFromMap(gameEngine, mapData, MAP_SCALE, mapPath);
 
   if (DEBUG_MODE) {
     console.log("Zombies spawned from map:", spawned.length, "on map:", mapPath || "(unknown)");
@@ -292,6 +292,12 @@ async function setupWorld(mapPath, spawnName) {
   gameEngine.zombiesEnabled = false;
   gameEngine.bossDefeated = false;
   gameEngine.zombieObjectiveTotal = 0;
+  gameEngine.enemySpawnIds = new Set();
+  gameEngine.defeatedEnemyIds = new Set();
+  gameEngine.enemyObjectiveTotal = 0;
+  gameEngine.enemyObjectiveDefeated = 0;
+  gameEngine.visitedBethUpstairs = false;
+  gameEngine.bethEscapeComplete = false;
 
   if (!gameEngine.collectedItems) {
     gameEngine.collectedItems = new Set();
@@ -561,6 +567,38 @@ ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.png");
     gameEngine.init(ctx);
     canvas.focus();
 
+    async function hardRestartGame() {
+      gameEngine.entities = [];
+      gameEngine.activeDialog = null;
+      gameEngine.checkedWindow = false;
+      gameEngine.foundBeth = false;
+      gameEngine.hasCarKey = false;
+      gameEngine.hasTriedBethDoor = false;
+      gameEngine.hasSewerKey = false;
+      gameEngine.bethDoorUnlocked = false;
+      gameEngine.bossDefeated = false;
+      gameEngine.zombieObjectiveTotal = 0;
+      gameEngine.enemySpawnIds = new Set();
+      gameEngine.defeatedEnemyIds = new Set();
+      gameEngine.enemyObjectiveTotal = 0;
+      gameEngine.enemyObjectiveDefeated = 0;
+      gameEngine.visitedBethUpstairs = false;
+      gameEngine.bethEscapeComplete = false;
+      gameEngine.collectedItems = new Set();
+      gameEngine.pendingTeleport = null;
+      gameEngine.gameOver = false;
+      gameEngine.gameWon = false;
+      gameEngine.paused = false;
+      gameEngine.keys = {};
+
+      if (typeof AudioEngine !== "undefined") {
+        AudioEngine.init();
+        AudioEngine.playMusic();
+      }
+
+      await setupWorld(MAP_PATH, START_SPAWN);
+    }
+
     function showTitleScreen() {
       // reset engine state
       gameEngine.entities = [];
@@ -575,6 +613,13 @@ ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.png");
       gameEngine.bethDoorUnlocked = false;
       gameEngine.bossDefeated = false;
       gameEngine.zombieObjectiveTotal = 0;
+      gameEngine.enemySpawnIds = new Set();
+      gameEngine.defeatedEnemyIds = new Set();
+      gameEngine.enemyObjectiveTotal = 0;
+      gameEngine.enemyObjectiveDefeated = 0;
+      gameEngine.visitedBethUpstairs = false;
+      gameEngine.bethEscapeComplete = false;
+      gameEngine.collectedItems = new Set();
 
       // optional: stop music on main screen
       if (typeof AudioEngine !== "undefined") {
@@ -596,8 +641,8 @@ ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.png");
     showTitleScreen();
 
     // restart button -> back to title screen
-    gameEngine.restart = () => {
-      showTitleScreen();
+    gameEngine.restart = async () => {
+      await hardRestartGame();
     };
 
     gameEngine.start();

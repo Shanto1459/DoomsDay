@@ -32,13 +32,24 @@ toggle() {
 
   getObjectiveSignature() {
     const path = String(this.game.currentMapPath || "").toLowerCase();
+    const inBethDownstairs = path.includes("bethhouse");
+    const inBethUpstairs = path.includes("bethroom");
+    const inBethPhase = inBethDownstairs || inBethUpstairs || !!this.game.visitedBethUpstairs;
+    const { total, dead } = this.getEnemyProgress();
     if (path.includes("bedroom") || path === "") {
       return `objective:bedroom:${this.windowChecked() ? 1 : 0}:${this.playerHasWeapon() ? 1 : 0}`;
     }
+    if (inBethPhase) {
+      return `objective:beth_phase:${inBethUpstairs ? 1 : 0}:${dead}/${total}:escaped:${this.game.bethEscapeComplete ? 1 : 0}`;
+    }
     if (this.game.bossDefeated) {
-      const alive = this.getAliveZombies();
-      const total = this.game.zombieObjectiveTotal || alive;
-      return `objective:clear_remaining:${alive}/${total}`;
+      const total =
+        this.game.enemyObjectiveTotal ||
+        (this.game.enemySpawnIds ? this.game.enemySpawnIds.size : 0);
+      const defeated =
+        this.game.enemyObjectiveDefeated ||
+        (this.game.defeatedEnemyIds ? this.game.defeatedEnemyIds.size : 0);
+      return `objective:clear_remaining:${defeated}/${total}`;
     }
     if (this.game.hasSewerKey) return "objective:return_beth_house";
     if (this.game.hasTriedBethDoor) return "objective:check_sewer_key";
@@ -55,6 +66,17 @@ toggle() {
       !e.removeFromWorld &&
       e.state !== "death"
     ).length;
+  }
+
+  getEnemyProgress() {
+    const total =
+      this.game.enemyObjectiveTotal ||
+      (this.game.enemySpawnIds ? this.game.enemySpawnIds.size : 0);
+    const dead =
+      this.game.enemyObjectiveDefeated ||
+      (this.game.defeatedEnemyIds ? this.game.defeatedEnemyIds.size : 0);
+    const alive = Math.max(0, total - dead);
+    return { total, dead, alive };
   }
 
   playerHasWeapon() {
@@ -86,6 +108,12 @@ toggle() {
 
   getObjectives() {
     const path = String(this.game.currentMapPath || "").toLowerCase();
+    const inBethDownstairs = path.includes("bethhouse");
+    const inBethUpstairs = path.includes("bethroom");
+    const inBethPhase = inBethDownstairs || inBethUpstairs || !!this.game.visitedBethUpstairs;
+    const upstairsDone = inBethUpstairs || !!this.game.visitedBethUpstairs;
+    const { total, dead, alive } = this.getEnemyProgress();
+
     if (path.includes("bedroom") || path === "") {
       return {
         title: "Notebook",
@@ -97,23 +125,47 @@ toggle() {
       };
     }
 
-    if (this.game.bossDefeated) {
-      const alive = this.getAliveZombies();
-      const total = Math.max(this.game.zombieObjectiveTotal || 0, alive);
-      this.game.zombieObjectiveTotal = total;
-
-      if (alive <= 0) {
+    if (inBethPhase) {
+      if (!upstairsDone) {
         return {
           title: "Notebook",
-          lines: ["☑ Kill all remaining zombies in the area (0/0)", "☐ Escape the area"],
+          lines: ["☐ Go to upstairs"],
+          footer: "Head upstairs in Beth's house."
+        };
+      }
+
+      return {
+        title: "Notebook",
+        lines: [
+          "☑ Go to upstairs",
+          `☐ Zombies + Beth: Alive ${alive} | Dead ${dead}/${total}`,
+          "☐ Find the exit",
+          "☐ Leave the map"
+        ],
+        footer: alive > 0 ? "Eliminate all enemies, then leave Beth's house." : "Area clear. Exit the house."
+      };
+    }
+
+    if (this.game.bossDefeated) {
+      const total =
+        this.game.enemyObjectiveTotal ||
+        (this.game.enemySpawnIds ? this.game.enemySpawnIds.size : 0);
+      const defeated =
+        this.game.enemyObjectiveDefeated ||
+        (this.game.defeatedEnemyIds ? this.game.defeatedEnemyIds.size : 0);
+
+      if (total > 0 && defeated >= total) {
+        return {
+          title: "Notebook",
+          lines: [`☑ Eliminate Beth and all zombies (${total}/${total})`, "☐ Escape the area"],
           footer: "Area cleared. Find the way out."
         };
       }
 
       return {
         title: "Notebook",
-        lines: [`☐ Kill all remaining zombies in the area (${alive}/${total})`],
-        footer: "Clear them all to escape."
+        lines: [`☐ Eliminate Beth and all zombies (${Math.min(defeated, total)}/${total})`],
+        footer: "Track down every remaining zombie to win."
       };
     }
 
@@ -198,12 +250,22 @@ toggle() {
     let ty = y + 105;
     let index = 0;
     const path = String(this.game.currentMapPath || "").toLowerCase();
+    const inBethDownstairs = path.includes("bethhouse");
+    const inBethUpstairs = path.includes("bethroom");
+    const inBethPhase = inBethDownstairs || inBethUpstairs || !!this.game.visitedBethUpstairs;
+    const upstairsDone = inBethUpstairs || !!this.game.visitedBethUpstairs;
+    const { total, alive } = this.getEnemyProgress();
 
     for (const line of lines) {
       let completed = line.trim().startsWith("☑");
       if (!completed && (path.includes("bedroom") || path === "")) {
         if (index === 0) completed = this.windowChecked();
         if (index === 1) completed = this.playerHasWeapon();
+      } else if (!completed && inBethPhase) {
+        if (index === 0) completed = upstairsDone;
+        if (index === 1) completed = alive <= 0;
+        if (index === 2) completed = alive <= 0;
+        if (index === 3) completed = !!this.game.bethEscapeComplete;
       }
 
       const text = completed ? line.replace("☐", "☑") : line;

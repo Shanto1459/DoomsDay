@@ -32,6 +32,13 @@ class GameEngine {
         this.gameOver = false;
         this.gameWon = false;
         this.collectedItems = new Set();
+        this.enemySpawnIds = new Set();
+        this.defeatedEnemyIds = new Set();
+        this.enemyObjectiveTotal = 0;
+        this.enemyObjectiveDefeated = 0;
+        this.bossDefeated = false;
+        this.visitedBethUpstairs = false;
+        this.bethEscapeComplete = false;
         this.restart = null;
 
         this.zombiesEnabled = false;
@@ -95,6 +102,13 @@ class GameEngine {
 
         if (this.restart) this.restart();
         this.levelHadZombies = false;
+        this.enemySpawnIds = new Set();
+        this.defeatedEnemyIds = new Set();
+        this.enemyObjectiveTotal = 0;
+        this.enemyObjectiveDefeated = 0;
+        this.bossDefeated = false;
+        this.visitedBethUpstairs = false;
+        this.bethEscapeComplete = false;
 
     }
 
@@ -136,6 +150,15 @@ class GameEngine {
 
         window.addEventListener("keydown", (event) => {
             const key = event.key.toLowerCase();
+            const isMacHardRestart = event.metaKey && key === "r";
+            const isWindowsHardRestart = event.ctrlKey && key === "f5";
+
+            // Global hard restart shortcuts.
+            if (isMacHardRestart || isWindowsHardRestart) {
+                event.preventDefault();
+                this.doRestart();
+                return;
+            }
 
             // Pause/Resume (disabled when won/over)
             if ((key === "p" || key === "escape") && !this.gameOver && !this.gameWon) {
@@ -210,15 +233,14 @@ class GameEngine {
             }
         }
 
-        const zombiesLeft = this.entities.filter(
-        e =>
-            e &&
-            e.constructor &&
-            (e.constructor.name === "Zombie" || e.constructor.name === "BethBoss")
-        ).length;
+        const totalEnemies = this.enemySpawnIds ? this.enemySpawnIds.size : 0;
+        const defeatedEnemies = this.defeatedEnemyIds ? this.defeatedEnemyIds.size : 0;
+        this.enemyObjectiveTotal = totalEnemies;
+        this.enemyObjectiveDefeated = defeatedEnemies;
 
-        if (this.zombiesEnabled && this.levelHadZombies && zombiesLeft === 0) {
-        this.winGame();
+        // Win only after Beth + all enemies are eliminated and player leaves Beth's house area.
+        if (this.bossDefeated && totalEnemies > 0 && defeatedEnemies >= totalEnemies && this.bethEscapeComplete) {
+            this.winGame();
         }
     }
 

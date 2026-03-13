@@ -592,6 +592,22 @@ class MapManager {
 
     this.mapData = mapData;
     this.mapPath = mapPath;
+    const mapPathLower = String(mapPath || "").toLowerCase();
+    const inBethDownstairs = mapPathLower.includes("bethhouse");
+    const inBethUpstairs = mapPathLower.includes("bethroom");
+    const inBethArea = inBethDownstairs || inBethUpstairs;
+    if (inBethUpstairs) {
+      this.game.visitedBethUpstairs = true;
+    }
+    if (
+      this.game.visitedBethUpstairs &&
+      !inBethArea &&
+      this.game.bossDefeated &&
+      this.game.enemyObjectiveTotal > 0 &&
+      this.game.enemyObjectiveDefeated >= this.game.enemyObjectiveTotal
+    ) {
+      this.game.bethEscapeComplete = true;
+    }
     this.lastSpawnName = spawnName || "PlayerSpawn";
     this.renderer = new TiledMapRenderer(this.game, mapData, mapPath, this.mapScale);
     this.collisionGrid = new CollisionGrid(mapData, this.mapScale, "Collision");
@@ -608,10 +624,8 @@ class MapManager {
     }
     this.spawnedZombies = [];
 
-    // ONLY spawn zombies on Mainforest
-    if (String(mapPath).toLowerCase().includes("mainforest")) {
-      this.spawnedZombies = spawnZombiesFromMap(this.game, mapData, this.mapScale);
-    }
+    // Spawn from map markers; defeated spawns are skipped by spawn manager.
+    this.spawnedZombies = spawnZombiesFromMap(this.game, mapData, this.mapScale, mapPath);
 
     console.log("ZOMBIES SPAWNED:", this.spawnedZombies.length, "on", mapPath);
 
