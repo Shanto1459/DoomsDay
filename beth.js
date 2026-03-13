@@ -86,17 +86,52 @@ class BethBoss {
     return !this.game.collisionGrid.isBlockedRect(x, y, this.width, this.height);
   }
 
+dropEscapeKey() {
+  if (this.droppedKey) return;
+
+  this.droppedKey = true;
+
+  const keyX = this.x + this.width / 2 - 16;
+  const keyY = this.y + this.height - 40;
+
+  this.game.addEntity(new ItemPickup(this.game, this.player, {
+    x: keyX,
+    y: keyY,
+    width: 32,
+    height: 32,
+    itemId: "escape_key",
+    spritePath: "./KeyFly/KeyFly1.jpeg",
+    collectedKey: "bethboss:escape_key",
+    animationFrames: [
+      "./KeyFly/KeyFly1.jpeg",
+      "./KeyFly/KeyFly2.jpeg",
+      "./KeyFly/KeyFly3.jpeg",
+      "./KeyFly/KeyFly4.jpeg"
+    ],
+    frameDuration: 0.12
+  }));
+}
+
   takeDamage(amount) {
     if (this.state === "death") return false;
 
     this.health = Math.max(0, this.health - amount);
 
     if (this.health <= 0) {
-      this.state = "death";
-      this.animations.death.reset();
-      return true;
-    }
+  this.state = "death";
+  this.animations.death.reset();
+  this.dropEscapeKey();
 
+  if (this.game) {
+    this.game.bossDefeated = true;
+    if (this.spawnId) {
+      if (!this.game.defeatedEnemyIds) this.game.defeatedEnemyIds = new Set();
+      this.game.defeatedEnemyIds.add(this.spawnId);
+      this.game.enemyObjectiveDefeated = this.game.defeatedEnemyIds.size;
+    }
+  }
+  return true;
+}
     this.state = "hurt";
     this.animations.hurt.reset();
     this.awake = true;
@@ -128,36 +163,12 @@ class BethBoss {
     }
 
     // Death logic + key drop
-    if (this.state === "death") {
-      if (this.animations.death.isDone()) {
-        if (!this.droppedKey) {
-          this.droppedKey = true;
-
-          const keyX = this.x + this.width / 2 - 16;
-          const keyY = this.y + this.height - 40;
-
-          this.game.addEntity(new ItemPickup(this.game, this.player, {
-            x: keyX,
-            y: keyY,
-            width: 32,
-            height: 32,
-            itemId: "escape_key",
-            spritePath: "./KeyFly/KeyFly1.png",
-            collectedKey: "bethboss:escape_key",
-            animationFrames: [
-              "./KeyFly/KeyFly1.png",
-              "./KeyFly/KeyFly2.png",
-              "./KeyFly/KeyFly3.png",
-              "./KeyFly/KeyFly4.png"
-            ],
-            frameDuration: 0.12
-          }));
-        }
-
-        this.removeFromWorld = true;
-      }
-      return;
-    }
+   if (this.state === "death") {
+  if (this.animations.death.isDone()) {
+    this.removeFromWorld = true;
+  }
+  return;
+}
 
     if (this.state === "hurt") {
       if (this.animations.hurt.isDone()) {

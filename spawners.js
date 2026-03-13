@@ -1,4 +1,4 @@
-function spawnZombiesFromMap(game, mapData, mapScale) {
+function spawnZombiesFromMap(game, mapData, mapScale, mapPath) {
 
   if (typeof Zombie === "undefined") {
     console.error("Zombie class not loaded. Check script order: zombie.js must load before spawners.js");
@@ -6,6 +6,9 @@ function spawnZombiesFromMap(game, mapData, mapScale) {
   }
 
   const spawned = [];
+  const mapKey = String(mapPath || game.currentMapPath || "").toLowerCase() || "unknown_map";
+  if (!game.enemySpawnIds) game.enemySpawnIds = new Set();
+  if (!game.defeatedEnemyIds) game.defeatedEnemyIds = new Set();
 
   const variants = [
     {
@@ -63,12 +66,21 @@ function spawnZombiesFromMap(game, mapData, mapScale) {
         const y = obj.y * mapScale;
         const facing = getObjectProperty(obj, "facing") || "down";
         const player = game.cameraTarget;
+        const layerName = String(layer.name || "layer");
+        const objectId = Number.isFinite(obj.id)
+          ? obj.id
+          : `${Math.round((obj.x || 0) * 100)}_${Math.round((obj.y || 0) * 100)}`;
 
         // -------------------------
         // BOSS SPAWN (Beth)
         // -------------------------
         if (marker.includes("boss")) {
+          const spawnId = `${mapKey}:${layerName}:${objectId}:boss`;
+          game.enemySpawnIds.add(spawnId);
+          if (game.defeatedEnemyIds.has(spawnId)) continue;
+
           const boss = new BethBoss(game, player, x, y);
+          boss.spawnId = spawnId;
           game.addEntity(boss);
           spawned.push(boss);
 
@@ -80,6 +92,9 @@ function spawnZombiesFromMap(game, mapData, mapScale) {
         // NORMAL ZOMBIES
         // -------------------------
         if (!marker.includes("zombie")) continue;
+        const spawnId = `${mapKey}:${layerName}:${objectId}:zombie`;
+        game.enemySpawnIds.add(spawnId);
+        if (game.defeatedEnemyIds.has(spawnId)) continue;
 
         const v = pickRandom(variants);
 
@@ -95,6 +110,7 @@ function spawnZombiesFromMap(game, mapData, mapScale) {
 
         z.width = v.width;
         z.height = v.height;
+        z.spawnId = spawnId;
 
         game.addEntity(z);
         spawned.push(z);

@@ -7,7 +7,7 @@ gameEngine.debugWeapon = DEBUG_WEAPON;
 const ASSET_MANAGER = new AssetManager();
 
 // Starting map + player config.
-const MAP_PATH = "./maps/mainForest.tmj";
+const MAP_PATH = "./maps/bethroom.tmj";
 const BAT_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Bat.png";
 const KNIFE_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Knife.png";
 const KEY_SPRITE_PATH = "./Room/sewerkey.png";
@@ -87,7 +87,7 @@ function getPickupSpritePath(itemId) {
   if (itemId === "bat") return BAT_SPRITE_PATH;
   if (itemId === "knife") return KNIFE_SPRITE_PATH;
   if (itemId === "beth_house_key") return KEY_SPRITE_PATH;
-  if (itemId === "escape_key") return "./KeyFly/KeyFly1.png";
+  if (itemId === "escape_key") return "./KeyFly/KeyFly1.jpeg";
   return "";
 }
 
@@ -147,8 +147,8 @@ function spawnPickupsForMap(player, mapData, mapPath) {
     const itemId = normalizeItemId(mappedType);
     if (itemId === "bat") {
       // Make bat on table clearly visible.
-      width = Math.max(width, 72);
-      height = Math.max(height, 72);
+      width = Math.max(width, 33);
+      height = Math.max(height, 33);
     }
     const x = isPoint ? rawX - width / 2 : rawX;
     const y = isPoint ? rawY - height / 2 : rawY;
@@ -175,7 +175,13 @@ frameHeight: isAnimatedKey ? 16 : height
 
   // Bedroom safety fallback: always ensure a bat pickup exists unless already collected.
   // This keeps bat available even if the map currently only has non-bat pickups (like Knife).
-  const hasBatPickupObject = pickupObjects.some((p) => normalizeItemId(p.itemType) === "bat");
+  const hasBatPickupObject = pickupObjects.some((p) => {
+    const mappedType =
+      mapPathLower.includes("bedroom") && p.itemType === "knife"
+        ? "bat"
+        : p.itemType;
+    return normalizeItemId(mappedType) === "bat";
+  });
   if (mapPathLower.includes("bedroom") && !hasBatPickupObject) {
     const fallbackKey = `${mapPathLower}:bat`;
 
@@ -183,8 +189,8 @@ frameHeight: isAnimatedKey ? 16 : height
       gameEngine.addEntity(new ItemPickup(gameEngine, player, {
         x: 64,
         y: 320,
-        width: 30,
-        height: 30,
+        width: 33,
+        height: 33,
         itemId: "bat",
         spritePath: BAT_SPRITE_PATH,
         collectedKey: fallbackKey
@@ -248,7 +254,7 @@ function spawnZombies(player, mapPath, mapData) {
   }
 
   // Spawn zombies from Tiled object markers (type/name includes "zombie")
-  const spawned = spawnZombiesFromMap(gameEngine, mapData, MAP_SCALE);
+  const spawned = spawnZombiesFromMap(gameEngine, mapData, MAP_SCALE, mapPath);
 
   if (DEBUG_MODE) {
     console.log("Zombies spawned from map:", spawned.length, "on map:", mapPath || "(unknown)");
@@ -286,6 +292,12 @@ async function setupWorld(mapPath, spawnName) {
   gameEngine.zombiesEnabled = false;
   gameEngine.bossDefeated = false;
   gameEngine.zombieObjectiveTotal = 0;
+  gameEngine.enemySpawnIds = new Set();
+  gameEngine.defeatedEnemyIds = new Set();
+  gameEngine.enemyObjectiveTotal = 0;
+  gameEngine.enemyObjectiveDefeated = 0;
+  gameEngine.visitedBethUpstairs = false;
+  gameEngine.bethEscapeComplete = false;
 
   if (!gameEngine.collectedItems) {
     gameEngine.collectedItems = new Set();
@@ -512,10 +524,10 @@ async function loadGame() {
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side-left_punch-Sheet4.png");
   ASSET_MANAGER.queueDownload("./sprites/character/punch/Character_side_punch-Sheet4.png");
 
-  ASSET_MANAGER.queueDownload("./KeyFly/KeyFly1.png");
-ASSET_MANAGER.queueDownload("./KeyFly/KeyFly2.png");
-ASSET_MANAGER.queueDownload("./KeyFly/KeyFly3.png");
-ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.png");
+  ASSET_MANAGER.queueDownload("./KeyFly/KeyFly1.jpeg");
+  ASSET_MANAGER.queueDownload("./KeyFly/KeyFly2.jpeg");
+  ASSET_MANAGER.queueDownload("./KeyFly/KeyFly3.jpeg");
+  ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.jpeg");
 
   ASSET_MANAGER.queueDownload("./Room/ZombieWoman/Zombie - Idle.png");
   ASSET_MANAGER.queueDownload("./Room/ZombieWoman/Zombie - Walk.png");
@@ -555,6 +567,38 @@ ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.png");
     gameEngine.init(ctx);
     canvas.focus();
 
+    async function hardRestartGame() {
+      gameEngine.entities = [];
+      gameEngine.activeDialog = null;
+      gameEngine.checkedWindow = false;
+      gameEngine.foundBeth = false;
+      gameEngine.hasCarKey = false;
+      gameEngine.hasTriedBethDoor = false;
+      gameEngine.hasSewerKey = false;
+      gameEngine.bethDoorUnlocked = false;
+      gameEngine.bossDefeated = false;
+      gameEngine.zombieObjectiveTotal = 0;
+      gameEngine.enemySpawnIds = new Set();
+      gameEngine.defeatedEnemyIds = new Set();
+      gameEngine.enemyObjectiveTotal = 0;
+      gameEngine.enemyObjectiveDefeated = 0;
+      gameEngine.visitedBethUpstairs = false;
+      gameEngine.bethEscapeComplete = false;
+      gameEngine.collectedItems = new Set();
+      gameEngine.pendingTeleport = null;
+      gameEngine.gameOver = false;
+      gameEngine.gameWon = false;
+      gameEngine.paused = false;
+      gameEngine.keys = {};
+
+      if (typeof AudioEngine !== "undefined") {
+        AudioEngine.init();
+        AudioEngine.playMusic();
+      }
+
+      await setupWorld(MAP_PATH, START_SPAWN);
+    }
+
     function showTitleScreen() {
       // reset engine state
       gameEngine.entities = [];
@@ -569,6 +613,13 @@ ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.png");
       gameEngine.bethDoorUnlocked = false;
       gameEngine.bossDefeated = false;
       gameEngine.zombieObjectiveTotal = 0;
+      gameEngine.enemySpawnIds = new Set();
+      gameEngine.defeatedEnemyIds = new Set();
+      gameEngine.enemyObjectiveTotal = 0;
+      gameEngine.enemyObjectiveDefeated = 0;
+      gameEngine.visitedBethUpstairs = false;
+      gameEngine.bethEscapeComplete = false;
+      gameEngine.collectedItems = new Set();
 
       // optional: stop music on main screen
       if (typeof AudioEngine !== "undefined") {
@@ -590,8 +641,8 @@ ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.png");
     showTitleScreen();
 
     // restart button -> back to title screen
-    gameEngine.restart = () => {
-      showTitleScreen();
+    gameEngine.restart = async () => {
+      await hardRestartGame();
     };
 
     gameEngine.start();

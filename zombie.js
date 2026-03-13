@@ -115,6 +115,7 @@ canMoveTo(x, y) {
 }
 
   takeDamage(amount, source) {
+    if (this.state === "death") return false;
     if (this.removeFromWorld) return false;
     const dmg = Math.max(0, amount || 0);
     if (dmg > 0) AudioEngine.playHit();
@@ -128,23 +129,10 @@ canMoveTo(x, y) {
     this.state = "death";
     this.animElapsed = 0;
     this.attackTimer = 9999; // stop attacking
-
-    // First zombie defeated in Beth room is treated as the boss defeat milestone.
-    const mapPath = String(this.game && this.game.currentMapPath || "").toLowerCase();
-    if (this.game && mapPath.includes("bethroom") && !this.game.bossDefeated) {
-      this.game.bossDefeated = true;
-      const aliveNow = (this.game.entities || []).filter(
-        (e) =>
-          e &&
-          e.constructor &&
-          e.constructor.name === "Zombie" &&
-          !e.removeFromWorld &&
-          e.state !== "death"
-      ).length;
-      this.game.zombieObjectiveTotal = Math.max(this.game.zombieObjectiveTotal || 0, aliveNow);
-      if (typeof this.game.showDialogue === "function") {
-        this.game.showDialogue("Boss down. Clear the remaining zombies.", 2600);
-      }
+    if (this.game && this.spawnId) {
+      if (!this.game.defeatedEnemyIds) this.game.defeatedEnemyIds = new Set();
+      this.game.defeatedEnemyIds.add(this.spawnId);
+      this.game.enemyObjectiveDefeated = this.game.defeatedEnemyIds.size;
     }
   }
     return true;
