@@ -83,6 +83,33 @@ class HintArrow {
     );
   }
 
+  getNonSewerEnemyProgress() {
+    const spawnIds = this.game.enemySpawnIds instanceof Set ? [...this.game.enemySpawnIds] : [];
+    const defeatedIds = this.game.defeatedEnemyIds instanceof Set ? this.game.defeatedEnemyIds : new Set();
+    const objectiveIds = spawnIds.filter((id) => !String(id).toLowerCase().includes("sewer"));
+    let defeated = 0;
+    for (const id of objectiveIds) {
+      if (defeatedIds.has(id)) defeated += 1;
+    }
+    const total = objectiveIds.length;
+    const alive = Math.max(0, total - defeated);
+    return { total, defeated, alive };
+  }
+
+  getFinalExitPoint(mapManager) {
+    if (!mapManager || !Array.isArray(mapManager.finalExits) || mapManager.finalExits.length === 0) return null;
+    const exitObj = mapManager.finalExits[0];
+    const scale = mapManager.mapScale || 1;
+    const tileW = (mapManager.mapData && mapManager.mapData.tilewidth) || 16;
+    const tileH = (mapManager.mapData && mapManager.mapData.tileheight) || 16;
+    const width = ((exitObj.width || tileW) * scale);
+    const height = ((exitObj.height || tileH) * scale);
+    return {
+      x: (exitObj.x || 0) * scale + width / 2,
+      y: (exitObj.y || 0) * scale + height / 2
+    };
+  }
+
 update() {
   const zDown = !!this.game.keys["z"];
   const zPressed = zDown && !this.prevZDown;
@@ -92,6 +119,15 @@ update() {
   const path = String(this.game.currentMapPath || "").toLowerCase();
   const mapManager = this.getMapManager();
   this.active = true;
+  const progress = this.getNonSewerEnemyProgress();
+  const mapCleared = progress.total > 0 && progress.alive <= 0;
+  const finalExitPoint = this.getFinalExitPoint(mapManager);
+
+  // After clearing the map objective, keep compass guiding the player to the final gate.
+  if (!this.game.gameWon && mapCleared && finalExitPoint) {
+    this.setTarget(finalExitPoint.x, finalExitPoint.y, "Final Gate");
+    return;
+  }
 
   // No guiding arrow on the starting bedroom map.
   if (path.includes("bedroom") || path === "") {
