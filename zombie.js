@@ -170,7 +170,7 @@ canMoveTo(x, y) {
     } else {
     }
         if (dist > this.chaseRadius) return;
-
+        if (!this.alwaysAggro && dist > this.chaseRadius) return;
     // Update direction for future (if you later swap sprites by direction)
     if (Math.abs(dx) >= Math.abs(dy)) this.lastDirection = dx >= 0 ? "right" : "left";
     else this.lastDirection = dy >= 0 ? "down" : "up";

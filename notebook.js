@@ -77,12 +77,22 @@ toggle() {
 }
 
   getEnemyProgress() {
-    const total =
-      this.game.enemyObjectiveTotal ||
-      (this.game.enemySpawnIds ? this.game.enemySpawnIds.size : 0);
-    const dead =
-      this.game.enemyObjectiveDefeated ||
-      (this.game.defeatedEnemyIds ? this.game.defeatedEnemyIds.size : 0);
+    // Global objective counter: include all tracked zombies/boss spawns EXCEPT sewer map spawns.
+    const allSpawnIds = this.game.enemySpawnIds instanceof Set
+      ? [...this.game.enemySpawnIds]
+      : [];
+    const defeatedIds = this.game.defeatedEnemyIds instanceof Set
+      ? this.game.defeatedEnemyIds
+      : new Set();
+
+    const nonSewerSpawnIds = allSpawnIds.filter((id) => !String(id).toLowerCase().includes("sewer"));
+    const total = nonSewerSpawnIds.length;
+
+    let dead = 0;
+    for (const id of nonSewerSpawnIds) {
+      if (defeatedIds.has(id)) dead += 1;
+    }
+
     const alive = Math.max(0, total - dead);
     return { total, dead, alive };
   }
@@ -146,10 +156,9 @@ toggle() {
         lines: [
           "☑ Go to upstairs",
           `☐ Zombies + Beth: Alive ${alive} | Dead ${dead}/${total}`,
-          "☐ Find the exit",
-          "☐ Leave the map"
+          "☐ Escape through the gate"
         ],
-        footer: alive > 0 ? "Leave Beth's house and clear the area." : "Area clear. Exit the house."
+        footer: alive > 0 ? "Clear all zombies first, then go to the gate." : "Area clear. Go to the gate to escape."
       };
     }
 

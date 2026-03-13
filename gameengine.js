@@ -237,11 +237,6 @@ class GameEngine {
         const defeatedEnemies = this.defeatedEnemyIds ? this.defeatedEnemyIds.size : 0;
         this.enemyObjectiveTotal = totalEnemies;
         this.enemyObjectiveDefeated = defeatedEnemies;
-
-        // Win only after Beth + all enemies are eliminated and player leaves Beth's house area.
-        if (this.bossDefeated && totalEnemies > 0 && defeatedEnemies >= totalEnemies && this.bethEscapeComplete) {
-            this.winGame();
-        }
     }
 
     draw() {
@@ -381,6 +376,7 @@ handleTopRightUiClick() {
     const firstY = rects.restart.y + rects.restart.height + 6;
 
     const hintOn = this.hintArrow && this.hintArrow.active;
+    const zombieRadarOn = this.hintArrow && this.hintArrow.showZombieRadar;
     const notebookHasUpdate = this.notebook && this.notebook.hasUnreadUpdate;
     const flashOn = Math.floor(performance.now() / 300) % 2 === 0;
 
@@ -392,7 +388,8 @@ handleTopRightUiClick() {
 
     this.ctx.fillText("Press N: Notebook", centerX, firstY);
     this.ctx.fillText("Press C: Compass", centerX, firstY + 16);
-    this.ctx.fillText(`${hintOn ? "ON" : "OFF"}`, centerX, firstY + 32);
+    this.ctx.fillText("Press Z: Zombie Radar", centerX, firstY + 32);
+    this.ctx.fillText(`Compass ${hintOn ? "ON" : "OFF"} | Radar ${zombieRadarOn ? "ON" : "OFF"}`, centerX, firstY + 48);
 
     this.ctx.restore();
     }
@@ -465,7 +462,7 @@ handleTopRightUiClick() {
         this.ctx.textAlign = "center";
         this.ctx.font = "30px Creepster";
 
-        const title = this.gameOver ? "GAME OVER" : (this.gameWon ? "YOU WIN!" : "PAUSED");
+        const title = this.gameOver ? "GAME OVER" : (this.gameWon ? "YOU HAVE SUCCESSFULLY ESCAPED" : "PAUSED");
         this.ctx.fillText(title, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2 - 20);
 
         this.ctx.font = "16px monospace";

@@ -7,7 +7,7 @@ gameEngine.debugWeapon = DEBUG_WEAPON;
 const ASSET_MANAGER = new AssetManager();
 
 // Starting map + player config.
-const MAP_PATH = "./maps/mainForest.tmj";
+const MAP_PATH = "./maps/bedroom.tmj";
 const BAT_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Bat.png";
 const KNIFE_SPRITE_PATH = "./PostApocalypse_AssetPack_v1.1.2/Objects/Pickable/Knife.png";
 const KEY_SPRITE_PATH = "./Room/sewerkey.png";
@@ -16,7 +16,7 @@ const TITLE_BG_PATH = "./sprites/ui/title-bg.png";
 const SAVE_KEY = "doomsday_save";
 const MAP_SCALE = 4;
 const START_SPAWN = "PlayerSpawn";
-const PLAYER_SPEED = 140; // pixels per second
+const PLAYER_SPEED = 500; // pixels per second 140
 const ZOMBIE_COUNT = 1;
 
 let currentPlayer = null;

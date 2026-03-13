@@ -3,6 +3,8 @@ class HintArrow {
     this.game = game;
     this.active = true;
     this.target = null;
+    this.showZombieRadar = false;
+    this.prevZDown = false;
   }
 
   setTarget(x, y, label = "Objective") {
@@ -70,7 +72,23 @@ class HintArrow {
     });
   }
 
+  getAliveEnemies() {
+    return (this.game.entities || []).filter(
+      (e) =>
+        e &&
+        e.constructor &&
+        (e.constructor.name === "Zombie" || e.constructor.name === "BethBoss") &&
+        !e.removeFromWorld &&
+        e.state !== "death"
+    );
+  }
+
 update() {
+  const zDown = !!this.game.keys["z"];
+  const zPressed = zDown && !this.prevZDown;
+  this.prevZDown = zDown;
+  if (zPressed) this.showZombieRadar = !this.showZombieRadar;
+
   const path = String(this.game.currentMapPath || "").toLowerCase();
   const mapManager = this.getMapManager();
   this.active = true;
@@ -136,76 +154,123 @@ update() {
 }
 
   draw(ctx) {
-    if (!this.active || !this.target) return;
+    if (!this.active) return;
 
     const player = this.game.cameraTarget;
     if (!player) return;
+    const hasObjectiveTarget = !!this.target;
+    const showRadar = !!this.showZombieRadar;
+    if (!hasObjectiveTarget && !showRadar) return;
 
-    const dx = this.target.x - player.x;
-    const dy = this.target.y - player.y;
-    const angle = Math.atan2(dy, dx);
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (hasObjectiveTarget) {
+      const dx = this.target.x - player.x;
+      const dy = this.target.y - player.y;
+      const angle = Math.atan2(dy, dx);
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+      const arrowX = ctx.canvas.width - 70;
+      const arrowY = 140;
+
+      ctx.translate(arrowX, arrowY);
+      ctx.rotate(angle);
+      ctx.scale(1.3, 1.3);
+      // prettier arrow
+      ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+
+      // main body
+      ctx.beginPath();
+      ctx.moveTo(26, 0);      // tip
+      ctx.lineTo(-8, -12);    // upper inner
+      ctx.lineTo(-2, 0);      // center notch
+      ctx.lineTo(-8, 12);     // lower inner
+      ctx.closePath();
+
+      ctx.fillStyle = "#f4d03f";   // gold
+      ctx.fill();
+
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#2b1b0f"; // dark brown outline
+      ctx.stroke();
+
+      // inner highlight
+      ctx.shadowColor = "transparent";
+      ctx.beginPath();
+      ctx.moveTo(15, 0);
+      ctx.lineTo(-4, -6);
+      ctx.lineTo(0, 0);
+      ctx.lineTo(-4, 6);
+      ctx.closePath();
+
+      ctx.fillStyle = "#fff3a6";
+      ctx.fill();
+
+      ctx.restore();
+
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+      ctx.font = "14px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      ctx.fillStyle = "rgba(255,255,255,0.95)";
+      ctx.strokeStyle = "rgba(0,0,0,0.9)";
+      ctx.lineWidth = 3;
+
+      const text = `${this.target.label} (${Math.round(distance)})`;
+      const labelX = arrowX;
+      const labelY = arrowY + 28;
+
+      ctx.strokeText(text, labelX, labelY);
+      ctx.fillText(text, labelX, labelY);
+
+      ctx.restore();
+    }
+
+    if (!showRadar) return;
+
+    const enemies = this.getAliveEnemies();
+    if (enemies.length === 0) return;
+
+    const centerX = ctx.canvas.width - 80;
+    const centerY = 230;
+    const radius = 46;
 
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-    const arrowX = ctx.canvas.width - 70;
-    const arrowY = 140;
-
-    ctx.translate(arrowX, arrowY);
-    ctx.rotate(angle);
-    ctx.scale(1.3, 1.3);
-   // prettier arrow
-    ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
-
-    // main body
-    ctx.beginPath();
-    ctx.moveTo(26, 0);      // tip
-    ctx.lineTo(-8, -12);    // upper inner
-    ctx.lineTo(-2, 0);      // center notch
-    ctx.lineTo(-8, 12);     // lower inner
-    ctx.closePath();
-
-    ctx.fillStyle = "#f4d03f";   // gold
-    ctx.fill();
-
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = "#2b1b0f"; // dark brown outline
-    ctx.stroke();
-
-    // inner highlight
-    ctx.shadowColor = "transparent";
-    ctx.beginPath();
-    ctx.moveTo(15, 0);
-    ctx.lineTo(-4, -6);
-    ctx.lineTo(0, 0);
-    ctx.lineTo(-4, 6);
-    ctx.closePath();
-
-    ctx.fillStyle = "#fff3a6";
-    ctx.fill();
-
-    ctx.restore();
-
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-    ctx.font = "14px monospace";
+    ctx.font = "12px monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
-    ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.strokeStyle = "rgba(0,0,0,0.9)";
-    ctx.lineWidth = 3;
+    ctx.fillStyle = "rgba(255,110,110,0.95)";
+    ctx.fillText(`Z radar: ${enemies.length}`, centerX, centerY + radius + 12);
 
-    const text = `${this.target.label} (${Math.round(distance)})`;
-    const labelX = arrowX;
-    const labelY = arrowY + 28;
+    for (const enemy of enemies) {
+      const dx = enemy.x - player.x;
+      const dy = enemy.y - player.y;
+      const angle = Math.atan2(dy, dx);
+      const px = centerX + Math.cos(angle) * radius;
+      const py = centerY + Math.sin(angle) * radius;
 
-    ctx.strokeText(text, labelX, labelY);
-    ctx.fillText(text, labelX, labelY);
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.moveTo(10, 0);
+      ctx.lineTo(-5, -4);
+      ctx.lineTo(-5, 4);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(255,80,80,0.95)";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,0.75)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+    }
 
     ctx.restore();
   }
