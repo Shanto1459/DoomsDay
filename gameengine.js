@@ -376,6 +376,7 @@ handleTopRightUiClick() {
     const firstY = rects.restart.y + rects.restart.height + 6;
 
     const hintOn = this.hintArrow && this.hintArrow.active;
+    const zombieRadarOn = this.hintArrow && this.hintArrow.showZombieRadar;
     const notebookHasUpdate = this.notebook && this.notebook.hasUnreadUpdate;
     const flashOn = Math.floor(performance.now() / 300) % 2 === 0;
 
@@ -387,7 +388,8 @@ handleTopRightUiClick() {
 
     this.ctx.fillText("Press N: Notebook", centerX, firstY);
     this.ctx.fillText("Press C: Compass", centerX, firstY + 16);
-    this.ctx.fillText(`${hintOn ? "ON" : "OFF"}`, centerX, firstY + 32);
+    this.ctx.fillText("Press Z: Zombie Radar", centerX, firstY + 32);
+    this.ctx.fillText(`Compass ${hintOn ? "ON" : "OFF"} | Radar ${zombieRadarOn ? "ON" : "OFF"}`, centerX, firstY + 48);
 
     this.ctx.restore();
     }
