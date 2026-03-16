@@ -29,12 +29,12 @@ function normalizeItemId(itemId) {
 
 function removeZombies() {
   gameEngine.entities = gameEngine.entities.filter(
-   (e) =>
-  !(
-    e &&
-    e.constructor &&
-    (e.constructor.name === "Zombie" || e.constructor.name === "BethBoss")
-  )
+    (e) =>
+      !(
+        e &&
+        e.constructor &&
+        (e.constructor.name === "Zombie" || e.constructor.name === "BethBoss")
+      )
   );
 }
 
@@ -88,6 +88,10 @@ function getPickupSpritePath(itemId) {
   if (itemId === "knife") return KNIFE_SPRITE_PATH;
   if (itemId === "beth_house_key") return KEY_SPRITE_PATH;
   if (itemId === "escape_key") return "./KeyFly/KeyFly1.png";
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
   return "";
 }
 
@@ -159,18 +163,18 @@ function spawnPickupsForMap(player, mapData, mapPath) {
     if (gameEngine.collectedItems.has(collectedKey)) continue;
 
     gameEngine.addEntity(new ItemPickup(gameEngine, player, {
-  x,
-  y,
-  width,
-  height,
-  itemId,
-  spritePath,
-  collectedKey,
-frameCount: isAnimatedKey ? 8 : 1,
-frameDuration: isAnimatedKey ? 0.12 : 0.12,
-frameWidth: isAnimatedKey ? 16 : width,
-frameHeight: isAnimatedKey ? 16 : height
-}));
+      x,
+      y,
+      width,
+      height,
+      itemId,
+      spritePath,
+      collectedKey,
+      frameCount: isAnimatedKey ? 8 : 1,
+      frameDuration: isAnimatedKey ? 0.12 : 0.12,
+      frameWidth: isAnimatedKey ? 16 : width,
+      frameHeight: isAnimatedKey ? 16 : height
+    }));
   }
 
   // Bedroom safety fallback: always ensure a bat pickup exists unless already collected.
@@ -316,6 +320,10 @@ async function setupWorld(mapPath, spawnName) {
     gameEngine.onStoryItemCollected = onStoryItemCollected;
 
     mapManager.setMap(mapData, mapPath, spawnName);
+<<<<<<< Updated upstream
+=======
+    gameEngine.noteZones = getNoteZones(mapData, MAP_SCALE);
+>>>>>>> Stashed changes
 
     const notebook = new Notebook(gameEngine);
     const teleportPrompt = new TeleportPrompt(gameEngine);
@@ -362,142 +370,142 @@ async function setupWorld(mapPath, spawnName) {
   }
 }
 function saveGame() {
-    console.log("SAVE BUTTON CLICKED");
+  console.log("SAVE BUTTON CLICKED");
 
-    const player = gameEngine.cameraTarget;
-    if (!player) {
-        console.log("No player found");
-        return;
-    }
+  const player = gameEngine.cameraTarget;
+  if (!player) {
+    console.log("No player found");
+    return;
+  }
 
-    const aliveZombies = (gameEngine.entities || [])
-        .filter(e =>
-            e &&
-            e.constructor &&
-            e.constructor.name === "Zombie" &&
-            !e.removeFromWorld &&
-            e.state !== "death"
-        )
-        .map(z => ({
-            x: z.x,
-            y: z.y,
-            width: z.width,
-            height: z.height,
-            speed: z.speed,
-            damage: z.damage,
-            maxHealth: z.maxHealth,
-            health: z.health,
-            variant: z.variant,
-            facing: z.lastDirection || "down"
-        }));
+  const aliveZombies = (gameEngine.entities || [])
+    .filter(e =>
+      e &&
+      e.constructor &&
+      e.constructor.name === "Zombie" &&
+      !e.removeFromWorld &&
+      e.state !== "death"
+    )
+    .map(z => ({
+      x: z.x,
+      y: z.y,
+      width: z.width,
+      height: z.height,
+      speed: z.speed,
+      damage: z.damage,
+      maxHealth: z.maxHealth,
+      health: z.health,
+      variant: z.variant,
+      facing: z.lastDirection || "down"
+    }));
 
-    const remainingMedkits = (gameEngine.entities || [])
-        .filter(e =>
-            e &&
-            e.constructor &&
-            e.constructor.name === "HealthPickup" &&
-            !e.removeFromWorld
-        )
-        .map(m => ({
-            x: m.x,
-            y: m.y,
-            width: m.width,
-            height: m.height,
-            healAmount: m.healAmount,
-            spritePath: m.spritePath
-        }));
+  const remainingMedkits = (gameEngine.entities || [])
+    .filter(e =>
+      e &&
+      e.constructor &&
+      e.constructor.name === "HealthPickup" &&
+      !e.removeFromWorld
+    )
+    .map(m => ({
+      x: m.x,
+      y: m.y,
+      width: m.width,
+      height: m.height,
+      healAmount: m.healAmount,
+      spritePath: m.spritePath
+    }));
 
-    const saveData = {
-        map: gameEngine.currentMapPath || MAP_PATH,
-        player: {
-            x: player.x,
-            y: player.y,
-            health: player.health,
-            maxHealth: player.maxHealth
-        },
-        zombies: aliveZombies,
-        medkits: remainingMedkits
-    };
+  const saveData = {
+    map: gameEngine.currentMapPath || MAP_PATH,
+    player: {
+      x: player.x,
+      y: player.y,
+      health: player.health,
+      maxHealth: player.maxHealth
+    },
+    zombies: aliveZombies,
+    medkits: remainingMedkits
+  };
 
-    localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
-    console.log("Game saved", saveData);
+  localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+  console.log("Game saved", saveData);
 }
 
 function loadSavedGame() {
-    console.log("LOAD BUTTON CLICKED");
+  console.log("LOAD BUTTON CLICKED");
 
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) {
-        console.log("No save found");
-        return;
-    }
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) {
+    console.log("No save found");
+    return;
+  }
 
-    const saveData = JSON.parse(raw);
-    const player = gameEngine.cameraTarget;
+  const saveData = JSON.parse(raw);
+  const player = gameEngine.cameraTarget;
 
-    if (!player) {
-        console.log("No player found");
-        return;
-    }
+  if (!player) {
+    console.log("No player found");
+    return;
+  }
 
-    // Restore player
-    player.x = saveData.player.x;
-    player.y = saveData.player.y;
-    player.health = saveData.player.health;
-    player.maxHealth = saveData.player.maxHealth;
+  // Restore player
+  player.x = saveData.player.x;
+  player.y = saveData.player.y;
+  player.health = saveData.player.health;
+  player.maxHealth = saveData.player.maxHealth;
 
-    // Remove all current zombies
-    gameEngine.entities = gameEngine.entities.filter(
-        e => !(e && e.constructor && e.constructor.name === "Zombie")
-    );
+  // Remove all current zombies
+  gameEngine.entities = gameEngine.entities.filter(
+    e => !(e && e.constructor && e.constructor.name === "Zombie")
+  );
 
-    // Remove all current medkits
-    gameEngine.entities = gameEngine.entities.filter(
-        e => !(e && e.constructor && e.constructor.name === "HealthPickup")
-    );
+  // Remove all current medkits
+  gameEngine.entities = gameEngine.entities.filter(
+    e => !(e && e.constructor && e.constructor.name === "HealthPickup")
+  );
 
-    // Restore zombies from save
-    if (Array.isArray(saveData.zombies)) {
-        saveData.zombies.forEach(z => {
-            const zombie = new Zombie(gameEngine, player, z.x, z.y, {
-                width: z.width,
-                height: z.height,
-                speed: z.speed,
-                damage: z.damage,
-                maxHealth: z.maxHealth,
-                variant: z.variant,
-                facing: z.facing
-            });
+  // Restore zombies from save
+  if (Array.isArray(saveData.zombies)) {
+    saveData.zombies.forEach(z => {
+      const zombie = new Zombie(gameEngine, player, z.x, z.y, {
+        width: z.width,
+        height: z.height,
+        speed: z.speed,
+        damage: z.damage,
+        maxHealth: z.maxHealth,
+        variant: z.variant,
+        facing: z.facing
+      });
 
-            zombie.health = z.health;
-            gameEngine.addEntity(zombie);
-        });
-    }
+      zombie.health = z.health;
+      gameEngine.addEntity(zombie);
+    });
+  }
 
-    // Restore medkits from save
-    if (Array.isArray(saveData.medkits)) {
-        saveData.medkits.forEach(m => {
-            const medkit = new HealthPickup(
-                gameEngine,
-                player,
-                m.x,
-                m.y,
-                m.width,
-                m.height,
-                {
-                    healAmount: m.healAmount,
-                    spritePath: m.spritePath
-                }
-            );
+  // Restore medkits from save
+  if (Array.isArray(saveData.medkits)) {
+    saveData.medkits.forEach(m => {
+      const medkit = new HealthPickup(
+        gameEngine,
+        player,
+        m.x,
+        m.y,
+        m.width,
+        m.height,
+        {
+          healAmount: m.healAmount,
+          spritePath: m.spritePath
+        }
+      );
 
-            gameEngine.addEntity(medkit);
-        });
-    }
+      gameEngine.addEntity(medkit);
+    });
+  }
 
-    // Keep map manager drawn correctly
-    keepMapManagerLast();
+  // Keep map manager drawn correctly
+  keepMapManagerLast();
 
-    console.log("Game loaded", saveData);
+  console.log("Game loaded", saveData);
 }
 
 // Loads the map JSON, preloads tiles, then starts the game loop.
@@ -599,11 +607,11 @@ ASSET_MANAGER.queueDownload("./KeyFly/KeyFly4.png");
 }
 const saveBtn = document.getElementById("saveBtn");
 if (saveBtn) {
-    saveBtn.addEventListener("click", saveGame);
+  saveBtn.addEventListener("click", saveGame);
 }
 const loadBtn = document.getElementById("loadBtn");
 if (loadBtn) {
-    loadBtn.addEventListener("click", loadSavedGame);
+  loadBtn.addEventListener("click", loadSavedGame);
 }
 
 loadGame().catch((error) => {
